@@ -1,0 +1,45 @@
+[project]
+name = "wappregator"
+version = "0.1.0"
+description = "An aggregator for Wappuradios."
+readme = "README.md"
+authors = [
+    { name = "Julius Laitala", email = "julius@laita.la" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp[speedups]>=3.11.16",
+    "fastapi[standard]>=0.115.12",
+]
+
+[project.scripts]
+wappregator = "wappregator:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+]
+
+[tool.ruff.lint]
+select = [
+    "F", # Pyflakes
+    "E", # Pycodestyle errors
+    "W", # Pycodestyle warnings
+    "N", # pep8-naming
+    "D", # Pydocstyle
+    "RUF", # Ruff-specifics
+]
+ignore = [
+    "D100", # Missing docstring in public module
+    "D104", # Missing docstring in public package
+    "D203", # 1 blank line required before class docstring
+    "D213", # Multi-line docstring summary should start at the second line
+    "D413", # Missing blank line after last section
+]
+
+[tool.mypy]
+disallow_untyped_defs = true

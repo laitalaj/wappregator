@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Radio Programs</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .time {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th></th>
+            {% for station in now_playing %}
+            <th><a href="{{ station.radio.url }}">{{ station.radio.name }}</a></th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Now Playing</th>
+            {% for station in now_playing %}
+            <td>
+                {% if station.now_playing %}
+                {{ station.now_playing.title }}<br>
+                <span class="time">
+                    {{ station.now_playing.start.astimezone().strftime('%Y-%m-%d %H:%M') }} -
+                    {{ station.now_playing.end.astimezone().strftime('%Y-%m-%d %H:%M') }}
+                </span>
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Up Next</th>
+            {% for station in now_playing %}
+            <td>
+                {% if station.up_next %}
+                {{ station.up_next.title }}<br>
+                <span class="time">
+                    {{ station.up_next.start.astimezone().strftime('%Y-%m-%d %H:%M') }} -
+                    {{ station.up_next.end.astimezone().strftime('%Y-%m-%d %H:%M') }}
+                </span>
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+</body>
+
+</html>
