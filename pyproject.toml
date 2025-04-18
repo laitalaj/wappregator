@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "aiohttp[speedups]>=3.11.16",
     "fastapi[standard]>=0.115.12",
+    "valkey[libvalkey]>=6.1.0",
 ]
 
 [project.scripts]

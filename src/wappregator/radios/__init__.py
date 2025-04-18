@@ -1,13 +1,18 @@
 import aiohttp
 import asyncio
+from datetime import datetime
+
+import valkey.asyncio as valkey
 
 from wappregator import model
 from wappregator.radios import diodi, norppa, rakkauden, turun, wapina
-from datetime import datetime
 
 
-async def fetch_radios() -> list[model.Schedule]:
+async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
     """Fetch all radios and their schedules.
+
+    Args:
+        valkey_client: The Valkey client to use for caching.
 
     Returns:
         List of radios with their schedules.
@@ -20,17 +25,22 @@ async def fetch_radios() -> list[model.Schedule]:
         wapina.WapinaFetcher(),
     ]
     async with aiohttp.ClientSession() as session:
-        radios = await asyncio.gather(*(fetcher(session) for fetcher in fetchers))
+        radios = await asyncio.gather(
+            *(fetcher(session, valkey_client) for fetcher in fetchers)
+        )
         return radios
 
 
-async def now_playing() -> list[model.NowPlaying]:
+async def now_playing(valkey_client: valkey.Valkey) -> list[model.NowPlaying]:
     """Get the current and next program for each radio.
+
+    Args:
+        valkey_client: The Valkey client to use for caching.
 
     Returns:
         List of radios with their current and next programs.
     """
-    radios = await fetch_radios()
+    radios = await fetch_radios(valkey_client)
     now = datetime.now().astimezone()
     res = []
 

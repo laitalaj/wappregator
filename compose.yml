@@ -1,0 +1,13 @@
+services:
+  backend:
+    build:
+      target: dev
+    volumes:
+      - .:/app
+      - /app/.venv # Anonymous volume to avoid overwriting the venv with the user's local venv
+    ports: 
+      - "8000:80"
+    environment:
+      VALKEY_URL: "valkey://cache"
+  cache:
+    image: docker.io/valkey/valkey:8-alpine

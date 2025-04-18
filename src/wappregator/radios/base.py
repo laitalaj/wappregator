@@ -2,8 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 import aiohttp
+import valkey.asyncio as valkey
 
 from wappregator import model
+
+CACHE_TTL_SECONDS = 60 * 60  # 1 hour
 
 
 class RadioError(Exception):
@@ -61,17 +64,26 @@ class BaseFetcher(ABC):
         """
         ...
 
-    async def __call__(self, session: aiohttp.ClientSession) -> model.Schedule:
+    async def __call__(
+        self, session: aiohttp.ClientSession, valkey_client: valkey.Valkey
+    ) -> model.Schedule:
         """Get the schedule in a Pydantic format.
 
         Args:
             session: The aiohttp session to use for HTTP requests.
+            valkey_client: The Valkey client to use for caching.
 
         Returns:
             A Schedule object containing the radio's schedule.
         """
+        cached = await valkey_client.get(self.url)
+        if cached:
+            return model.Schedule.model_validate_json(cached)
+
         data = await self.fetch_schedule(session)
         schedule = sorted(self.parse_schedule(data), key=lambda x: x.start)
-        return model.Schedule(
+        res = model.Schedule(
             radio=model.Radio(name=self.name, url=self.url), schedule=schedule
         )
+        await valkey_client.set(self.url, res.model_dump_json(), ex=CACHE_TTL_SECONDS)
+        return res
