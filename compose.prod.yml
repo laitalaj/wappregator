@@ -1,0 +1,20 @@
+services:
+  frontend:
+    build:
+      context: frontend
+      target: prod
+      args:
+        VITE_API_URL: "http://localhost:8000"
+    ports:
+      - "3000:3000"
+  backend:
+    build:
+      context: backend
+      target: prod
+    ports: 
+      - "8000:8000"
+    environment:
+      VALKEY_URL: "valkey://cache"
+      ALLOWED_ORIGINS: "http://localhost:3000"
+  cache:
+    image: docker.io/valkey/valkey:8-alpine

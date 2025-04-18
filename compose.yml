@@ -1,13 +1,26 @@
 services:
-  backend:
+  frontend:
     build:
+      context: frontend
       target: dev
     volumes:
-      - .:/app
+      - ./frontend:/app
+      - /app/node_modules # Anonymous volume to avoid overwriting the node_modules with the user's local node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: "http://localhost:8000"
+  backend:
+    build:
+      context: backend
+      target: dev
+    volumes:
+      - ./backend:/app
       - /app/.venv # Anonymous volume to avoid overwriting the venv with the user's local venv
     ports: 
-      - "8000:80"
+      - "8000:8000"
     environment:
       VALKEY_URL: "valkey://cache"
+      ALLOWED_ORIGINS: "http://localhost:3000"
   cache:
     image: docker.io/valkey/valkey:8-alpine

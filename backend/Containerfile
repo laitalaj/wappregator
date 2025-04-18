@@ -21,15 +21,15 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS dev
 WORKDIR /app
 COPY --from=builder /app /app
 
-EXPOSE 80
-CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "80", "app.py"]
+EXPOSE 8000
+CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "app.py"]
 
 
 FROM python:3.13-slim-bookworm AS prod
 
 RUN groupadd -r app && useradd -r -g app app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
+COPY --chown=app:app app.py /app/app.py
 
-EXPOSE 80
-USER app
-CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "/app/app.py"]
+EXPOSE 8000
+CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "/app/app.py"]

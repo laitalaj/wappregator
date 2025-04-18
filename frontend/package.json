@@ -1,0 +1,23 @@
+{
+  "name": "wappregator-frontend",
+  "version": "0.1.0",
+  "description": "An aggregator for Wappuradios",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "biome check --write src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.6"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.5"
+  }
+}

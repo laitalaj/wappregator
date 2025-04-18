@@ -7,11 +7,14 @@ import logging
 
 import fastapi
 from fastapi import responses, templating
+from fastapi.middleware import cors
 import valkey.asyncio as valkey
 
 from wappregator import model, radios
 
 VALKEY_URL = os.environ["VALKEY_URL"]
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS")
+ALLOWED_ORIGINS_LIST = ALLOWED_ORIGINS.split(",") if ALLOWED_ORIGINS else []
 
 valkey_pool = None
 
@@ -55,6 +58,13 @@ async def valkey_client() -> AsyncIterator[valkey.Valkey]:
 ValkeyClient = Annotated[valkey.Valkey, fastapi.Depends(valkey_client)]
 
 app = fastapi.FastAPI(lifespan=lifespan)
+
+if ALLOWED_ORIGINS_LIST:
+    app.add_middleware(
+        cors.CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS_LIST,
+    )
+
 templates = templating.Jinja2Templates(
     directory=pathlib.Path(__file__).parent / "templates"
 )
