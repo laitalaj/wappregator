@@ -1,11 +1,20 @@
 import aiohttp
 import asyncio
 from datetime import datetime
+import logging
 
 import valkey.asyncio as valkey
 
 from wappregator import model
 from wappregator.radios import diodi, norppa, rakkauden, turun, wapina
+
+logger = logging.getLogger(__name__)
+
+
+class FetchingBrokenError(Exception):
+    """Exception for errors that are due to radio fetching being broken on our end."""
+
+    pass
 
 
 async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
@@ -16,6 +25,9 @@ async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
 
     Returns:
         List of radios with their schedules.
+
+    Raises:
+        FetchingBrokenError: If no radios were fetched successfully.
     """
     fetchers = [
         diodi.DiodiFetcher(),
@@ -24,11 +36,20 @@ async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
         turun.TurunFetcher(),
         wapina.WapinaFetcher(),
     ]
+    radios = []
     async with aiohttp.ClientSession() as session:
-        radios = await asyncio.gather(
-            *(fetcher(session, valkey_client) for fetcher in fetchers)
+        tasks = [fetcher(session, valkey_client) for fetcher in fetchers]
+        async for task in asyncio.as_completed(tasks):
+            try:
+                radios.append(await task)
+            except Exception:
+                logger.exception("Error fetching a radio schedule")
+                continue
+    if not radios:
+        raise FetchingBrokenError(
+            "No radios were fetched successfully. See earlier logs for details."
         )
-        return radios
+    return radios
 
 
 async def now_playing(valkey_client: valkey.Valkey) -> list[model.NowPlaying]:
@@ -39,6 +60,9 @@ async def now_playing(valkey_client: valkey.Valkey) -> list[model.NowPlaying]:
 
     Returns:
         List of radios with their current and next programs.
+
+    Raises:
+        FetchingBrokenError: If no radios were fetched successfully.
     """
     radios = await fetch_radios(valkey_client)
     now = datetime.now().astimezone()

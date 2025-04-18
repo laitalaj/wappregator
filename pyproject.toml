@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Julius Laitala", email = "julius@laita.la" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "aiohttp[speedups]>=3.11.16",
     "fastapi[standard]>=0.115.12",

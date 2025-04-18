@@ -3,6 +3,7 @@ from collections.abc import AsyncIterator
 import os
 import pathlib
 import contextlib
+import logging
 
 import fastapi
 from fastapi import responses, templating
@@ -25,6 +26,8 @@ async def lifespan(_: fastapi.FastAPI) -> AsyncIterator[None]:
     Yields:
         Nothing.
     """
+    logging.basicConfig(level=logging.INFO)
+
     global valkey_pool
     valkey_pool = valkey.ConnectionPool.from_url(VALKEY_URL)
 

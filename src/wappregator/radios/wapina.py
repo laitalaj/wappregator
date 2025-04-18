@@ -6,7 +6,7 @@ from wappregator import model
 from wappregator.radios import base
 
 
-class WapinaFetcher(base.BaseFetcher):
+class WapinaFetcher(base.ListOfDictsFetcher):
     """Fetcher for Radio Wapina, the wappuradio from Vaasa."""
 
     def __init__(self) -> None:
@@ -28,8 +28,7 @@ class WapinaFetcher(base.BaseFetcher):
         """
         return self.api_url
 
-    @classmethod
-    def parse_one(cls, entry: dict[str, str]) -> model.Program:
+    def parse_one(self, entry: dict[str, str]) -> model.Program:
         """Parse a single entry from the schedule data.
 
         Args:
@@ -40,8 +39,8 @@ class WapinaFetcher(base.BaseFetcher):
         """
         start_time = datetime.time.fromisoformat(entry["startTime"])
         end_time = datetime.time.fromisoformat(
-            entry["end_time"]
-        )  # Keeping it consistent :-D
+            entry["end_time"]  # Keeping it consistent :-D
+        )
         date = datetime.date.fromisoformat(entry["date"])
         tz = datetime.timezone(datetime.timedelta(hours=3))
         return model.Program(
@@ -53,7 +52,8 @@ class WapinaFetcher(base.BaseFetcher):
         )
 
     def parse_schedule(
-        self, data: dict[str, dict[str, dict[str, str]]]
+        self,
+        data: dict[str, dict[str, dict[str, str]]],  # type: ignore[override]
     ) -> list[model.Program]:
         """Parse the schedule data into a list of Program objects.
 
@@ -63,4 +63,4 @@ class WapinaFetcher(base.BaseFetcher):
         Returns:
             A list of Program objects.
         """
-        return [self.parse_one(entry["program"]) for entry in data.values()]
+        return super().parse_schedule([entry["program"] for entry in data.values()])

@@ -10,7 +10,7 @@ from urllib.parse import quote
 WINDOW_DAYS = 7
 
 
-class NorppaFetcher(base.BaseFetcher):
+class NorppaFetcher(base.ListOfDictsFetcher):
     """Fetcher for Norpparadio, the wappuradio from lappeen Ranta."""
 
     def __init__(self) -> None:
@@ -47,8 +47,7 @@ class NorppaFetcher(base.BaseFetcher):
             f"&end={quote(may_second.isoformat())}"
         )
 
-    @classmethod
-    def parse_one(cls, entry: dict[str, Any]) -> model.Program:
+    def parse_one(self, entry: dict[str, Any]) -> model.Program:
         """Parse a single entry from the schedule data.
 
         Args:
@@ -64,14 +63,3 @@ class NorppaFetcher(base.BaseFetcher):
             title=entry["title"],
             description=extended_props.get("description"),
         )
-
-    def parse_schedule(self, data: list[dict[str, str]]) -> list[model.Program]:
-        """Parse the schedule data into a list of Program objects.
-
-        Args:
-            data: The schedule data to parse.
-
-        Returns:
-            A list of Program objects.
-        """
-        return [self.parse_one(entry) for entry in data]

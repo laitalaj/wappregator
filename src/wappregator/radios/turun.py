@@ -10,7 +10,7 @@ from wappregator.radios import base
 BUILD_ID_RE = re.compile(r"\"buildId\":\"([\w-]+)\"")
 
 
-class TurunFetcher(base.BaseFetcher):
+class TurunFetcher(base.ListOfDictsFetcher):
     """Fetcher for Turun Wappuradio."""
 
     def __init__(self) -> None:
@@ -31,19 +31,28 @@ class TurunFetcher(base.BaseFetcher):
 
         Returns:
             The URL for the radio's API endpoint.
+
+        Raises:
+            RadioError: If there was an error fetching the index or if the
+                build ID could not be found from it.
         """
         async with session.get(self.url) as response:
-            html = await response.text()
+            try:
+                response.raise_for_status()
+                html = await response.text()
+            except (aiohttp.ClientResponseError, UnicodeDecodeError) as e:
+                raise base.RadioError("Error loading Turun Wappuradio index") from e
+
             match = BUILD_ID_RE.search(html)
             if not match:
                 raise base.RadioError(
                     "Couldn't find NextJS build ID in Turun Wappuradio index"
                 )
+
             build_id = match.group(1)
             return f"{self.url}_next/data/{build_id}/index.json"
 
-    @classmethod
-    def parse_one(cls, entry: dict[str, str]) -> model.Program:
+    def parse_one(self, entry: dict[str, str]) -> model.Program:
         """Parse a single entry from the schedule data.
 
         Args:
@@ -62,7 +71,10 @@ class TurunFetcher(base.BaseFetcher):
             photo=entry.get("pictureUrl"),
         )
 
-    def parse_schedule(self, data: dict[str, Any]) -> list[model.Program]:
+    def parse_schedule(
+        self,
+        data: dict[str, Any],  # type: ignore[override]
+    ) -> list[model.Program]:
         """Parse the schedule data into a list of Program objects.
 
         Args:
@@ -73,4 +85,6 @@ class TurunFetcher(base.BaseFetcher):
         """
         props = data["pageProps"]
         shows = props["showsByDate"]
-        return [self.parse_one(entry) for lst in shows.values() for entry in lst]
+        return super().parse_schedule(
+            [entry for lst in shows.values() for entry in lst]
+        )

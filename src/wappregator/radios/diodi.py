@@ -6,7 +6,7 @@ from wappregator import model
 from wappregator.radios import base
 
 
-class DiodiFetcher(base.BaseFetcher):
+class DiodiFetcher(base.ListOfDictsFetcher):
     """Fetcher for Radio Diodi, the wappuradio from Otaniemi."""
 
     def __init__(self) -> None:
@@ -28,8 +28,7 @@ class DiodiFetcher(base.BaseFetcher):
         """
         return self.api_url
 
-    @classmethod
-    def parse_one(cls, entry: dict[str, str]) -> model.Program:
+    def parse_one(self, entry: dict[str, str]) -> model.Program:
         """Parse a single entry from the schedule data.
 
         Args:
@@ -47,14 +46,3 @@ class DiodiFetcher(base.BaseFetcher):
             host=entry.get("team"),
             photo=entry.get("image"),
         )
-
-    def parse_schedule(self, data: list[dict[str, str]]) -> list[model.Program]:
-        """Parse the schedule data into a list of Program objects.
-
-        Args:
-            data: The schedule data to parse.
-
-        Returns:
-            A list of Program objects.
-        """
-        return [self.parse_one(entry) for entry in data]
