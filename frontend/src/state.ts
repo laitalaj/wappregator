@@ -1,20 +1,20 @@
 import {
+	addHours,
+	isBefore,
+	isWithinInterval,
+	parseISO,
+	startOfHour,
+	subHours,
+} from "date-fns";
+import {
 	type Accessor,
+	type Resource,
 	createEffect,
 	createResource,
 	createSignal,
 	onCleanup,
-	type Resource,
 } from "solid-js";
 import type { NowPlaying, Radios, Schedule } from "./types";
-import {
-	subHours,
-	startOfHour,
-	addHours,
-	parseISO,
-	isWithinInterval,
-	isBefore,
-} from "date-fns";
 
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;

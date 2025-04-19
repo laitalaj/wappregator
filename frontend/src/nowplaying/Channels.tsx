@@ -1,4 +1,4 @@
-import { type Accessor, Index, type Resource, Suspense } from "solid-js";
+import { type Accessor, Index, Suspense } from "solid-js";
 import type { NowPlaying } from "../types";
 import { Channel } from "./Channel";
 import classes from "./Channels.module.css";
