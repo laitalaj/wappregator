@@ -1,12 +1,7 @@
-import {
-	type Component,
-	Match,
-	Suspense,
-	Switch,
-	createResource,
-} from "solid-js";
+import { type Component, Suspense, createResource, onCleanup } from "solid-js";
 import { NowPlayingTable } from "./nowplaying/NowPlayingTable";
 import type { NowPlaying } from "./types";
+import classes from "./App.module.css";
 
 interface ImportMetaEnv {
 	readonly VITE_API_URL: string;
@@ -22,18 +17,25 @@ const fetchNowPlaying = async (): Promise<NowPlaying[]> => {
 };
 
 const App: Component = () => {
-	const [nowPlaying] = createResource(fetchNowPlaying);
+	const [nowPlaying, { refetch }] = createResource(fetchNowPlaying, {});
+
+	const interval = setInterval(() => {
+		refetch();
+	}, 5000);
+	onCleanup(() => clearInterval(interval));
+
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<Switch>
-				<Match when={nowPlaying.error}>
-					<div>Error: {nowPlaying.error.message}</div>
-				</Match>
-				<Match when={nowPlaying()}>
-					<NowPlayingTable stations={nowPlaying()} />
-				</Match>
-			</Switch>
-		</Suspense>
+		<div class={classes.app}>
+			<header>
+				<h1>Wappregator</h1>
+				<span>Vapun epävirallinen aggregoija</span>
+			</header>
+			<main>
+				<Suspense fallback={<div>Loading...</div>}>
+					<NowPlayingTable stations={nowPlaying.latest} />
+				</Suspense>
+			</main>
+		</div>
 	);
 };
 

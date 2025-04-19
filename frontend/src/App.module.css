@@ -1,0 +1,28 @@
+.app {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	width: 100vw;
+
+	font-family: "Roboto Condensed", sans-serif;
+}
+
+header {
+	background-color: #282c34;
+	padding: 16px;
+	color: white;
+	text-align: center;
+
+	& > h1 {
+		margin: 0;
+		font-family: "Bungee Spice", sans-serif;
+	}
+}
+
+main {
+	display: flex;
+	flex-grow: 1;
+	flex-direction: column;
+	align-items: center;
+	background-color: #ffffff;
+}
