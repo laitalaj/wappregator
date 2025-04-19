@@ -1,9 +1,12 @@
 import datetime
+import re
 
 import aiohttp
 
 from wappregator import model
 from wappregator.radios import base
+
+TAG_RE = re.compile(r"<[^>]+>")
 
 
 class DiodiFetcher(base.ListOfDictsFetcher):
@@ -30,6 +33,25 @@ class DiodiFetcher(base.ListOfDictsFetcher):
         """
         return self.api_url
 
+    def sanitize_value(self, value: str | None) -> str | None:
+        """Sanitize a value.
+
+        Removes HTML tags and turns empty strings into None.
+
+        Args:
+            value: The value to sanitize.
+
+        Returns:
+            The sanitized value.
+        """
+        if value is None:
+            return None
+        # Not the most sophisticated HTML sanitizer, but it will do for now.
+        res = TAG_RE.sub("", value)
+        if res == "":
+            return None
+        return res
+
     def parse_one(self, entry: dict[str, str]) -> model.Program:
         """Parse a single entry from the schedule data.
 
@@ -38,13 +60,20 @@ class DiodiFetcher(base.ListOfDictsFetcher):
 
         Returns:
             A Program object representing the entry.
+
+        Raises:
+            ValueError: If the entry is malformed.
         """
+        title = self.sanitize_value(entry["title"])
+        if title is None:
+            raise ValueError("Malformed entry in Diodi API: title is None")
+
         return model.Program(
             start=datetime.datetime.fromisoformat(entry["start"]),
             end=datetime.datetime.fromisoformat(entry["end"]),
-            title=entry["title"],
-            description=entry.get("description"),
-            genre=entry.get("genre"),
-            host=entry.get("team"),
-            photo=entry.get("image"),
+            title=title,
+            description=self.sanitize_value(entry.get("description")),
+            genre=self.sanitize_value(entry.get("genre")),
+            host=self.sanitize_value(entry.get("team")),
+            photo=self.sanitize_value(entry.get("image")),
         )

@@ -153,6 +153,11 @@ class ListOfDictsFetcher(BaseFetcher):
                 f"Key error parsing entry {entry} from {self.name}", exc_info=True
             )
             return None
+        except ValueError:
+            logger.warning(
+                f"Value error parsing entry {entry} from {self.name}", exc_info=True
+            )
+            return None
 
     def parse_schedule(self, data: list[dict[str, Any]]) -> list[model.Program]:
         """Parse the schedule data into a list of Program objects.

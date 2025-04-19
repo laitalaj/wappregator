@@ -62,6 +62,9 @@ class TurunFetcher(base.ListOfDictsFetcher):
         Returns:
             A Program object representing the entry.
         """
+        photo = entry.get("pictureUrl")
+        if photo is not None and photo.startswith("/"):
+            photo = self.url + photo[1:]
         return model.Program(
             start=datetime.datetime.fromisoformat(entry["start"]),
             end=datetime.datetime.fromisoformat(entry["end"]),
@@ -69,7 +72,7 @@ class TurunFetcher(base.ListOfDictsFetcher):
             description=entry.get("description"),
             host=entry.get("hosts"),
             producer=entry.get("producer"),
-            photo=entry.get("pictureUrl"),
+            photo=photo,
         )
 
     def parse_schedule(
