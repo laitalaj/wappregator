@@ -22,6 +22,7 @@ class Program(pydantic.BaseModel):
 class Radio(pydantic.BaseModel):
     """A radio station."""
 
+    id: str
     name: str
     url: str
 

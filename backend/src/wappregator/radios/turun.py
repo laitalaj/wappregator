@@ -16,6 +16,7 @@ class TurunFetcher(base.ListOfDictsFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(
+            id="turun",
             name="Turun Wappuradio",
             url="https://turunwappuradio.com/",
         )

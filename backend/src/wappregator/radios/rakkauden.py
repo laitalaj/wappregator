@@ -12,6 +12,7 @@ class RakkaudenFetcher(base.ListOfDictsFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(
+            id="rakkauden",
             name="Rakkauden Wappuradio",
             url="https://wappuradio.fi/",
         )

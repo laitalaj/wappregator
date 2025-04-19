@@ -12,6 +12,7 @@ class WapinaFetcher(base.ListOfDictsFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(
+            id="wapina",
             name="Radio Wapina",
             url="https://wapina.fi/",
         )

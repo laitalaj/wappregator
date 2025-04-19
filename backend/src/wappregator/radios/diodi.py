@@ -12,6 +12,7 @@ class DiodiFetcher(base.ListOfDictsFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(
+            id="diodi",
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
         )

@@ -16,6 +16,7 @@ class NorppaFetcher(base.ListOfDictsFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(
+            id="norppa",
             name="Norpparadio",
             url="https://norpparadio.net/",
         )

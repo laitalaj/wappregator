@@ -30,21 +30,21 @@ async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
         FetchingBrokenError: If no radios were fetched successfully.
     """
     fetchers = [
-        diodi.DiodiFetcher(),
-        norppa.NorppaFetcher(),
         rakkauden.RakkaudenFetcher(),
         turun.TurunFetcher(),
+        diodi.DiodiFetcher(),
         wapina.WapinaFetcher(),
+        norppa.NorppaFetcher(),
     ]
     radios = []
     async with aiohttp.ClientSession() as session:
         tasks = [fetcher(session, valkey_client) for fetcher in fetchers]
-        async for task in asyncio.as_completed(tasks):
-            try:
-                radios.append(await task)
-            except Exception:
-                logger.exception("Error fetching a radio schedule")
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for result in results:
+            if isinstance(result, Exception):
+                logger.exception("Error fetching a radio schedule", exc_info=result)
                 continue
+            radios.append(result)
     if not radios:
         raise FetchingBrokenError(
             "No radios were fetched successfully. See earlier logs for details."

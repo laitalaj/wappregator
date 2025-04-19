@@ -7,7 +7,10 @@ import valkey.asyncio as valkey
 
 from wappregator import model
 
-CACHE_TTL_SECONDS = 60 * 60  # 1 hour
+CACHE_TTL_SECONDS = 60 * 15
+CACHE_VERSION = 1
+CACHE_NAMESPACE = "radios"
+CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +24,14 @@ class RadioError(Exception):
 class BaseFetcher(ABC):
     """Base class for fetching radio schedules."""
 
-    def __init__(self, name: str, url: str) -> None:
+    def __init__(self, id: str, name: str, url: str) -> None:
         """Initialize the fetcher.
 
         Args:
             name: The name of the radio station.
             url: The (human) URL of the radio station.
         """
+        self.id = id
         self.name = name
         self.url = url
 
@@ -86,16 +90,17 @@ class BaseFetcher(ABC):
         Returns:
             A Schedule object containing the radio's schedule.
         """
-        cached = await valkey_client.get(self.url)
+        cache_key = f"{CACHE_KEY_PREFIX}{self.url}"
+        cached = await valkey_client.get(cache_key)
         if cached:
             return model.Schedule.model_validate_json(cached)
 
         data = await self.fetch_schedule(session)
         schedule = sorted(self.parse_schedule(data), key=lambda x: x.start)
         res = model.Schedule(
-            radio=model.Radio(name=self.name, url=self.url), schedule=schedule
+            radio=model.Radio(id=self.id, name=self.name, url=self.url), schedule=schedule
         )
-        await valkey_client.set(self.url, res.model_dump_json(), ex=CACHE_TTL_SECONDS)
+        await valkey_client.set(cache_key, res.model_dump_json(), ex=CACHE_TTL_SECONDS)
         return res
 
 
