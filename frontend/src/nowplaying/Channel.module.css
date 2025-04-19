@@ -1,0 +1,41 @@
+.channel {
+	container: channel;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	background-color: var(--channel-color, #fff);
+	color: var(--channel-text-color, #000);
+}
+
+.channelName {
+	h2 {
+		margin: 0;
+		font-size: calc(max(1.5em, 1.5cqw));
+	}
+}
+
+.channel[data-type="rakkauden"] {
+	--channel-color: rgb(211, 59, 111);
+	--channel-text-color: white;
+}
+
+.channel[data-type="norppa"] {
+	--channel-color: rgb(15, 23, 43);
+	--channel-text-color: white;
+}
+
+.channel[data-type="turun"] {
+	--channel-color: rgb(0, 27, 52);
+	--channel-text-color: white;
+}
+
+.channel[data-type="wapina"] {
+	--channel-color: rgb(255, 180, 20);
+	--channel-text-color: black;
+}
+
+.channel[data-type="diodi"] {
+	--channel-color: rgb(220, 246, 220);
+	--channel-text-color: black;
+}

@@ -1,0 +1,9 @@
+.channels {
+	width: 100%;
+	flex-grow: 1;
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	min-width: 100%;
+	overflow-x: hidden;
+}

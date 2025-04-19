@@ -1,9 +1,15 @@
 @import "./reset.css";
 
 body {
-    font-family: "Inter", sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #333;
-    background-color: #f9f9f9;
+	font-family: "Inter", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	color: #333;
+	background-color: #f9f9f9;
+	overflow-y: scroll;
+}
+
+#root {
+	min-height: 100vh;
+	display: flex;
 }

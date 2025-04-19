@@ -1,16 +1,16 @@
 .app {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
 	width: 100vw;
-
 	font-family: "Roboto Condensed", sans-serif;
+
+	--bg-black: #282c34;
 }
 
 header {
-	background-color: #282c34;
 	padding: 16px;
 	color: white;
+	background-color: var(--bg-black);
 	text-align: center;
 
 	& > h1 {
@@ -24,5 +24,5 @@ main {
 	flex-grow: 1;
 	flex-direction: column;
 	align-items: center;
-	background-color: #ffffff;
+	background-color: var(--bg-black);
 }
