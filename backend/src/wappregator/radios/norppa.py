@@ -19,6 +19,7 @@ class NorppaFetcher(base.ListOfDictsFetcher):
             id="norppa",
             name="Norpparadio",
             url="https://norpparadio.net/",
+            stream="https://listen.norpparadio.net:8443/norpparadio.mp3",
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

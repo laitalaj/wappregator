@@ -25,3 +25,4 @@ class Radio(pydantic.BaseModel):
     id: str
     name: str
     url: str
+    stream: str | None = None

@@ -15,6 +15,7 @@ class DiodiFetcher(base.ListOfDictsFetcher):
             id="diodi",
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
+            stream="https://virta.radiodiodi.fi/mp3",
         )
         self.api_url = "https://api.radiodiodi.fi/programmes"
 

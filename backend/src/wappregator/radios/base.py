@@ -27,17 +27,19 @@ class RadioError(Exception):
 class BaseFetcher(ABC):
     """Base class for fetching radio schedules."""
 
-    def __init__(self, id: str, name: str, url: str) -> None:
+    def __init__(self, id: str, name: str, url: str, stream: str | None = None) -> None:
         """Initialize the fetcher.
 
         Args:
             id: The ID of the radio station.
             name: The name of the radio station.
             url: The (human) URL of the radio station.
+            stream: The stream URL of the radio station.
         """
         self.id = id
         self.name = name
         self.url = url
+        self.stream = stream
 
     @property
     def radio(self) -> model.Radio:
@@ -46,7 +48,7 @@ class BaseFetcher(ABC):
         Returns:
             A Radio object with the ID, name, and URL of the radio station.
         """
-        return model.Radio(id=self.id, name=self.name, url=self.url)
+        return model.Radio(id=self.id, name=self.name, url=self.url, stream=self.stream)
 
     @abstractmethod
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

@@ -15,6 +15,7 @@ class RakkaudenFetcher(base.ListOfDictsFetcher):
             id="rakkauden",
             name="Rakkauden Wappuradio",
             url="https://wappuradio.fi/",
+            stream="https://stream1.wappuradio.fi/wappuradio.opus",
         )
         self.endpoint = "api/programs"
 
