@@ -1,6 +1,5 @@
 import { type Component, Suspense, createResource, onCleanup } from "solid-js";
 import { Channels } from "./nowplaying/Channels";
-import type { NowPlaying } from "./types";
 import classes from "./App.module.css";
 
 const App: Component = () => {

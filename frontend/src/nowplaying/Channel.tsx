@@ -1,7 +1,7 @@
-import { type Accessor, createSignal, onCleanup, Show } from "solid-js";
+import type { Accessor } from "solid-js";
 import type { NowPlaying } from "../types";
 import classes from "./Channel.module.css";
-import { Program } from "./Program";
+import { MaybeProgram } from "./Program";
 
 interface Props {
 	station: Accessor<NowPlaying>;
@@ -20,12 +20,10 @@ export function Channel(props: Props) {
 				</h2>
 			</div>
 
-			<Show when={nowPlaying()}>
-				<Program program={nowPlaying} playingNow={true} />
-			</Show>
-			<Show when={upNext()}>
-				<Program program={upNext} playingNow={false} />
-			</Show>
+			<div class={classes.programs}>
+				<MaybeProgram program={nowPlaying} playingNow={true} />
+				<MaybeProgram program={upNext} playingNow={false} />
+			</div>
 		</div>
 	);
 }

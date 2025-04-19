@@ -15,6 +15,17 @@
 	}
 }
 
+.programs {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	& > * {
+		padding-bottom: 8px;
+		border-bottom: 2px solid var(--channel-text-color, #000);
+	}
+}
+
 .channel[data-type="rakkauden"] {
 	--channel-color: rgb(211, 59, 111);
 	--channel-text-color: white;

@@ -3,7 +3,14 @@
 	flex-grow: 1;
 	position: relative;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	grid-auto-rows: max-content;
 	min-width: 100%;
 	overflow-x: hidden;
+}
+
+@media screen and (min-width: 700px) {
+	.channels {
+		grid-auto-rows: 1fr;
+	}
 }
