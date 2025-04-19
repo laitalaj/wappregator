@@ -3,16 +3,19 @@ from typing import Any
 import logging
 
 import aiohttp
+import pydantic
 import valkey.asyncio as valkey
 
 from wappregator import model
 
 CACHE_TTL_SECONDS = 60 * 15
-CACHE_VERSION = 1
+CACHE_VERSION = 2
 CACHE_NAMESPACE = "radios"
 CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
 
 logger = logging.getLogger(__name__)
+
+adapter = pydantic.TypeAdapter(list[model.Program])
 
 
 class RadioError(Exception):
@@ -28,12 +31,22 @@ class BaseFetcher(ABC):
         """Initialize the fetcher.
 
         Args:
+            id: The ID of the radio station.
             name: The name of the radio station.
             url: The (human) URL of the radio station.
         """
         self.id = id
         self.name = name
         self.url = url
+
+    @property
+    def radio(self) -> model.Radio:
+        """Get the Radio object for this fetcher.
+
+        Returns:
+            A Radio object with the ID, name, and URL of the radio station.
+        """
+        return model.Radio(id=self.id, name=self.name, url=self.url)
 
     @abstractmethod
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
@@ -80,7 +93,7 @@ class BaseFetcher(ABC):
 
     async def __call__(
         self, session: aiohttp.ClientSession, valkey_client: valkey.Valkey
-    ) -> model.Schedule:
+    ) -> list[model.Program]:
         """Get the schedule in a Pydantic format.
 
         Args:
@@ -88,20 +101,19 @@ class BaseFetcher(ABC):
             valkey_client: The Valkey client to use for caching.
 
         Returns:
-            A Schedule object containing the radio's schedule.
+            A list of Program objects containing the radio's schedule.
         """
         cache_key = f"{CACHE_KEY_PREFIX}{self.url}"
         cached = await valkey_client.get(cache_key)
         if cached:
-            return model.Schedule.model_validate_json(cached)
+            return adapter.validate_json(cached)
 
         data = await self.fetch_schedule(session)
         schedule = sorted(self.parse_schedule(data), key=lambda x: x.start)
-        res = model.Schedule(
-            radio=model.Radio(id=self.id, name=self.name, url=self.url), schedule=schedule
+        await valkey_client.set(
+            cache_key, adapter.dump_json(schedule), ex=CACHE_TTL_SECONDS
         )
-        await valkey_client.set(cache_key, res.model_dump_json(), ex=CACHE_TTL_SECONDS)
-        return res
+        return schedule
 
 
 class ListOfDictsFetcher(BaseFetcher):

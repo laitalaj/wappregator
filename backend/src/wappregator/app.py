@@ -1,16 +1,15 @@
 from typing import Annotated
 from collections.abc import AsyncIterator
+import datetime
 import os
-import pathlib
 import contextlib
 import logging
 
 import fastapi
-from fastapi import responses, templating
 from fastapi.middleware import cors
 import valkey.asyncio as valkey
 
-from wappregator import model, radios
+from wappregator import model, radios, utils
 
 VALKEY_URL = os.environ["VALKEY_URL"]
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS")
@@ -65,29 +64,28 @@ if ALLOWED_ORIGINS_LIST:
         allow_origins=ALLOWED_ORIGINS_LIST,
     )
 
-templates = templating.Jinja2Templates(
-    directory=pathlib.Path(__file__).parent / "templates"
-)
+
+@app.get("/radios")
+async def get_radios() -> list[model.Radio]:
+    """Get a list of Wappuradios."""
+    return radios.radios()
 
 
 @app.get("/schedule")
-async def get_schedule(client: ValkeyClient) -> list[model.Schedule]:
-    """Get a list of Wappuradios, including full schedules."""
-    return await radios.fetch_radios(client)
-
-
-@app.get("/now_playing")
-async def get_now_playing(client: ValkeyClient) -> list[model.NowPlaying]:
-    """Get a list of Wappuradios, including current and next programs."""
-    return await radios.now_playing(client)
-
-
-@app.get("/")
-async def index(
-    request: fastapi.Request, client: ValkeyClient
-) -> responses.HTMLResponse:
-    """Render a nice minimal index page."""
-    now_playing = await radios.now_playing(client)
-    return templates.TemplateResponse(
-        request=request, name="nowplaying.html", context={"now_playing": now_playing}
+async def get_schedule(
+    client: ValkeyClient,
+    include: Annotated[list[str] | None, fastapi.Query()] = None,
+    start: datetime.datetime | None = None,
+    end: datetime.datetime | None = None,
+    min_previous: int | None = None,
+    min_upcoming: int | None = None,
+) -> dict[str, list[model.Program]]:
+    """Get schedules for Wappuradios."""
+    schedule = await radios.schedule(client)
+    filt = utils.ScheduleFilter(
+        start=start,
+        end=end,
+        min_previous=min_previous,
+        min_upcoming=min_upcoming,
     )
+    return {k: filt(v) for k, v in schedule.items() if include is None or k in include}

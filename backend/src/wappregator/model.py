@@ -25,18 +25,3 @@ class Radio(pydantic.BaseModel):
     id: str
     name: str
     url: str
-
-
-class Schedule(pydantic.BaseModel):
-    """The schedule of a radio station."""
-
-    radio: Radio
-    schedule: list[Program]
-
-
-class NowPlaying(pydantic.BaseModel):
-    """The current and next program of a radio station."""
-
-    radio: Radio
-    now_playing: Program | None = None
-    up_next: Program | None = None

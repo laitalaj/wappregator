@@ -1,12 +1,19 @@
 import aiohttp
 import asyncio
-from datetime import datetime
 import logging
 
 import valkey.asyncio as valkey
 
 from wappregator import model
 from wappregator.radios import diodi, norppa, rakkauden, turun, wapina
+
+FETCHERS = [
+    rakkauden.RakkaudenFetcher(),
+    turun.TurunFetcher(),
+    diodi.DiodiFetcher(),
+    wapina.WapinaFetcher(),
+    norppa.NorppaFetcher(),
+]
 
 logger = logging.getLogger(__name__)
 
@@ -17,69 +24,41 @@ class FetchingBrokenError(Exception):
     pass
 
 
-async def fetch_radios(valkey_client: valkey.Valkey) -> list[model.Schedule]:
-    """Fetch all radios and their schedules.
+def radios() -> list[model.Radio]:
+    """Get the list of available radios.
+
+    Returns:
+        List of radios.
+    """
+    return [fetcher.radio for fetcher in FETCHERS]
+
+
+async def schedule(valkey_client: valkey.Valkey) -> dict[str, list[model.Program]]:
+    """Fetch schedules for all radios.
 
     Args:
         valkey_client: The Valkey client to use for caching.
 
     Returns:
-        List of radios with their schedules.
+        Dictionary; keys are radio IDs, values are their schedules.
 
     Raises:
-        FetchingBrokenError: If no radios were fetched successfully.
+        FetchingBrokenError: If no schedules were fetched successfully.
     """
-    fetchers = [
-        rakkauden.RakkaudenFetcher(),
-        turun.TurunFetcher(),
-        diodi.DiodiFetcher(),
-        wapina.WapinaFetcher(),
-        norppa.NorppaFetcher(),
-    ]
-    radios = []
+    res = {}
     async with aiohttp.ClientSession() as session:
-        tasks = [fetcher(session, valkey_client) for fetcher in fetchers]
+        keys = [fetcher.id for fetcher in FETCHERS]
+        tasks = [fetcher(session, valkey_client) for fetcher in FETCHERS]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        for result in results:
-            if isinstance(result, Exception):
+        for key, result in zip(keys, results):
+            if isinstance(result, BaseException):
                 logger.exception("Error fetching a radio schedule", exc_info=result)
                 continue
-            radios.append(result)
-    if not radios:
+            res[key] = result
+
+    if not res:
         raise FetchingBrokenError(
             "No radios were fetched successfully. See earlier logs for details."
-        )
-    return radios
-
-
-async def now_playing(valkey_client: valkey.Valkey) -> list[model.NowPlaying]:
-    """Get the current and next program for each radio.
-
-    Args:
-        valkey_client: The Valkey client to use for caching.
-
-    Returns:
-        List of radios with their current and next programs.
-
-    Raises:
-        FetchingBrokenError: If no radios were fetched successfully.
-    """
-    radios = await fetch_radios(valkey_client)
-    now = datetime.now().astimezone()
-    res = []
-
-    for radio in radios:
-        now_playing = None
-        up_next = None
-        for program in radio.schedule:
-            if program.start <= now and now <= program.end:
-                now_playing = program
-            elif now < program.start and up_next is None:
-                up_next = program
-        res.append(
-            model.NowPlaying(
-                radio=radio.radio, now_playing=now_playing, up_next=up_next
-            )
         )
 
     return res
