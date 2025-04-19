@@ -1,6 +1,7 @@
 import { formatRelative, isToday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 import { type Accessor, Show, createSignal, onCleanup } from "solid-js";
+import { getProgramProgress } from "../getProgramProgress";
 import type { Program as ProgramType } from "../types";
 import classes from "./Program.module.css";
 import { ProgressBar } from "./ProgressBar";
@@ -14,7 +15,6 @@ interface Props {
 
 export function Program(props: Props) {
 	const [nowPlayingProgress, setNowPlayingProgress] = createSignal(0);
-	const nowPlayingProgressPercentage = () => `${nowPlayingProgress() * 100}%`;
 
 	const updateCompletion = setInterval(() => {
 		if (!props.playingNow) {
@@ -27,12 +27,7 @@ export function Program(props: Props) {
 			return 0;
 		}
 
-		const now = new Date();
-		const start = new Date(program.start);
-		const end = new Date(program.end);
-		const totalDuration = end.getTime() - start.getTime();
-		const elapsed = now.getTime() - start.getTime();
-		const progress = Math.min(Math.max(0, elapsed / totalDuration), 1);
+		const progress = getProgramProgress(program);
 		setNowPlayingProgress(progress);
 	}, NOW_PLAYING_UPDATE_INTERVAL);
 

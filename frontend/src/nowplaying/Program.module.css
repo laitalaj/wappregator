@@ -25,27 +25,6 @@
 	font-weight: 500;
 }
 
-.progressBar {
-	width: 100%;
-	height: 16px;
-	background-color: color-mix(
-		in srgb,
-		var(--channel-color, #fff) 65%,
-		var(--channel-text-color)
-	);
-	border-radius: 16px;
-	padding: 2px;
-}
-
-.progressBarFill {
-	height: 100%;
-	width: var(--progress, 0%);
-	background-color: var(--channel-text-color, #000);
-	border-radius: 8px;
-	will-change: width;
-	transition: width var(--now-playing-update-interval) linear;
-}
-
 .time {
 	font-size: 1.25em;
 	display: flex;

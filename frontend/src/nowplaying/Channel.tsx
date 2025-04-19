@@ -6,6 +6,8 @@ import { MaybeProgram } from "./Program";
 
 interface Props {
 	station: Accessor<NowPlaying>;
+	isPlaying: Accessor<boolean>;
+	setSelectedChannelId: (id: string) => void;
 }
 
 export function Channel(props: Props) {
@@ -17,7 +19,12 @@ export function Channel(props: Props) {
 		<div class={classes.channel} data-type={radio().id}>
 			<div class={classes.channelName}>
 				<h2>{radio().name}</h2>
-				<PlayButton />
+				{nowPlaying() && (
+					<PlayButton
+						onClick={() => props.setSelectedChannelId(radio().id)}
+						isPlaying={props.isPlaying()}
+					/>
+				)}
 			</div>
 
 			<div>
