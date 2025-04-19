@@ -4,11 +4,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
-	background-color: var(--channel-color, #fff);
-	color: var(--channel-text-color, #000);
+	background-color: var(--bg-color, #fff);
+	color: var(--text-color, #000);
 }
 
 .channelName {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
 	h2 {
 		margin: 0;
 		font-size: calc(max(1.5em, 1.5cqw));
@@ -22,31 +26,31 @@
 
 	& > * {
 		padding-bottom: 8px;
-		border-bottom: 2px solid var(--channel-text-color, #000);
+		border-bottom: 2px solid var(--text-color, #000);
 	}
 }
 
 .channel[data-type="rakkauden"] {
-	--channel-color: rgb(211, 59, 111);
-	--channel-text-color: white;
+	--bg-color: rgb(211, 59, 111);
+	--text-color: white;
 }
 
 .channel[data-type="norppa"] {
-	--channel-color: rgb(15, 23, 43);
-	--channel-text-color: white;
+	--bg-color: rgb(15, 23, 43);
+	--text-color: white;
 }
 
 .channel[data-type="turun"] {
-	--channel-color: rgb(0, 27, 52);
-	--channel-text-color: white;
+	--bg-color: rgb(0, 27, 52);
+	--text-color: white;
 }
 
 .channel[data-type="wapina"] {
-	--channel-color: rgb(255, 180, 20);
-	--channel-text-color: black;
+	--bg-color: rgb(255, 180, 20);
+	--text-color: black;
 }
 
 .channel[data-type="diodi"] {
-	--channel-color: rgb(220, 246, 220);
-	--channel-text-color: black;
+	--bg-color: rgb(220, 246, 220);
+	--text-color: black;
 }

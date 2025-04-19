@@ -1,0 +1,23 @@
+.playButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	background-color: var(--text-color, #000);
+	color: var(--bg-color, #fff);
+	border-radius: 100%;
+	width: 32px;
+	height: 32px;
+
+	--hover-color: color-mix(
+		in srgb,
+		var(--bg-color, #fff) 25%,
+		var(--text-color, #000)
+	);
+
+	transition: background-color 0.2s ease-in-out;
+
+	&:hover {
+		background-color: var(--hover-color);
+	}
+}

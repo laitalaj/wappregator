@@ -2,6 +2,7 @@ import type { Accessor } from "solid-js";
 import type { NowPlaying } from "../types";
 import classes from "./Channel.module.css";
 import { MaybeProgram } from "./Program";
+import { PlayButton } from "./PlayButton";
 
 interface Props {
 	station: Accessor<NowPlaying>;
@@ -15,9 +16,14 @@ export function Channel(props: Props) {
 	return (
 		<div class={classes.channel} data-type={radio().id}>
 			<div class={classes.channelName}>
-				<h2>
-					<a href={radio().url}>{radio().name}</a>
-				</h2>
+				<h2>{radio().name}</h2>
+				<PlayButton />
+			</div>
+
+			<div>
+				<a href={radio().url} class={classes.listenButton}>
+					WWW
+				</a>
 			</div>
 
 			<div class={classes.programs}>

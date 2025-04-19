@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@tabler/icons-solidjs':
+        specifier: ^3.31.0
+        version: 3.31.0(solid-js@1.9.5)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -442,6 +445,14 @@ packages:
     resolution: {integrity: sha512-3j4jx1TppORdTAoBJRd+/wJRGCPC0ETWkXOecJ6PPZLj6SptXkrXcNqdj0oclbKML6FkQltdz7bBA3rUSirZug==}
     cpu: [x64]
     os: [win32]
+
+  '@tabler/icons-solidjs@3.31.0':
+    resolution: {integrity: sha512-NB0Tk8++ibD7L7qtabzqBs//G5U9mhq3UkTvEjCWnHg/W4TROeUZqksSXZ9venU9iRZ5rPIqkV20DEsIi8z9vw==}
+    peerDependencies:
+      solid-js: ^1.4.7
+
+  '@tabler/icons@3.31.0':
+    resolution: {integrity: sha512-dblAdeKY3+GA1U+Q9eziZ0ooVlZMHsE8dqP0RkwvRtEsAULoKOYaCUOcJ4oW1DjWegdxk++UAt2SlQVnmeHv+g==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -1022,6 +1033,13 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.27.4':
     optional: true
+
+  '@tabler/icons-solidjs@3.31.0(solid-js@1.9.5)':
+    dependencies:
+      '@tabler/icons': 3.31.0
+      solid-js: 1.9.5
+
+  '@tabler/icons@3.31.0': {}
 
   '@types/babel__core@7.20.5':
     dependencies:

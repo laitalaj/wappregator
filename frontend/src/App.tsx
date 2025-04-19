@@ -1,6 +1,7 @@
 import { type Component, Suspense, createResource, onCleanup } from "solid-js";
 import { Channels } from "./nowplaying/Channels";
 import classes from "./App.module.css";
+import { PlayerBar } from "./nowplaying/PlayerBar";
 
 const App: Component = () => {
 	return (
@@ -11,6 +12,7 @@ const App: Component = () => {
 			</header>
 			<main>
 				<Channels />
+				<PlayerBar />
 			</main>
 		</div>
 	);

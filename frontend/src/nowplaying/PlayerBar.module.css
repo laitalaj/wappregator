@@ -1,0 +1,45 @@
+.playerBar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 16px;
+	background-color: var(--bg-black);
+	color: white;
+	border-top: 2px solid white;
+	position: sticky;
+	bottom: 0;
+	width: 100%;
+	gap: 4px;
+	overflow: hidden;
+	container: playerBar;
+
+	--bg-color: var(--bg-black);
+	--text-color: white;
+
+	& > * {
+		width: 100%;
+	}
+}
+
+.controlsRow {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	width: 100%;
+}
+
+.playPauseButton {
+	background-color: transparent;
+	border: none;
+	color: white;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.progressBarContainer {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 8px;
+}

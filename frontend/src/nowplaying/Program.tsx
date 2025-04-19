@@ -3,9 +3,9 @@ import type { Program as ProgramType } from "../types";
 import classes from "./Program.module.css";
 import { formatRelative, isToday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
+import { ProgressBar } from "./ProgressBar";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
-const NOW_PLAYING_UPDATE_INTERVAL_MS = `${NOW_PLAYING_UPDATE_INTERVAL}ms`;
 
 interface Props {
 	program: Accessor<ProgramType>;
@@ -39,22 +39,17 @@ export function Program(props: Props) {
 	onCleanup(() => clearInterval(updateCompletion));
 
 	return (
-		<div
-			class={classes.program}
-			style={{
-				"--now-playing-update-interval": NOW_PLAYING_UPDATE_INTERVAL_MS,
-				"--progress": nowPlayingProgressPercentage(),
-			}}
-		>
+		<div class={classes.program}>
 			<h3>{props.program().title}</h3>
 			<ProgramTime
 				startTime={props.program().start}
 				endTime={props.program().end}
 			/>
 			<Show when={props.playingNow}>
-				<div class={classes.progressBar}>
-					<div class={classes.progressBarFill} />
-				</div>
+				<ProgressBar
+					progress={nowPlayingProgress}
+					transitionTimeMs={NOW_PLAYING_UPDATE_INTERVAL}
+				/>
 			</Show>
 		</div>
 	);
