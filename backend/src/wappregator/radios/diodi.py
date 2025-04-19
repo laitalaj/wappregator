@@ -1,15 +1,12 @@
 import datetime
-import re
 
 import aiohttp
 
 from wappregator import model
-from wappregator.radios import base
-
-TAG_RE = re.compile(r"<[^>]+>")
+from wappregator.radios import base, utils
 
 
-class DiodiFetcher(base.ListOfDictsFetcher):
+class DiodiFetcher(base.JSONFetcher):
     """Fetcher for Radio Diodi, the wappuradio from Otaniemi."""
 
     def __init__(self) -> None:
@@ -33,25 +30,6 @@ class DiodiFetcher(base.ListOfDictsFetcher):
         """
         return self.api_url
 
-    def sanitize_value(self, value: str | None) -> str | None:
-        """Sanitize a value.
-
-        Removes HTML tags and turns empty strings into None.
-
-        Args:
-            value: The value to sanitize.
-
-        Returns:
-            The sanitized value.
-        """
-        if value is None:
-            return None
-        # Not the most sophisticated HTML sanitizer, but it will do for now.
-        res = TAG_RE.sub("", value)
-        if res == "":
-            return None
-        return res
-
     def parse_one(self, entry: dict[str, str]) -> model.Program:
         """Parse a single entry from the schedule data.
 
@@ -64,7 +42,7 @@ class DiodiFetcher(base.ListOfDictsFetcher):
         Raises:
             ValueError: If the entry is malformed.
         """
-        title = self.sanitize_value(entry["title"])
+        title = utils.sanitize_value(entry["title"])
         if title is None:
             raise ValueError("Malformed entry in Diodi API: title is None")
 
@@ -72,8 +50,8 @@ class DiodiFetcher(base.ListOfDictsFetcher):
             start=datetime.datetime.fromisoformat(entry["start"]),
             end=datetime.datetime.fromisoformat(entry["end"]),
             title=title,
-            description=self.sanitize_value(entry.get("description")),
-            genre=self.sanitize_value(entry.get("genre")),
-            host=self.sanitize_value(entry.get("team")),
-            photo=self.sanitize_value(entry.get("image")),
+            description=utils.sanitize_value(entry.get("description")),
+            genre=utils.sanitize_value(entry.get("genre")),
+            host=utils.sanitize_value(entry.get("team")),
+            photo=utils.sanitize_value(entry.get("image")),
         )

@@ -10,7 +10,7 @@ from wappregator.radios import base
 BUILD_ID_RE = re.compile(r"\"buildId\":\"([\w-]+)\"")
 
 
-class TurunFetcher(base.ListOfDictsFetcher):
+class TurunFetcher(base.JSONFetcher):
     """Fetcher for Turun Wappuradio."""
 
     def __init__(self) -> None:

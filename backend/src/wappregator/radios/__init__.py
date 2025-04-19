@@ -5,7 +5,7 @@ import logging
 import valkey.asyncio as valkey
 
 from wappregator import model
-from wappregator.radios import diodi, norppa, rakkauden, turun, wapina
+from wappregator.radios import diodi, norppa, rakkauden, ratto, turun, wapina
 
 FETCHERS = [
     rakkauden.RakkaudenFetcher(),
@@ -13,6 +13,7 @@ FETCHERS = [
     diodi.DiodiFetcher(),
     wapina.WapinaFetcher(),
     norppa.NorppaFetcher(),
+    ratto.RattoFetcher(),
 ]
 
 logger = logging.getLogger(__name__)

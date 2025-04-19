@@ -6,7 +6,7 @@ from wappregator import model
 from wappregator.radios import base
 
 
-class WapinaFetcher(base.ListOfDictsFetcher):
+class WapinaFetcher(base.JSONFetcher):
     """Fetcher for Radio Wapina, the wappuradio from Vaasa."""
 
     def __init__(self) -> None:

@@ -10,7 +10,7 @@ from urllib.parse import quote
 WINDOW_DAYS = 7
 
 
-class NorppaFetcher(base.ListOfDictsFetcher):
+class NorppaFetcher(base.JSONFetcher):
     """Fetcher for Norpparadio, the wappuradio from lappeen Ranta."""
 
     def __init__(self) -> None:

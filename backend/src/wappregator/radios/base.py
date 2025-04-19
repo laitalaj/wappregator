@@ -62,6 +62,18 @@ class BaseFetcher(ABC):
         """
         ...
 
+    @abstractmethod
+    async def parse_response(self, response: aiohttp.ClientResponse) -> Any:
+        """Parse the response from the radio's API.
+
+        Args:
+            response: The response object from the aiohttp request.
+
+        Returns:
+            The parsed data from the response.
+        """
+        ...
+
     async def fetch_schedule(self, session: aiohttp.ClientSession) -> Any:
         """Fetch the schedule from the radio's API.
 
@@ -77,7 +89,7 @@ class BaseFetcher(ABC):
         async with session.get(await self.get_api_url(session)) as response:
             try:
                 response.raise_for_status()
-                return await response.json()
+                return await self.parse_response(response)
             except (aiohttp.ClientResponseError, aiohttp.ContentTypeError) as e:
                 raise RadioError(f"Error fetching schedule from {self.name}") from e
 
@@ -118,8 +130,19 @@ class BaseFetcher(ABC):
         return schedule
 
 
-class ListOfDictsFetcher(BaseFetcher):
-    """Base class for fetchers where the schedule is a list of dictionaries."""
+class JSONFetcher(BaseFetcher):
+    """Base class for fetchers where the schedule is in JSON."""
+
+    async def parse_response(self, response: aiohttp.ClientResponse) -> Any:
+        """Parse the JSON response from the radio's API.
+
+        Args:
+            response: The response object from the aiohttp request.
+
+        Returns:
+            The parsed data from the response.
+        """
+        return await response.json()
 
     @abstractmethod
     def parse_one(self, entry: dict[str, Any]) -> model.Program:

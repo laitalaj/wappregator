@@ -54,3 +54,8 @@
 	--bg-color: rgb(220, 246, 220);
 	--text-color: black;
 }
+
+.channel[data-type="ratto"] {
+	--bg-color: rgb(95, 235, 216);
+	--text-color: black;
+}

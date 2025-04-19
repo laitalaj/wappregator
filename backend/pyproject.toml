@@ -3,13 +3,12 @@ name = "wappregator"
 version = "0.1.0"
 description = "An aggregator for Wappuradios."
 readme = "README.md"
-authors = [
-    { name = "Julius Laitala", email = "julius@laita.la" }
-]
+authors = [{ name = "Julius Laitala", email = "julius@laita.la" }]
 requires-python = ">=3.13"
 dependencies = [
     "aiohttp[speedups]>=3.11.16",
     "fastapi[standard]>=0.115.12",
+    "ics>=0.7.2",
     "valkey[libvalkey]>=6.1.0",
 ]
 
@@ -21,17 +20,15 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "mypy>=1.15.0",
-]
+dev = ["mypy>=1.15.0"]
 
 [tool.ruff.lint]
 select = [
-    "F", # Pyflakes
-    "E", # Pycodestyle errors
-    "W", # Pycodestyle warnings
-    "N", # pep8-naming
-    "D", # Pydocstyle
+    "F",   # Pyflakes
+    "E",   # Pycodestyle errors
+    "W",   # Pycodestyle warnings
+    "N",   # pep8-naming
+    "D",   # Pydocstyle
     "RUF", # Ruff-specifics
 ]
 ignore = [
@@ -44,3 +41,7 @@ ignore = [
 
 [tool.mypy]
 disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["ics"]
+ignore_missing_imports = true
