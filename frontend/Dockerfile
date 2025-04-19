@@ -24,10 +24,12 @@ FROM base AS builder
 WORKDIR /app
 RUN pnpm install --frozen-lockfile
 
+COPY . .
+
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-RUN npm run build
+RUN pnpm run build
 
 
 # Production frontend image
