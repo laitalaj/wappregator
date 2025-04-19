@@ -24,13 +24,13 @@ class FetchingBrokenError(Exception):
     pass
 
 
-def radios() -> list[model.Radio]:
-    """Get the list of available radios.
+def radios() -> dict[str, model.Radio]:
+    """Get the available radios.
 
     Returns:
-        List of radios.
+        A dictionary from radio IDs to Radio objects.
     """
-    return [fetcher.radio for fetcher in FETCHERS]
+    return {fetcher.id: fetcher.radio for fetcher in FETCHERS}
 
 
 async def schedule(valkey_client: valkey.Valkey) -> dict[str, list[model.Program]]:

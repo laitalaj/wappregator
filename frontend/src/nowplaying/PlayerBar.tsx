@@ -1,6 +1,6 @@
+import { PlayButton } from "./PlayButton";
 import classes from "./PlayerBar.module.css";
 import { ProgressBar } from "./ProgressBar";
-import { PlayButton } from "./PlayButton";
 
 export function PlayerBar() {
 	return (

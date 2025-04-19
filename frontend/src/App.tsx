@@ -1,6 +1,6 @@
 import { type Component, Suspense, createResource, onCleanup } from "solid-js";
-import { Channels } from "./nowplaying/Channels";
 import classes from "./App.module.css";
+import { Channels } from "./nowplaying/Channels";
 import { PlayerBar } from "./nowplaying/PlayerBar";
 
 const App: Component = () => {

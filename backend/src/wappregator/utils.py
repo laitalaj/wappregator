@@ -38,8 +38,8 @@ class ScheduleFilter:
             min_upcoming: The minimum number of programs to include after the current
                 time.
         """
-        self.start = datetime.datetime.min.astimezone() if start is None else start
-        self.end = datetime.datetime.max.astimezone() if end is None else end
+        self.start = datetime.datetime.min.replace(tzinfo=datetime.UTC) if start is None else start
+        self.end = datetime.datetime.max.replace(tzinfo=datetime.UTC) if end is None else end
         self.min_previous = min_previous
         self.min_upcoming = min_upcoming
 
@@ -55,7 +55,7 @@ class ScheduleFilter:
         now = datetime.datetime.now().astimezone()
 
         start_idx = 0
-        previous_idx = 0
+        previous_idx = -1
         current_idx = None
         end_idx = 0
         for i, program in enumerate(schedule):
@@ -80,7 +80,7 @@ class ScheduleFilter:
             min_end_idx = previous_idx + 1 if current_idx is None else current_idx + 1
         else:
             min_end_idx = (
-                previous_idx + self.min_upcoming + (1 if current_idx is not None else 0)
+                (previous_idx if current_idx is None else current_idx) + self.min_upcoming + 1
             )
 
         return schedule[min(max_start_idx, start_idx) : max(min_end_idx, end_idx)]

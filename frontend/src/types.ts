@@ -15,6 +15,14 @@ export interface Radio {
 	url: string;
 }
 
+export interface Radios {
+	[id: string]: Radio;
+}
+
+export interface Schedule {
+	[id: string]: Program[];
+}
+
 export interface NowPlaying {
 	radio: Radio;
 	now_playing?: Program;

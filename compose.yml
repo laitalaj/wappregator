@@ -5,7 +5,7 @@ services:
       target: dev
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Anonymous volume to avoid overwriting the node_modules with the user's local node_modules
+      - /app/node_modules/ # Anonymous volume to avoid overwriting the node_modules with the user's local node_modules
     ports:
       - "3000:3000"
     environment:
@@ -16,7 +16,7 @@ services:
       target: dev
     volumes:
       - ./backend:/app
-      - /app/.venv # Anonymous volume to avoid overwriting the venv with the user's local venv
+      - /app/.venv/ # Anonymous volume to avoid overwriting the venv with the user's local venv
     ports: 
       - "8000:8000"
     environment:

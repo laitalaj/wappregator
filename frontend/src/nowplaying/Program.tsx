@@ -1,8 +1,8 @@
-import { type Accessor, createSignal, onCleanup, Show } from "solid-js";
-import type { Program as ProgramType } from "../types";
-import classes from "./Program.module.css";
 import { formatRelative, isToday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
+import { type Accessor, Show, createSignal, onCleanup } from "solid-js";
+import type { Program as ProgramType } from "../types";
+import classes from "./Program.module.css";
 import { ProgressBar } from "./ProgressBar";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;

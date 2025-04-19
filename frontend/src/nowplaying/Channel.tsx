@@ -1,8 +1,8 @@
 import type { Accessor } from "solid-js";
 import type { NowPlaying } from "../types";
 import classes from "./Channel.module.css";
-import { MaybeProgram } from "./Program";
 import { PlayButton } from "./PlayButton";
+import { MaybeProgram } from "./Program";
 
 interface Props {
 	station: Accessor<NowPlaying>;

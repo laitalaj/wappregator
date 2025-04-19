@@ -66,8 +66,8 @@ if ALLOWED_ORIGINS_LIST:
 
 
 @app.get("/radios")
-async def get_radios() -> list[model.Radio]:
-    """Get a list of Wappuradios."""
+async def get_radios() -> dict[str, model.Radio]:
+    """Get available Wappuradios."""
     return radios.radios()
 
 
