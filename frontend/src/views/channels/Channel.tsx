@@ -1,7 +1,7 @@
 import type { Accessor, Setter } from "solid-js";
-import type { NowPlaying } from "../types";
+import type { NowPlaying } from "../../types";
 import classes from "./Channel.module.css";
-import { PlayButton } from "./PlayButton";
+import { PlayButton } from "../common/PlayButton";
 import { MaybeProgram } from "./Program";
 
 interface Props {

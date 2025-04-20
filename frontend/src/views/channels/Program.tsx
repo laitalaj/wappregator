@@ -10,10 +10,10 @@ import {
 	onCleanup,
 	onMount,
 } from "solid-js";
-import { getProgramProgress } from "../getProgramProgress";
-import type { Program as ProgramType } from "../types";
+import { getProgramProgress } from "../../getProgramProgress";
+import type { Program as ProgramType } from "../../types";
 import classes from "./Program.module.css";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "../common/ProgressBar";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 

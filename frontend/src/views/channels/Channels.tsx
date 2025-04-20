@@ -1,5 +1,5 @@
 import { type Accessor, Index, type Setter, Suspense } from "solid-js";
-import type { NowPlaying } from "../types";
+import type { NowPlaying } from "../../types";
 import { Channel } from "./Channel";
 import classes from "./Channels.module.css";
 

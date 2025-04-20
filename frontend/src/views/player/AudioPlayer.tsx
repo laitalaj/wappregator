@@ -1,5 +1,5 @@
 import { type Accessor, Index, createEffect, createMemo } from "solid-js";
-import type { Radio } from "../types";
+import type { Radio } from "../../types";
 
 interface Props {
 	radio: Accessor<Radio>;

@@ -3,7 +3,7 @@ import {
 	IconPlayerPlayFilled,
 } from "@tabler/icons-solidjs";
 import { Dynamic } from "solid-js/web";
-import commonClasses from "../common.module.css";
+import commonClasses from "../common/common.module.css";
 import classes from "./PlayButton.module.css";
 
 interface Props {

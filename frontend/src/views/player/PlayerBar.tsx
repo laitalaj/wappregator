@@ -7,14 +7,14 @@ import {
 	createSignal,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import commonClasses from "../common.module.css";
-import { getProgramProgress } from "../getProgramProgress";
-import type { RadioState } from "../radio";
-import type { Program } from "../types";
+import commonClasses from "../common/common.module.css";
+import { getProgramProgress } from "../../getProgramProgress";
+import type { RadioState } from "../../radio";
+import type { Program } from "../../types";
 import { AudioPlayer } from "./AudioPlayer";
-import { PlayButton } from "./PlayButton";
+import { PlayButton } from "../common/PlayButton";
 import classes from "./PlayerBar.module.css";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "../common/ProgressBar";
 
 interface Props {
 	radioState: Accessor<RadioState>;

@@ -1,9 +1,9 @@
 import { type Component, createMemo, createSignal } from "solid-js";
 import classes from "./App.module.css";
-import { Channels } from "./nowplaying/Channels";
-import { PlayerBar } from "./nowplaying/PlayerBar";
-import type { RadioState } from "./radio";
-import { getNowPlayingState, getRadiosState, getScheduleState } from "./state";
+import { Channels } from "./channels/Channels";
+import { PlayerBar } from "./player/PlayerBar";
+import type { RadioState } from "../radio";
+import { getNowPlayingState, getRadiosState, getScheduleState } from "../state";
 
 const App: Component = () => {
 	const radios = getRadiosState();

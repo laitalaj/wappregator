@@ -1,4 +1,4 @@
-import type { NowPlaying, Program, Radio } from "./types";
+import type { Program, Radio } from "./types";
 
 export type RadioState =
 	| { type: "channelNotSelected" }
