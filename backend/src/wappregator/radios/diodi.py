@@ -19,7 +19,15 @@ class DiodiFetcher(base.JSONFetcher):
                 model.Stream(
                     url="https://virta.radiodiodi.fi/flac",
                     mime_type="audio/flac",
-                )
+                ),
+                model.Stream(
+                    url="https://virta.radiodiodi.fi/mp3",
+                    mime_type="audio/mpeg",
+                ),
+                model.Stream(
+                    url="https://virta.radiodiodi.fi/aac",
+                    mime_type="audio/aac",
+                ),
             ],
         )
         self.api_url = "https://api.radiodiodi.fi/programmes"

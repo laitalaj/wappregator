@@ -64,7 +64,6 @@ export function AudioPlayer(props: Props) {
 			ref={(element) => {
 				audioRef = element;
 			}}
-			crossorigin="anonymous"
 		>
 			<Index each={props.radio().streams ?? []}>
 				{(stream) => <source src={stream().url} type={stream().mime_type} />}

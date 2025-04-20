@@ -17,27 +17,27 @@ class RakkaudenFetcher(base.JSONFetcher):
             url="https://wappuradio.fi/",
             streams=[
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden1/wappuradio.opus",
+                    url="https://stream1.wappuradio.fi/wappuradio.opus",
                     mime_type="audio/ogg",
                 ),
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden2/wappuradio.opus",
+                    url="https://stream2.wappuradio.fi/wappuradio.opus",
                     mime_type="audio/ogg",
                 ),
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden1/wappuradio.ogg",
+                    url="https://stream1.wappuradio.fi/wappuradio.ogg",
                     mime_type="audio/ogg",
                 ),
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden2/wappuradio.ogg",
+                    url="https://stream2.wappuradio.fi/wappuradio.ogg",
                     mime_type="audio/ogg",
                 ),
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden1/wappuradio.mp3",
+                    url="https://stream1.wappuradio.fi/wappuradio.mp3",
                     mime_type="audio/mpeg",
                 ),
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/rakkauden2/wappuradio.mp3",
+                    url="https://stream2.wappuradio.fi/wappuradio.mp3",
                     mime_type="audio/mpeg",
                 ),
             ]

@@ -21,9 +21,13 @@ class NorppaFetcher(base.JSONFetcher):
             url="https://norpparadio.net/",
             streams=[
                 model.Stream(
-                    url="https://wapproxy.mainittu.fi/norpparadio/norpparadio.ogg",
+                    url="https://listen.norpparadio.net:8443/norpparadio.mp3",
+                    mime_type="audio/mpeg",
+                ),
+                model.Stream(
+                    url="https://listen.norpparadio.net:8443/norpparadio.ogg",
                     mime_type="audio/ogg",
-                )
+                ),
             ]
         )
 
