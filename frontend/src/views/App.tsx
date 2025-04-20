@@ -4,6 +4,7 @@ import { Channels } from "./channels/Channels";
 import { PlayerBar } from "./player/PlayerBar";
 import type { RadioState } from "../radio";
 import { getNowPlayingState, getRadiosState, getScheduleState } from "../state";
+import { funnySlogansHaha } from "../funnySlogansHaha";
 
 const App: Component = () => {
 	const radios = getRadiosState();
@@ -43,10 +44,7 @@ const App: Component = () => {
 
 	return (
 		<div class={classes.app}>
-			<header>
-				<h1>Wappregator</h1>
-				<span>Vapun epävirallinen aggregoija</span>
-			</header>
+			<Header />
 			<main>
 				<Channels
 					nowPlaying={nowPlaying}
@@ -60,5 +58,17 @@ const App: Component = () => {
 		</div>
 	);
 };
+
+function Header() {
+	const funnySlogan =
+		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
+
+	return (
+		<header>
+			<h1>Wappregator</h1>
+			<span>{funnySlogan}</span>
+		</header>
+	);
+}
 
 export default App;
