@@ -39,7 +39,7 @@ export function AudioPlayer(props: Props) {
 	// If the stream changes, we need to load the new stream
 	createEffect(async () => {
 		// When channel changes and we're playing, we need to load the new stream
-		const id = radioId();
+		radioId();
 
 		if (!audioRef) {
 			return;

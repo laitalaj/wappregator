@@ -1,4 +1,4 @@
-import type { Accessor } from "solid-js";
+import type { Accessor, Setter } from "solid-js";
 import type { NowPlaying } from "../types";
 import classes from "./Channel.module.css";
 import { PlayButton } from "./PlayButton";
@@ -7,6 +7,8 @@ import { MaybeProgram } from "./Program";
 interface Props {
 	station: Accessor<NowPlaying>;
 	isPlaying: Accessor<boolean>;
+	setIsPlaying: Setter<boolean>;
+	isCurrentChannel: Accessor<boolean>;
 	setSelectedChannelId: (id: string) => void;
 }
 
@@ -21,8 +23,18 @@ export function Channel(props: Props) {
 				<h2>{radio().name}</h2>
 				{nowPlaying() && (
 					<PlayButton
-						onClick={() => props.setSelectedChannelId(radio().id)}
-						isPlaying={props.isPlaying()}
+						onClick={() => {
+							if (!props.isCurrentChannel()) {
+								props.setSelectedChannelId(radio().id);
+
+								if (!props.isPlaying()) {
+									props.setIsPlaying(true);
+								}
+							} else {
+								props.setIsPlaying((current) => !current);
+							}
+						}}
+						isPlaying={props.isCurrentChannel() && props.isPlaying()}
 					/>
 				)}
 			</div>

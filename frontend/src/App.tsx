@@ -10,19 +10,10 @@ const App: Component = () => {
 	const schedule = getScheduleState();
 	const nowPlaying = getNowPlayingState(schedule, radios);
 
-	const [selectedChannelId, setSelectedChannelIdInner] = createSignal<
-		string | null
-	>(null);
+	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
+		null,
+	);
 	const [isPlaying, setIsPlaying] = createSignal(false);
-
-	const setSelectedChannelId = (id: string | null) => {
-		if (id === null) {
-			setIsPlaying(false);
-		} else {
-			setIsPlaying(true);
-		}
-		setSelectedChannelIdInner(id);
-	};
 
 	const radioState = createMemo((): RadioState => {
 		if (selectedChannelId() === null) {
@@ -60,6 +51,7 @@ const App: Component = () => {
 				<Channels
 					nowPlaying={nowPlaying}
 					isPlaying={isPlaying}
+					setIsPlaying={setIsPlaying}
 					selectedChannelId={selectedChannelId}
 					setSelectedChannelId={setSelectedChannelId}
 				/>
