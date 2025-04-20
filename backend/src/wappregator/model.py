@@ -18,6 +18,11 @@ class Program(pydantic.BaseModel):
 
     photo: str | None = None
 
+class Stream(pydantic.BaseModel):
+    """Stream data for a radio program."""
+
+    url: str
+    mime_type: str | None = None
 
 class Radio(pydantic.BaseModel):
     """A radio station."""
@@ -25,4 +30,4 @@ class Radio(pydantic.BaseModel):
     id: str
     name: str
     url: str
-    stream: str | None = None
+    streams: list[Stream] | None = None

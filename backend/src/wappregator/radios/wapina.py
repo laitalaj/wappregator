@@ -15,8 +15,6 @@ class WapinaFetcher(base.JSONFetcher):
             id="wapina",
             name="Radio Wapina",
             url="https://wapina.fi/",
-            # Not sure if the stream here will actually work :-D
-            stream="https://s5.radio.co/s484b62a6d/listen",
         )
         self.api_url = "https://radio-wapina-default-rtdb.firebaseio.com/programs.json"
 

@@ -15,7 +15,12 @@ class DiodiFetcher(base.JSONFetcher):
             id="diodi",
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
-            stream="https://virta.radiodiodi.fi/mp3",
+            streams=[
+                model.Stream(
+                    url="https://virta.radiodiodi.fi/flac",
+                    mime_type="audio/flac",
+                )
+            ],
         )
         self.api_url = "https://api.radiodiodi.fi/programmes"
 

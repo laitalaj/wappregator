@@ -18,7 +18,12 @@ class RattoFetcher(base.BaseFetcher):
             id="ratto",
             name="Rattoradio",
             url="https://www.rattoradio.fi/",
-            stream="https://stream.rattoradio.fi/ratto.mp3",
+            streams=[
+                model.Stream(
+                    url="https://wapproxy.mainittu.fi/rattoradio/ratto.mp3",
+                    mime_type="audio/mpeg",
+                ),
+            ],
         )
         self.api_url = "https://www.rattoradio.fi/ohjelmisto.ics"
 

@@ -9,10 +9,16 @@ export interface Program {
 	photo?: string;
 }
 
+export interface Stream {
+	url: string;
+	mime_type?: string;
+}
+
 export interface Radio {
 	id: string;
 	name: string;
 	url: string;
+	streams?: Stream[];
 }
 
 export interface Radios {

@@ -19,7 +19,12 @@ class NorppaFetcher(base.JSONFetcher):
             id="norppa",
             name="Norpparadio",
             url="https://norpparadio.net/",
-            stream="https://listen.norpparadio.net:8443/norpparadio.mp3",
+            streams=[
+                model.Stream(
+                    url="https://wapproxy.mainittu.fi/norpparadio/norpparadio.ogg",
+                    mime_type="audio/ogg",
+                )
+            ]
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
