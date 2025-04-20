@@ -4,6 +4,7 @@ import type { Radio } from "../types";
 interface Props {
 	radio: Accessor<Radio>;
 	isPlaying: Accessor<boolean>;
+	volume: Accessor<number>;
 }
 
 export function AudioPlayer(props: Props) {
@@ -30,6 +31,13 @@ export function AudioPlayer(props: Props) {
 		} else {
 			audioRef.pause();
 		}
+	});
+
+	createEffect(() => {
+		if (!audioRef) {
+			return;
+		}
+		audioRef.volume = props.volume() / 100;
 	});
 
 	const radioId = createMemo(() => {

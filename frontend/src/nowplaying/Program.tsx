@@ -1,6 +1,15 @@
 import { formatRelative, isToday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
-import { type Accessor, Show, createSignal, onCleanup } from "solid-js";
+import {
+	type Accessor,
+	Match,
+	Show,
+	Switch,
+	createMemo,
+	createSignal,
+	onCleanup,
+	onMount,
+} from "solid-js";
 import { getProgramProgress } from "../getProgramProgress";
 import type { Program as ProgramType } from "../types";
 import classes from "./Program.module.css";
@@ -16,30 +25,32 @@ interface Props {
 export function Program(props: Props) {
 	const [nowPlayingProgress, setNowPlayingProgress] = createSignal(0);
 
-	const updateCompletion = setInterval(() => {
+	onMount(() => {
 		if (!props.playingNow) {
-			return 0;
+			return;
 		}
 
-		const program = props.program();
+		const updateCompletion = setInterval(() => {
+			const program = props.program();
 
-		if (!program) {
-			return 0;
-		}
+			if (!program) {
+				return;
+			}
 
-		const progress = getProgramProgress(program);
-		setNowPlayingProgress(progress);
-	}, NOW_PLAYING_UPDATE_INTERVAL);
+			const progress = getProgramProgress(program);
+			setNowPlayingProgress(progress);
+		}, NOW_PLAYING_UPDATE_INTERVAL);
 
-	onCleanup(() => clearInterval(updateCompletion));
+		onCleanup(() => clearInterval(updateCompletion));
+	});
+
+	const startTime = () => props.program().start;
+	const endTime = () => props.program().end;
 
 	return (
 		<div class={classes.program}>
 			<h3>{props.program().title}</h3>
-			<ProgramTime
-				startTime={props.program().start}
-				endTime={props.program().end}
-			/>
+			<ProgramTime startTime={startTime} endTime={endTime} />
 			<Show when={props.playingNow}>
 				<ProgressBar
 					progress={nowPlayingProgress}
@@ -51,30 +62,32 @@ export function Program(props: Props) {
 }
 
 function ProgramTime(props: {
-	startTime: string;
-	endTime: string;
+	startTime: Accessor<string>;
+	endTime: Accessor<string>;
 }) {
-	const startTime = new Date(props.startTime);
-	const endTime = new Date(props.endTime);
+	function timestampToTime(timestamp: string): string {
+		const date = new Date(timestamp);
+		return date.toLocaleTimeString("fi-FI", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	}
+
+	const startTime = createMemo(() => timestampToTime(props.startTime()));
+	const endTime = createMemo(() => timestampToTime(props.endTime()));
 
 	return (
 		<div class={classes.time}>
 			<span>
-				{startTime.toLocaleTimeString("fi-FI", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})}
+				{startTime()}
 				{" - "}
-				{endTime.toLocaleTimeString("fi-FI", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})}
+				{endTime()}
 			</span>
 		</div>
 	);
 }
 
-export function NoProgram() {
+function NoProgram() {
 	return (
 		<div class={classes.noProgram}>
 			<span>Ei ohjelmaa</span>
@@ -86,16 +99,12 @@ export function MaybeProgram(props: {
 	program: Accessor<ProgramType | undefined>;
 	playingNow: boolean;
 }) {
+	const startTime = () => props.program()?.start;
+
 	return (
 		<div class={classes.programWrapper}>
-			<ScheduleLabel
-				playingNow={props.playingNow}
-				startTime={props.program()?.start}
-			/>
-			<Show
-				when={props.program()}
-				fallback={<div class={classes.noProgram}>Ei ohjelmaa</div>}
-			>
+			<ScheduleLabel playingNow={props.playingNow} startTime={startTime} />
+			<Show when={props.program()} fallback={<NoProgram />}>
 				{(program) => (
 					<Program program={program} playingNow={props.playingNow} />
 				)}
@@ -115,29 +124,41 @@ const formatRelativeLocale = {
 
 function ScheduleLabel(props: {
 	playingNow: boolean;
-	startTime?: string;
+	startTime: Accessor<string | undefined>;
 }) {
-	const startTimeDate = props.startTime ? new Date(props.startTime) : undefined;
-	const nextIsToday = startTimeDate ? isToday(startTimeDate) : false;
-	const nextDate = startTimeDate
-		? formatRelative(startTimeDate, new Date(), {
-				locale: {
-					...fi,
-					formatRelative: (token) => formatRelativeLocale[token],
-				},
-			})
-		: undefined;
+	const startTimeDate = createMemo(() => {
+		const startTime = props.startTime();
+		return startTime ? new Date(startTime) : undefined;
+	});
 
-	if (props.playingNow) {
-		return <span class={classes.scheduleLabel}>Nyt</span>;
-	}
+	const nextIsToday = createMemo(() => {
+		const date = startTimeDate();
+		return date ? isToday(date) : false;
+	});
 
-	if (!props.playingNow) {
-		return (
-			<span class={classes.scheduleLabel}>
-				Seuraavaksi
-				{!nextIsToday && nextDate ? ` (${nextDate})` : null}
-			</span>
-		);
-	}
+	const nextDate = createMemo(() => {
+		const date = startTimeDate();
+		return date
+			? formatRelative(date, new Date(), {
+					locale: {
+						...fi,
+						formatRelative: (token) => formatRelativeLocale[token],
+					},
+				})
+			: undefined;
+	});
+
+	return (
+		<Switch>
+			<Match when={props.playingNow}>
+				<span class={classes.scheduleLabel}>Nyt</span>
+			</Match>
+			<Match when={!props.playingNow}>
+				<span class={classes.scheduleLabel}>
+					Seuraavaksi
+					{!nextIsToday() && nextDate() ? ` (${nextDate()})` : null}
+				</span>
+			</Match>
+		</Switch>
+	);
 }

@@ -3,7 +3,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-between;
-	padding: 8px 16px;
+	padding: 8px;
 	background-color: var(--bg-black);
 	color: white;
 	border-top: 2px solid white;
@@ -11,7 +11,6 @@
 	bottom: 0;
 	width: 100%;
 	gap: 4px;
-	overflow: hidden;
 	container: playerBar;
 
 	--bg-color: var(--bg-black);
@@ -19,6 +18,12 @@
 
 	& > * {
 		width: 100%;
+	}
+}
+
+@media (min-width: 600px) {
+	.playerBar {
+		padding: 8px 16px;
 	}
 }
 
@@ -42,4 +47,34 @@
 	align-items: center;
 	width: 100%;
 	gap: 8px;
+	position: relative;
+}
+
+.volumeButton {
+	color: var(--text-color);
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.volumeSliderContainer {
+	position: absolute;
+	top: 0;
+	transform: translateY(-100%);
+	right: 0;
+	background: var(--bg-black);
+	padding: 16px;
+	z-index: 1;
+	border: 2px solid white;
+	display: flex;
+	justify-content: center;
+}
+
+.volumeSlider {
+	writing-mode: vertical-lr;
+	direction: rtl;
+	appearance: slider-vertical;
+	vertical-align: bottom;
+	height: 150px;
 }
