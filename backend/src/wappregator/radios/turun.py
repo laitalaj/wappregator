@@ -20,6 +20,7 @@ class TurunFetcher(base.JSONFetcher):
             name="Turun Wappuradio",
             url="https://turunwappuradio.com/",
             location="Suomen Turku",
+            frequency_mhz=93.8,
             brand=model.Brand(
                 background_color="rgb(0, 27, 52)",
                 text_color="rgb(246, 95, 82)",

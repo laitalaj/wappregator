@@ -21,7 +21,8 @@ class WapinaFetcher(base.JSONFetcher):
                 text_color="black",
             ),
             streams=[
-                # These URLs are identical for both streams - maybe the endpoint serves different data depending on headers?
+                # These URLs are identical for both streams - maybe the endpoint serves
+                # different data depending on headers?
                 model.Stream(
                     url="https://s5.radio.co/s484b62a6d/listen",
                     mime_type="audio/ogg",
@@ -30,7 +31,7 @@ class WapinaFetcher(base.JSONFetcher):
                     url="https://s5.radio.co/s484b62a6d/listen",
                     mime_type="audio/mpeg",
                 ),
-            ]
+            ],
         )
         self.api_url = "https://radio-wapina-default-rtdb.firebaseio.com/programs.json"
 
