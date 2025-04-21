@@ -1,0 +1,19 @@
+name: 'Docker: Frontend'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/docker-frontend.yml'
+      - 'frontend/**'
+
+jobs:
+  docker:
+    uses: ./.github/workflows/docker.yml
+    with:
+      container-name: 'wappregator-frontend'
+      working-directory: 'frontend'
+      build-args: |
+        VITE_API_URL=https://wappregat.org/api
