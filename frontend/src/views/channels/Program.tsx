@@ -12,8 +12,8 @@ import {
 } from "solid-js";
 import { getProgramProgress } from "../../getProgramProgress";
 import type { Program as ProgramType } from "../../types";
-import classes from "./Program.module.css";
 import { ProgressBar } from "../common/ProgressBar";
+import classes from "./Program.module.css";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 

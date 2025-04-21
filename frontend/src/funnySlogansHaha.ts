@@ -26,4 +26,8 @@ export const funnySlogansHaha = [
 	"Bob ei syö pepperonipizzaa",
 	"Valmistunut tai tapettu",
 	"Sponsored by pitkä viikonloppu",
+	"Wappu Wide Web",
+	"Och detsamma på svenska",
+	"Haloo",
+	"Kuuluuko?",
 ];

@@ -5,6 +5,13 @@
 	font-family: "Roboto Condensed", sans-serif;
 
 	--bg-black: #282c34;
+	--horizontal-padding: 8px;
+}
+
+@media (min-width: 600px) {
+	.app {
+		--horizontal-padding: 16px;
+	}
 }
 
 header {
@@ -15,7 +22,7 @@ header {
 
 	& > h1 {
 		margin: 0;
-		font-family: "Bungee Spice", sans-serif;
+		font-family: "Bungee", sans-serif;
 	}
 }
 

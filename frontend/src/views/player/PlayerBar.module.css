@@ -3,7 +3,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-between;
-	padding: 8px;
+	padding: 8px var(--horizontal-padding);
 	background-color: var(--bg-black);
 	color: white;
 	border-top: 2px solid white;
@@ -21,16 +21,11 @@
 	}
 }
 
-@media (min-width: 600px) {
-	.playerBar {
-		padding: 8px 16px;
-	}
-}
-
 .controlsRow {
 	display: flex;
 	gap: 8px;
 	align-items: center;
+	justify-content: space-between;
 	width: 100%;
 }
 
@@ -56,6 +51,9 @@
 	border: none;
 	padding: 0;
 	margin: 0;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
 }
 
 .volumeSliderContainer {

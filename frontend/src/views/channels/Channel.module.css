@@ -11,11 +11,15 @@
 .channelName {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
 	gap: 8px;
 
-	h2 {
+	/* Add container width relative top padding to compensate for h2's overflow.  */
+	padding: calc(max(0px, 0.75cqw - 16px)) 0;
+
+	& > h2 {
 		margin: 0;
+		/* Use fixed line-height to keep the first line aligned with the play button. */
+		line-height: 32px;
 		font-size: calc(max(1.5em, 1.5cqw));
 	}
 }

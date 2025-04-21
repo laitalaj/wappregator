@@ -1,4 +1,3 @@
-import { IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-solidjs";
 import {
 	type Accessor,
 	type Setter,
@@ -6,15 +5,14 @@ import {
 	createMemo,
 	createSignal,
 } from "solid-js";
-import { Dynamic } from "solid-js/web";
-import commonClasses from "../common/common.module.css";
 import { getProgramProgress } from "../../getProgramProgress";
 import type { RadioState } from "../../radio";
 import type { Program } from "../../types";
-import { AudioPlayer } from "./AudioPlayer";
 import { PlayButton } from "../common/PlayButton";
-import classes from "./PlayerBar.module.css";
 import { ProgressBar } from "../common/ProgressBar";
+import { AudioPlayer } from "./AudioPlayer";
+import classes from "./PlayerBar.module.css";
+import { VolumeSlider } from "./VolumeSlide";
 
 interface Props {
 	radioState: Accessor<RadioState>;
@@ -53,11 +51,11 @@ export function PlayerBar(props: Props) {
 							isPlaying={isPlaying}
 							volume={volume}
 						/>
-						<div class={classes.playerBar}>
-							<span>{statusText()}</span>
+						<section class={classes.playerBar} aria-label="Mediasoitin">
+							<span aria-label="Nyt soi">{statusText()}</span>
 							<div class={classes.controlsRow}>
 								<PlayButton
-									isPlaying={isPlaying()}
+									isPlaying={isPlaying}
 									onClick={() =>
 										props.setIsPlaying((playing: boolean) => !playing)
 									}
@@ -92,7 +90,7 @@ export function PlayerBar(props: Props) {
 								</Show>
 								<VolumeSlider setVolume={setVolume} volume={volume} />
 							</div>
-						</div>
+						</section>
 					</>
 				);
 			}}
@@ -120,63 +118,4 @@ function getNowPlayingState(
 		};
 	}
 	return undefined;
-}
-
-interface VolumeSliderProps {
-	volume: Accessor<number>;
-	setVolume?: (volume: number) => void;
-}
-
-function VolumeSlider(props: VolumeSliderProps) {
-	const handleVolumeChange = (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		const newVolume = Number(target.value);
-		props.setVolume?.(newVolume);
-	};
-	const [showVolume, setShowVolume] = createSignal(false);
-
-	const volumeIcon = createMemo(() => {
-		if (props.volume() === 0) {
-			return IconVolume3;
-		}
-
-		if (props.volume() < 50) {
-			return IconVolume2;
-		}
-
-		return IconVolume;
-	});
-
-	return (
-		<>
-			<button
-				classList={{
-					[classes.volumeButton]: true,
-					[commonClasses.buttonHoverInverse]: true,
-				}}
-				type="button"
-				onClick={() => setShowVolume((prev) => !prev)}
-			>
-				<Dynamic
-					component={volumeIcon()}
-					color="currentcolor"
-					width={32}
-					height={32}
-				/>
-			</button>
-			<Show when={showVolume()}>
-				<div class={classes.volumeSliderContainer}>
-					<input
-						type="range"
-						min="0"
-						max="100"
-						class={classes.volumeSlider}
-						id="volume"
-						value={props.volume()}
-						onInput={handleVolumeChange}
-					/>
-				</div>
-			</Show>
-		</>
-	);
 }

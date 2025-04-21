@@ -1,7 +1,7 @@
 import type { Accessor, Setter } from "solid-js";
 import type { NowPlaying } from "../../types";
-import classes from "./Channel.module.css";
 import { PlayButton } from "../common/PlayButton";
+import classes from "./Channel.module.css";
 import { MaybeProgram } from "./Program";
 
 interface Props {
@@ -42,7 +42,7 @@ export function Channel(props: Props) {
 								props.setIsPlaying((current) => !current);
 							}
 						}}
-						isPlaying={props.isCurrentChannel() && props.isPlaying()}
+						isPlaying={() => props.isCurrentChannel() && props.isPlaying()}
 					/>
 				)}
 			</div>
