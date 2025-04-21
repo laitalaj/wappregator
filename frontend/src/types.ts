@@ -42,3 +42,8 @@ export interface NowPlaying {
 	now_playing?: Program;
 	up_next?: Program;
 }
+
+export interface ProgramInfo {
+	program: Program;
+	radio: Radio;
+}

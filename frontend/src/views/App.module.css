@@ -77,6 +77,18 @@ main {
 	position: relative;
 }
 
+.content {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.dimmedContent {
+	composes: content;
+	opacity: 0.3;
+	transition: opacity 0.2s ease-in-out;
+}
+
 .headerLinks {
 	display: flex;
 	gap: 8px;

@@ -3,6 +3,7 @@ import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
 	Match,
+	type Setter,
 	Show,
 	Switch,
 	createMemo,
@@ -11,18 +12,24 @@ import {
 	onMount,
 } from "solid-js";
 import { getProgramProgress } from "../../getProgramProgress";
-import type { Program as ProgramType } from "../../types";
+import type { ProgramInfo, Program as ProgramType } from "../../types";
 import { ProgressBar } from "../common/ProgressBar";
 import classes from "./Program.module.css";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 
-interface Props {
+interface ProgramProps {
 	program: Accessor<ProgramType>;
 	playingNow: boolean;
 }
 
-export function Program(props: Props) {
+interface MaybeProgramProps {
+	programInfo: Accessor<ProgramInfo | undefined>;
+	playingNow: boolean;
+	setSelectedProgram: Setter<ProgramInfo | null>;
+}
+
+export function Program(props: ProgramProps) {
 	const [nowPlayingProgress, setNowPlayingProgress] = createSignal(0);
 
 	onMount(() => {
@@ -95,18 +102,25 @@ function NoProgram() {
 	);
 }
 
-export function MaybeProgram(props: {
-	program: Accessor<ProgramType | undefined>;
-	playingNow: boolean;
-}) {
-	const startTime = () => props.program()?.start;
+export function MaybeProgram(props: MaybeProgramProps) {
+	const startTime = () => props.programInfo()?.program.start;
+	const program = createMemo(() => props.programInfo()?.program);
+	const handleClick = () => {
+		const info = props.programInfo();
+		if (info) {
+			props.setSelectedProgram(info);
+		}
+	};
 
 	return (
-		<div class={classes.programWrapper}>
+		<div
+			class={classes.programWrapper}
+			onClick={props.programInfo() ? handleClick : undefined}
+		>
 			<ScheduleLabel playingNow={props.playingNow} startTime={startTime} />
-			<Show when={props.program()} fallback={<NoProgram />}>
+			<Show when={program()} fallback={<NoProgram />}>
 				{(program) => (
-					<Program program={program} playingNow={props.playingNow} />
+					<Program program={() => program()} playingNow={props.playingNow} />
 				)}
 			</Show>
 		</div>

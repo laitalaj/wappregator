@@ -1,5 +1,5 @@
-import { type Accessor, type Setter, Show } from "solid-js";
-import type { NowPlaying } from "../../types";
+import { type Accessor, type Setter, Show, createMemo } from "solid-js";
+import type { NowPlaying, Program, ProgramInfo, Radio } from "../../types";
 import { PlayButton } from "../common/PlayButton";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import classes from "./Channel.module.css";
@@ -11,12 +11,30 @@ interface Props {
 	setIsPlaying: Setter<boolean>;
 	isCurrentChannel: Accessor<boolean>;
 	setSelectedChannelId: (id: string) => void;
+	setSelectedProgram: Setter<ProgramInfo | null>;
 }
+
+const toProgramInfo = (
+	program: Program | undefined,
+	radio: Radio,
+): ProgramInfo | undefined => {
+	if (!program) {
+		return undefined;
+	}
+	return {
+		program: program,
+		radio: radio,
+	};
+};
 
 export function Channel(props: Props) {
 	const radio = () => props.station().radio;
-	const nowPlaying = () => props.station().now_playing;
-	const upNext = () => props.station().up_next;
+	const nowPlaying = createMemo(() =>
+		toProgramInfo(props.station().now_playing, radio()),
+	);
+	const upNext = createMemo(() =>
+		toProgramInfo(props.station().up_next, radio()),
+	);
 	const canPlay = () => radio().streams.length > 0;
 
 	return (
@@ -56,8 +74,16 @@ export function Channel(props: Props) {
 			</div>
 
 			<div class={classes.programs}>
-				<MaybeProgram program={nowPlaying} playingNow={true} />
-				<MaybeProgram program={upNext} playingNow={false} />
+				<MaybeProgram
+					programInfo={nowPlaying}
+					playingNow={true}
+					setSelectedProgram={props.setSelectedProgram}
+				/>
+				<MaybeProgram
+					programInfo={upNext}
+					playingNow={false}
+					setSelectedProgram={props.setSelectedProgram}
+				/>
 			</div>
 		</div>
 	);

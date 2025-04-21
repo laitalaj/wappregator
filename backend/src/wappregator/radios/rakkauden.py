@@ -77,5 +77,5 @@ class RakkaudenFetcher(base.JSONFetcher):
             description=entry.get("desc"),
             host=entry.get("host"),
             producer=entry.get("prod"),
-            photo=entry.get("thumb"),
+            photo=entry.get("photo"),
         )

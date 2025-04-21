@@ -1,0 +1,31 @@
+.infoGrid {
+	--grid-gap: 16px;
+	--grid-gap-wide: 40px;
+
+	display: grid;
+	gap: var(--grid-gap);
+	margin-bottom: calc(var(--grid-gap) * 1.5);
+}
+
+.infoItem {
+	display: flex;
+	flex-direction: row;
+	gap: var(--grid-gap);
+	align-items: baseline;
+}
+
+.label {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.value {
+	flex: 1;
+}
+
+@media (min-width: 600px) {
+	.infoGrid {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: var(--grid-gap) var(--grid-gap-wide);
+	}
+}

@@ -1,5 +1,5 @@
 import { type Accessor, Index, type Setter, Suspense } from "solid-js";
-import type { NowPlaying } from "../../types";
+import type { NowPlaying, ProgramInfo } from "../../types";
 import { Channel } from "./Channel";
 import classes from "./Channels.module.css";
 
@@ -9,6 +9,7 @@ interface Props {
 	setIsPlaying: Setter<boolean>;
 	selectedChannelId: Accessor<string | null>;
 	setSelectedChannelId: (id: string | null) => void;
+	setSelectedProgram: Setter<ProgramInfo | null>;
 }
 
 export function Channels(props: Props) {
@@ -28,6 +29,7 @@ export function Channels(props: Props) {
 								isPlaying={props.isPlaying}
 								station={station}
 								setSelectedChannelId={props.setSelectedChannelId}
+								setSelectedProgram={props.setSelectedProgram}
 							/>
 						);
 					}}

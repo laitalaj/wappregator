@@ -1,0 +1,84 @@
+.header {
+	--header-padding: 16px;
+	--transition-duration: 0.2s;
+	--button-size-mobile: 2.5rem;
+	--button-size-desktop: 1.8rem;
+	--button-padding: 0.25em;
+
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	border-radius: 8px 8px 0 0;
+	position: relative;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	padding: var(--header-padding);
+	text-align: left;
+}
+
+.headerWithImage {
+	overflow: hidden;
+}
+
+.headerBackground {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+}
+
+.headerBackground::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-color: var(--bg-color);
+	opacity: 0.66;
+	transition: opacity var(--transition-duration) ease-in-out;
+}
+
+.headerContent {
+	grid-column: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+	position: relative;
+	z-index: 1;
+}
+
+.title {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin: 0;
+}
+
+.time {
+	font-style: italic;
+	margin: 0;
+}
+
+.closeButton {
+	grid-column: 2;
+	align-self: start;
+	background: none;
+	border: none;
+	font-size: var(--button-size-mobile);
+	line-height: 1;
+	padding: var(--button-padding);
+	margin: calc(-1 * var(--header-padding));
+	margin-left: 0;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: opacity var(--transition-duration) ease-in-out;
+	color: inherit;
+	position: relative;
+	z-index: 1;
+}
+
+.closeButton:hover {
+	opacity: 1;
+}
+
+@media (min-width: 600px) {
+	.closeButton {
+		font-size: var(--button-size-desktop);
+	}
+}

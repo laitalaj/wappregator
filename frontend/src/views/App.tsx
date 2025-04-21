@@ -3,12 +3,14 @@ import {
 	IconBrandGithubFilled,
 	IconBrandTelegram,
 } from "@tabler/icons-solidjs";
-import { type Component, createMemo, createSignal } from "solid-js";
+import { type Component, Show, createMemo, createSignal } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
 import { getNowPlayingState, getRadiosState, getScheduleState } from "../state";
+import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
+import { Description } from "./description/Description";
 import { PlayerBar } from "./player/PlayerBar";
 
 const App: Component = () => {
@@ -19,6 +21,8 @@ const App: Component = () => {
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
 		null,
 	);
+	const [selectedProgram, setSelectedProgram] =
+		createSignal<ProgramInfo | null>(null);
 	const [isPlaying, setIsPlaying] = createSignal(false);
 
 	const radioState = createMemo((): RadioState => {
@@ -47,17 +51,35 @@ const App: Component = () => {
 		};
 	});
 
+	const contentClass = createMemo(() => {
+		if (selectedProgram()) {
+			return classes.dimmedContent;
+		}
+		return classes.content;
+	});
+
 	return (
 		<div class={classes.app}>
 			<Header />
 			<main>
-				<Channels
-					nowPlaying={nowPlaying}
-					isPlaying={isPlaying}
-					setIsPlaying={setIsPlaying}
-					selectedChannelId={selectedChannelId}
-					setSelectedChannelId={setSelectedChannelId}
-				/>
+				<div class={contentClass()}>
+					<Channels
+						nowPlaying={nowPlaying}
+						isPlaying={isPlaying}
+						setIsPlaying={setIsPlaying}
+						selectedChannelId={selectedChannelId}
+						setSelectedChannelId={setSelectedChannelId}
+						setSelectedProgram={setSelectedProgram}
+					/>
+				</div>
+				<Show when={selectedProgram()}>
+					{(selected) => (
+						<Description
+							programInfo={selected()}
+							setSelectedProgram={setSelectedProgram}
+						/>
+					)}
+				</Show>
 				<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
 			</main>
 		</div>
