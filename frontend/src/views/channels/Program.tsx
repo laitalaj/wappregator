@@ -15,6 +15,7 @@ import { getProgramProgress } from "../../getProgramProgress";
 import type { ProgramInfo, Program as ProgramType } from "../../types";
 import { ProgressBar } from "../common/ProgressBar";
 import classes from "./Program.module.css";
+import { Dynamic } from "solid-js/web";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 
@@ -113,14 +114,20 @@ export function MaybeProgram(props: MaybeProgramProps) {
 	};
 
 	return (
-		<div class={classes.programWrapper} onClick={handleClick}>
+		<Dynamic
+			component={program() ? "button" : "div"}
+			class={classes.programWrapper}
+			onClick={handleClick}
+			type="button"
+			aria-label={program() ? "Näytä ohjelmatiedot" : undefined}
+		>
 			<ScheduleLabel playingNow={props.playingNow} startTime={startTime} />
 			<Show when={program()} fallback={<NoProgram />}>
 				{(program) => (
 					<Program program={() => program()} playingNow={props.playingNow} />
 				)}
 			</Show>
-		</div>
+		</Dynamic>
 	);
 }
 
