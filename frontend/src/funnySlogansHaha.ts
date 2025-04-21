@@ -19,6 +19,7 @@ export const funnySlogansHaha = [
 	"keksin lisää huomenna nyt pää tyynyyn 1000fps",
 	"Kaikkien maiden proletaarit, liittykää yhteen!",
 	"Kõigi maade proletaarlased, ühinege!",
+	"Shoutout to tippaleipä connoisseurs",
 	"Tippaleipä on pahaa",
 	"Connecting people",
 	"Wappu - redefined",
@@ -30,4 +31,6 @@ export const funnySlogansHaha = [
 	"Och detsamma på svenska",
 	"Haloo",
 	"Kuuluuko?",
+	"Shoutout to TKO-äly",
+	"Shoutout to AOP&PHK",
 ];
