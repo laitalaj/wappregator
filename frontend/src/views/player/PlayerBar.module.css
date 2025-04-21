@@ -4,7 +4,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 8px var(--horizontal-padding);
-	background-color: var(--bg-black);
+	background-color: var(--bg-color);
 	color: white;
 	border-top: 2px solid white;
 	position: sticky;
@@ -12,9 +12,6 @@
 	width: 100%;
 	gap: 4px;
 	container: playerBar;
-
-	--bg-color: var(--bg-black);
-	--text-color: white;
 
 	& > * {
 		width: 100%;
@@ -61,7 +58,7 @@
 	top: 0;
 	transform: translateY(-100%);
 	right: 0;
-	background: var(--bg-black);
+	background: var(--bg-color);
 	padding: 16px;
 	z-index: 1;
 	border: 2px solid white;

@@ -1,3 +1,8 @@
+import {
+	IconBrandGithub,
+	IconBrandGithubFilled,
+	IconBrandTelegram,
+} from "@tabler/icons-solidjs";
 import { type Component, createMemo, createSignal } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
@@ -65,8 +70,33 @@ function Header() {
 
 	return (
 		<header>
-			<h1>Wappregator</h1>
+			<div class={classes.headerLogo}>
+				<h1>
+					Wappregat<small>.</small>or<small>g</small>
+				</h1>
+				<img src="/appicon.png" alt="" width={64} height={64} />
+			</div>
 			<span>{funnySlogan}</span>
+			<div class={classes.headerLinks}>
+				<a
+					class={classes.headerLink}
+					href="https://github.com/laitalaj/wappregator"
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Kanna kortesi kekoon GitHubissa (uusi välilehti)"
+				>
+					<IconBrandGithubFilled height={24} />
+				</a>
+				<a
+					class={classes.headerLink}
+					href="https://t.me/+qkl_29fGEXpkY2Q0"
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Ota yhteyttä Telegramissa (uusi välilehti)"
+				>
+					<IconBrandTelegram height={24} />
+				</a>
+			</div>
 		</header>
 	);
 }

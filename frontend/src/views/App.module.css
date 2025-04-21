@@ -4,8 +4,15 @@
 	width: 100vw;
 	font-family: "Roboto Condensed", sans-serif;
 
-	--bg-black: #282c34;
+	--bg-color: #282c34;
+	--text-color: white;
 	--horizontal-padding: 8px;
+
+	--hover-color: color-mix(
+		in srgb,
+		var(--bg-color, #fff) 25%,
+		var(--text-color, #000)
+	);
 }
 
 @media (min-width: 600px) {
@@ -17,12 +24,52 @@
 header {
 	padding: 16px;
 	color: white;
-	background-color: var(--bg-black);
+	background-color: var(--bg-color);
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.headerLogo {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: center;
+	column-gap: 16px;
+	row-gap: 8px;
 
 	& > h1 {
 		margin: 0;
 		font-family: "Bungee", sans-serif;
+
+		& > small {
+			font-size: 0.5em;
+		}
+	}
+
+	& > img {
+		animation: spin 1s linear infinite forwards;
+		animation-play-state: paused;
+
+		&:hover {
+			animation-play-state: running;
+		}
+	}
+}
+
+@media (min-width: 360px) {
+	.headerLogo {
+		flex-direction: row;
 	}
 }
 
@@ -30,7 +77,26 @@ main {
 	display: flex;
 	flex-grow: 1;
 	flex-direction: column;
-	align-items: center;
-	background-color: var(--bg-black);
+	background-color: var(--bg-color);
 	position: relative;
+}
+
+.headerLinks {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+	align-items: center;
+}
+
+.headerLink {
+	composes: buttonHoverInverse from "./common/common.module.css";
+	color: var(--text-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-shrink: 0;
+
+	&:visited {
+		color: inherit;
+	}
 }
