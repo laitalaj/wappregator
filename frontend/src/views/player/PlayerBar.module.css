@@ -5,13 +5,14 @@
 	justify-content: space-between;
 	padding: 8px var(--horizontal-padding);
 	background-color: var(--bg-color);
-	color: white;
-	border-top: 2px solid white;
+	color: var(--text-color);
+	border-top: 2px solid var(--text-color);
 	position: sticky;
 	bottom: 0;
 	width: 100%;
 	gap: 4px;
 	container: playerBar;
+	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
 	& > * {
 		width: 100%;
@@ -24,14 +25,6 @@
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-}
-
-.playPauseButton {
-	background-color: transparent;
-	border: none;
-	color: white;
-	font-size: 24px;
-	cursor: pointer;
 }
 
 .progressBarContainer {
@@ -61,7 +54,7 @@
 	background: var(--bg-color);
 	padding: 16px;
 	z-index: 1;
-	border: 2px solid white;
+	border: 2px solid var(--text-color);
 	display: flex;
 	justify-content: center;
 }

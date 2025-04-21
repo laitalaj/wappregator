@@ -8,7 +8,14 @@ interface Props {
 
 export function ProgressBar(props: Props) {
 	return (
+		// biome-ignore lint/a11y/useFocusableInteractive: progressbar is not interactive, what is wrong with you Biome
 		<div
+			role="progressbar"
+			aria-valuenow={props.progress() * 100}
+			aria-valuemin={0}
+			aria-valuemax={100}
+			aria-label="Ohjelman eteneminen"
+			aria-valuetext={`${Math.round(props.progress() * 100)}%`}
 			class={classes.progressBar}
 			style={{
 				"--progress": `${props.progress() * 100}%`,

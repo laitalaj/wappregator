@@ -10,6 +10,7 @@ import type { RadioState } from "../../radio";
 import type { Program } from "../../types";
 import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
+import { brandColorVariablesStyle } from "../common/brandUtils";
 import { AudioPlayer } from "./AudioPlayer";
 import classes from "./PlayerBar.module.css";
 import { VolumeSlider } from "./VolumeSlide";
@@ -51,7 +52,11 @@ export function PlayerBar(props: Props) {
 							isPlaying={isPlaying}
 							volume={volume}
 						/>
-						<section class={classes.playerBar} aria-label="Mediasoitin">
+						<section
+							class={classes.playerBar}
+							aria-label="Mediasoitin"
+							style={brandColorVariablesStyle(state().radio.brand)}
+						>
 							<span aria-label="Nyt soi">{statusText()}</span>
 							<div class={classes.controlsRow}>
 								<PlayButton

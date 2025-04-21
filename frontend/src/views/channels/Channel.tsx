@@ -1,6 +1,7 @@
 import { type Accessor, type Setter, Show } from "solid-js";
 import type { NowPlaying } from "../../types";
 import { PlayButton } from "../common/PlayButton";
+import { brandColorVariablesStyle } from "../common/brandUtils";
 import classes from "./Channel.module.css";
 import { MaybeProgram } from "./Program";
 
@@ -22,10 +23,7 @@ export function Channel(props: Props) {
 		<div
 			class={classes.channel}
 			data-type={radio().id}
-			style={{
-				"--bg-color": radio().brand.background_color,
-				"--text-color": radio().brand.text_color,
-			}}
+			style={brandColorVariablesStyle(radio().brand)}
 		>
 			<div class={classes.channelName}>
 				<h2>{radio().name}</h2>
