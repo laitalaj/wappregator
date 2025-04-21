@@ -52,6 +52,8 @@ export function PlayerBar(props: Props) {
 							radio={() => state().radio}
 							isPlaying={isPlaying}
 							volume={volume}
+							nowPlaying={() => state().nowPlaying}
+							setIsPlaying={props.setIsPlaying}
 						/>
 						<section
 							class={classes.playerBar}

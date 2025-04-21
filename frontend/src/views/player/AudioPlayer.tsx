@@ -1,9 +1,17 @@
-import { type Accessor, Index, createEffect, createMemo } from "solid-js";
-import type { Radio } from "../../types";
+import {
+	type Accessor,
+	Index,
+	createEffect,
+	createMemo,
+	onMount,
+} from "solid-js";
+import type { Program, Radio } from "../../types";
 
 interface Props {
 	radio: Accessor<Radio>;
+	nowPlaying: Accessor<Program | undefined>;
 	isPlaying: Accessor<boolean>;
+	setIsPlaying: (isPlaying: boolean) => void;
 	volume: Accessor<number>;
 }
 
@@ -62,6 +70,62 @@ export function AudioPlayer(props: Props) {
 				}
 			});
 		}
+	});
+
+	const start = () => props.setIsPlaying(true);
+	const pause = () => props.setIsPlaying(false);
+
+	// Media Session API: play/pause
+	createEffect(() => {
+		// Not supported in e.g. Firefox
+		if (!("mediaSession" in navigator)) {
+			return;
+		}
+
+		navigator.mediaSession.setActionHandler("play", start);
+		navigator.mediaSession.setActionHandler("pause", pause);
+
+		navigator.mediaSession.playbackState = props.isPlaying()
+			? "playing"
+			: "paused";
+	});
+
+	// Media Session API: metadata
+	createEffect(() => {
+		const nowPlaying = props.nowPlaying();
+		const radio = props.radio();
+
+		if (!("mediaSession" in navigator)) {
+			return;
+		}
+
+		const mediaData = nowPlaying
+			? {
+					title: nowPlaying.title,
+					artist: radio.name,
+				}
+			: {
+					title: radio.name,
+				};
+
+		const wappregatorArtwork = {
+			src: "https://wappregat.org/appicon.png",
+			sizes: "256x256",
+			type: "image/png",
+		};
+
+		const artwork = nowPlaying?.photo
+			? [
+					{
+						src: nowPlaying.photo,
+					},
+				]
+			: [wappregatorArtwork];
+
+		navigator.mediaSession.metadata = new MediaMetadata({
+			...mediaData,
+			artwork,
+		});
 	});
 
 	return (
