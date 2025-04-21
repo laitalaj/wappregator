@@ -23,7 +23,7 @@ export function PlayButton(props: Props) {
 				[commonClasses.buttonHover]: true,
 			}}
 			type="button"
-			onClick={props.onClick}
+			onClick={() => props.onClick?.()}
 			title={props.isPlaying() ? "Pysäytä" : "Toista"}
 			aria-pressed={props.isPlaying()}
 		>

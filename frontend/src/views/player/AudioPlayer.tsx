@@ -10,7 +10,7 @@ interface Props {
 export function AudioPlayer(props: Props) {
 	let audioRef: HTMLAudioElement | null = null;
 
-	createEffect(async () => {
+	createEffect(() => {
 		if (!audioRef) {
 			return;
 		}
@@ -22,7 +22,7 @@ export function AudioPlayer(props: Props) {
 				audioRef.load();
 			}
 
-			await audioRef.play().catch((error) => {
+			audioRef.play().catch((error) => {
 				// If AbortError, ignore it
 				if (error.name !== "AbortError") {
 					console.error("Error playing audio:", error);
@@ -45,7 +45,7 @@ export function AudioPlayer(props: Props) {
 	});
 
 	// If the stream changes, we need to load the new stream
-	createEffect(async () => {
+	createEffect(() => {
 		// When channel changes and we're playing, we need to load the new stream
 		radioId();
 
@@ -55,7 +55,7 @@ export function AudioPlayer(props: Props) {
 
 		if (!audioRef.paused) {
 			audioRef.load();
-			await audioRef.play().catch((error) => {
+			audioRef.play().catch((error) => {
 				// If AbortError, ignore it
 				if (error.name !== "AbortError") {
 					console.error("Error playing audio:", error);

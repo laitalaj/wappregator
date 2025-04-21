@@ -8,14 +8,17 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "biome check --write src"
+    "lint": "biome check --write src && eslint"
   },
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
-    "vite-plugin-solid": "^2.11.6"
+    "vite-plugin-solid": "^2.11.6",
+    "eslint": "^9.25.0",
+    "eslint-plugin-solid": "^0.14.5",
+    "@typescript-eslint/parser": "^8.30.1"
   },
   "dependencies": {
     "@tabler/icons-solidjs": "^3.31.0",
