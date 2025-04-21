@@ -22,8 +22,8 @@ class TurunFetcher(base.JSONFetcher):
             location="Suomen Turku",
             frequency_mhz=93.8,
             brand=model.Brand(
-                background_color="rgb(0, 27, 52)",
-                text_color="rgb(246, 95, 82)",
+                background_color="rgb(0, 51, 102)",
+                text_color="rgb(238, 107, 96)",
             ),
         )
 
