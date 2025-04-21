@@ -1,5 +1,4 @@
 import {
-	IconBrandGithub,
 	IconBrandGithubFilled,
 	IconBrandTelegram,
 } from "@tabler/icons-solidjs";
