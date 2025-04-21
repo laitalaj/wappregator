@@ -8,8 +8,8 @@ interface Props {
 
 const InfoItem: Component<{ label: string; value: string }> = (props) => (
 	<div class={classes.infoItem}>
-		<span class={classes.label}>{props.label}:</span>
-		<span class={classes.value}>{props.value}</span>
+		<dt>{props.label}:</dt>
+		<dd>{props.value}</dd>
 	</div>
 );
 
@@ -17,18 +17,18 @@ export const InfoGrid: Component<Props> = (props) => (
 	<Show
 		when={props.program.genre || props.program.host || props.program.producer}
 	>
-		<div class={classes.infoGrid}>
+		<dl class={classes.infoGrid}>
 			<Show when={props.program.genre}>
-				{(genre) => <InfoItem label="Genre" value={genre()} />}
+				{(genre) => <InfoItem label="Lajityyppi" value={genre()} />}
 			</Show>
 
 			<Show when={props.program.host}>
-				{(host) => <InfoItem label="Host" value={host()} />}
+				{(host) => <InfoItem label="Juontaja(t)" value={host()} />}
 			</Show>
 
 			<Show when={props.program.producer}>
-				{(producer) => <InfoItem label="Producer" value={producer()} />}
+				{(producer) => <InfoItem label="Tuottaja(t)" value={producer()} />}
 			</Show>
-		</div>
+		</dl>
 	</Show>
 );

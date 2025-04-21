@@ -6,6 +6,10 @@ body {
 	color: #333;
 	background-color: #282c34;
 	overflow-y: scroll;
+
+	&:has(dialog) {
+		overflow: hidden;
+	}
 }
 
 #root {

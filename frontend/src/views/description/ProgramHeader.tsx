@@ -1,3 +1,4 @@
+import { IconX } from "@tabler/icons-solidjs";
 import type { Component } from "solid-js";
 import type { Brand } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
@@ -12,8 +13,8 @@ interface Props {
 }
 
 export const ProgramHeader: Component<Props> = (props) => (
-	<header
-		class={`${classes.header} ${props.photo ? classes.headerWithImage : ""}`}
+	<div
+		class={classes.header}
 		style={brandColorVariablesStyle(props.brandColor)}
 	>
 		{props.photo && (
@@ -24,19 +25,16 @@ export const ProgramHeader: Component<Props> = (props) => (
 			/>
 		)}
 		<div class={classes.headerContent}>
-			<h2 class={classes.title} id="program-title">
-				{props.title}
-			</h2>
+			<h2 class={classes.title}>{props.title}</h2>
 			<div class={classes.time}>{props.timeStr}</div>
 		</div>
 		<button
 			type="button"
 			class={classes.closeButton}
 			onClick={() => props.onClose()}
-			title="Close"
-			aria-label="Close program description"
+			title="Sulje ohjelman tiedot"
 		>
-			×
+			<IconX width={24} height={24} role="presentation" color="currentcolor" />
 		</button>
-	</header>
+	</div>
 );

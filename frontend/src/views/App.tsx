@@ -2,7 +2,13 @@ import {
 	IconBrandGithubFilled,
 	IconBrandTelegram,
 } from "@tabler/icons-solidjs";
-import { type Component, Show, createMemo, createSignal } from "solid-js";
+import {
+	type Accessor,
+	type Component,
+	Show,
+	createMemo,
+	createSignal,
+} from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
 import { getNowPlayingState, getRadiosState, getScheduleState } from "../state";
@@ -50,18 +56,19 @@ const App: Component = () => {
 		};
 	});
 
-	const contentClass = createMemo(() => {
-		if (selectedProgram()) {
-			return classes.dimmedContent;
-		}
-		return classes.content;
-	});
+	const nonModalElementsInert = () => selectedProgram() !== null;
 
 	return (
 		<div class={classes.app}>
-			<Header />
+			<Header inert={nonModalElementsInert} />
 			<main>
-				<div class={contentClass()}>
+				<div
+					classList={{
+						[classes.content]: true,
+						[classes.dimmedContent]: !!selectedProgram(),
+					}}
+					inert={nonModalElementsInert()}
+				>
 					<Channels
 						nowPlaying={nowPlaying}
 						isPlaying={isPlaying}
@@ -85,12 +92,16 @@ const App: Component = () => {
 	);
 };
 
-function Header() {
+interface HeaderProps {
+	inert: Accessor<boolean>;
+}
+
+function Header(props: HeaderProps) {
 	const funnySlogan =
 		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
 
 	return (
-		<header>
+		<header inert={props.inert()}>
 			<div class={classes.headerLogo}>
 				<h1>
 					Wappregat<small>.</small>or<small>g</small>

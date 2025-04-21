@@ -6,6 +6,7 @@ import {
 	onCleanup,
 	onMount,
 } from "solid-js";
+import { formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
 import classes from "./Description.module.css";
 import { InfoGrid } from "./InfoGrid";
@@ -17,11 +18,12 @@ interface Props {
 }
 
 export const Description: Component<Props> = (props) => {
-	const timeStr = createMemo(() => {
-		const startTime = new Date(props.programInfo.program.start);
-		const endTime = new Date(props.programInfo.program.end);
-		return `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`;
-	});
+	const timeRange = createMemo(() =>
+		formatTimeRange(
+			props.programInfo.program.start,
+			props.programInfo.program.end,
+		),
+	);
 
 	const handleClose = () => props.setSelectedProgram(null);
 
@@ -49,10 +51,14 @@ export const Description: Component<Props> = (props) => {
 
 	return (
 		<div class={classes.overlay} onClick={handleClick}>
-			<div class={classes.description}>
+			<dialog
+				class={classes.description}
+				aria-modal
+				aria-label={`Ohjelman tiedot: ${props.programInfo.program.title}`}
+			>
 				<ProgramHeader
 					title={props.programInfo.program.title}
-					timeStr={timeStr()}
+					timeStr={timeRange()}
 					photo={props.programInfo.program.photo}
 					brandColor={props.programInfo.radio.brand}
 					onClose={handleClose}
@@ -65,7 +71,7 @@ export const Description: Component<Props> = (props) => {
 						<p>{props.programInfo.program.description}</p>
 					</Show>
 				</div>
-			</div>
+			</dialog>
 		</div>
 	);
 };

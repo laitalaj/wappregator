@@ -11,11 +11,12 @@ import {
 	onCleanup,
 	onMount,
 } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import { getProgramProgress } from "../../getProgramProgress";
+import { formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo, Program as ProgramType } from "../../types";
 import { ProgressBar } from "../common/ProgressBar";
 import classes from "./Program.module.css";
-import { Dynamic } from "solid-js/web";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 
@@ -73,24 +74,13 @@ function ProgramTime(props: {
 	startTime: Accessor<string>;
 	endTime: Accessor<string>;
 }) {
-	function timestampToTime(timestamp: string): string {
-		const date = new Date(timestamp);
-		return date.toLocaleTimeString("fi-FI", {
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-	}
-
-	const startTime = createMemo(() => timestampToTime(props.startTime()));
-	const endTime = createMemo(() => timestampToTime(props.endTime()));
+	const timeRange = createMemo(() =>
+		formatTimeRange(props.startTime(), props.endTime()),
+	);
 
 	return (
 		<div class={classes.time}>
-			<span>
-				{startTime()}
-				{" - "}
-				{endTime()}
-			</span>
+			<span>{timeRange()}</span>
 		</div>
 	);
 }

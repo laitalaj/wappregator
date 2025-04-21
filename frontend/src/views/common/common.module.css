@@ -1,7 +1,7 @@
 .buttonHover {
 	--hover-color: color-mix(
 		in srgb,
-		var(--bg-color, #fff) 25%,
+		var(--bg-color, #fff) 50%,
 		var(--text-color, #000)
 	);
 
@@ -15,7 +15,7 @@
 .buttonHoverInverse {
 	--hover-color: color-mix(
 		in srgb,
-		var(--bg-color, #fff) 25%,
+		var(--bg-color, #fff) 50%,
 		var(--text-color, #000)
 	);
 

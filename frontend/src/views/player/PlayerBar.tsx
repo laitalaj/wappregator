@@ -7,6 +7,7 @@ import {
 } from "solid-js";
 import { getProgramProgress } from "../../getProgramProgress";
 import type { RadioState } from "../../radio";
+import { formatTime } from "../../timeUtils";
 import type { Program } from "../../types";
 import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
@@ -68,27 +69,15 @@ export function PlayerBar(props: Props) {
 								<Show when={getNowPlayingState(state())}>
 									{(state) => {
 										const nowPlaying = () => state().nowPlaying;
-										const startTime = () => new Date(nowPlaying().start);
-										const endTime = () => new Date(nowPlaying().end);
 
 										return (
 											<div class={classes.progressBarContainer}>
-												<span>
-													{startTime().toLocaleTimeString("fi-FI", {
-														hour: "2-digit",
-														minute: "2-digit",
-													})}
-												</span>
+												<span>{formatTime(nowPlaying().start)}</span>
 												<ProgressBar
 													progress={() => getProgramProgress(nowPlaying())}
 													transitionTimeMs={1000}
 												/>
-												<span>
-													{endTime().toLocaleTimeString("fi-FI", {
-														hour: "2-digit",
-														minute: "2-digit",
-													})}
-												</span>
+												<span>{formatTime(nowPlaying().end)}</span>
 											</div>
 										);
 									}}
