@@ -13,7 +13,7 @@ interface Props {
 
 export function Channels(props: Props) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense fallback={<ChannelsSkeleton />}>
 			<div class={classes.channels}>
 				<Index each={props.nowPlaying()}>
 					{(station) => {
@@ -34,5 +34,21 @@ export function Channels(props: Props) {
 				</Index>
 			</div>
 		</Suspense>
+	);
+}
+
+function ChannelsSkeleton() {
+	return (
+		<div class={classes.channels}>
+			<Index each={Array.from({ length: 6 })}>
+				{() => {
+					return (
+						<div class={classes.channelSkeleton}>
+							<div class={classes.nameSkeleton} />
+						</div>
+					);
+				}}
+			</Index>
+		</div>
 	);
 }

@@ -14,3 +14,33 @@
 		grid-auto-rows: 1fr;
 	}
 }
+
+.channelSkeleton {
+	display: flex;
+	background: var(--bg-color);
+	padding: 16px;
+	min-height: 300px;
+
+	&:nth-child(odd) {
+		--bg-color: color-mix(
+			in srgb,
+			var(--default-bg-color) 90%,
+			var(--default-text-color)
+		);
+	}
+
+	&:nth-child(even) {
+		--bg-color: color-mix(
+			in srgb,
+			var(--default-bg-color) 80%,
+			var(--default-text-color)
+		);
+	}
+}
+
+.nameSkeleton {
+	width: 100%;
+	height: 32px;
+	background: color-mix(in srgb, var(--bg-color) 90%, var(--default-text-color));
+	border-radius: 4px;
+}

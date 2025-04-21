@@ -4,15 +4,11 @@
 	width: 100vw;
 	font-family: "Roboto Condensed", sans-serif;
 
-	--bg-color: #282c34;
-	--text-color: white;
+	--default-bg-color: #282c34;
+	--bg-color: var(--default-bg-color);
+	--default-text-color: white;
+	--text-color: var(--default-text-color);
 	--horizontal-padding: 8px;
-
-	--hover-color: color-mix(
-		in srgb,
-		var(--bg-color, #fff) 25%,
-		var(--text-color, #000)
-	);
 }
 
 @media (min-width: 600px) {
