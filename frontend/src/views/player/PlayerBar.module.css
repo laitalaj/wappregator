@@ -36,6 +36,8 @@
 }
 
 .volumeButton {
+	composes: buttonHoverInverse from "../common/common.module.css";
+
 	color: var(--text-color);
 	background: none;
 	border: none;

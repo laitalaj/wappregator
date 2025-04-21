@@ -7,7 +7,6 @@ import {
 	createUniqueId,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import commonClasses from "../common/common.module.css";
 import classes from "./PlayerBar.module.css";
 
 interface VolumeSliderProps {
@@ -40,10 +39,7 @@ export function VolumeSlider(props: VolumeSliderProps) {
 	return (
 		<>
 			<button
-				classList={{
-					[classes.volumeButton]: true,
-					[commonClasses.buttonHoverInverse]: true,
-				}}
+				class={classes.volumeButton}
 				type="button"
 				onClick={() => setShowVolume((prev) => !prev)}
 				aria-label="Äänenvoimakkuus"

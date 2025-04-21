@@ -4,7 +4,6 @@ import {
 } from "@tabler/icons-solidjs";
 import type { Accessor } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import commonClasses from "../common/common.module.css";
 import classes from "./PlayButton.module.css";
 
 interface Props {
@@ -18,10 +17,7 @@ export function PlayButton(props: Props) {
 
 	return (
 		<button
-			classList={{
-				[classes.playButton]: true,
-				[commonClasses.buttonHover]: true,
-			}}
+			class={classes.playButton}
 			type="button"
 			onClick={() => props.onClick?.()}
 			title={props.isPlaying() ? "Pysäytä" : "Toista"}
