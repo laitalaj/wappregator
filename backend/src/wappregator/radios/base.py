@@ -32,7 +32,9 @@ class BaseFetcher(ABC):
         id: str,
         name: str,
         url: str,
-        brand: model.Brand,
+        location: str,
+        frequency_mhz: float | None = None,
+        brand: model.Brand = model.Brand.default(),
         streams: list[model.Stream] = [],
     ) -> None:
         """Initialize the fetcher.
@@ -41,12 +43,16 @@ class BaseFetcher(ABC):
             id: The ID of the radio station.
             name: The name of the radio station.
             url: The (human) URL of the radio station.
+            location: The location of the radio station.
+            frequency_mhz: The frequency of the radio station in MHz.
             brand: Branding for the radio station.
             streams: The available streams.
         """
         self.id = id
         self.name = name
         self.url = url
+        self.location = location
+        self.frequency_mhz = frequency_mhz
         self.brand = brand
         self.streams = streams
 
@@ -61,6 +67,8 @@ class BaseFetcher(ABC):
             id=self.id,
             name=self.name,
             url=self.url,
+            location=self.location,
+            frequency_mhz=self.frequency_mhz,
             brand=self.brand,
             streams=self.streams,
         )

@@ -1,4 +1,4 @@
-import type { Accessor, Setter } from "solid-js";
+import { type Accessor, type Setter, Show } from "solid-js";
 import type { NowPlaying } from "../../types";
 import { PlayButton } from "../common/PlayButton";
 import classes from "./Channel.module.css";
@@ -16,7 +16,7 @@ export function Channel(props: Props) {
 	const radio = () => props.station().radio;
 	const nowPlaying = () => props.station().now_playing;
 	const upNext = () => props.station().up_next;
-	const canPlay = () => (radio().streams || []).length > 0;
+	const canPlay = () => radio().streams.length > 0;
 
 	return (
 		<div
@@ -48,6 +48,10 @@ export function Channel(props: Props) {
 			</div>
 
 			<div>
+				<Show when={radio().frequency_mhz}>
+					{radio().frequency_mhz?.toFixed(1)} MHz @{" "}
+				</Show>
+				{`${radio().location} / `}
 				<a href={radio().url} class={classes.listenButton}>
 					WWW
 				</a>

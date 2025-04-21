@@ -1,3 +1,4 @@
+from typing import Self
 import datetime
 
 import pydantic
@@ -32,6 +33,14 @@ class Brand(pydantic.BaseModel):
     background_color: str
     text_color: str
 
+    @classmethod
+    def default(cls) -> Self:
+        """Get the default brand."""
+        return cls(
+            background_color="white",
+            text_color="black",
+        )
+
 
 class Radio(pydantic.BaseModel):
     """A radio station."""
@@ -39,5 +48,9 @@ class Radio(pydantic.BaseModel):
     id: str
     name: str
     url: str
-    brand: Brand
-    streams: list[Stream] | None = None
+
+    location: str
+    frequency_mhz: float | None = None
+
+    brand: Brand = Brand.default()
+    streams: list[Stream] = []

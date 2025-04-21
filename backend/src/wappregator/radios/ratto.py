@@ -18,6 +18,8 @@ class RattoFetcher(base.BaseFetcher):
             id="ratto",
             name="Rattoradio",
             url="https://www.rattoradio.fi/",
+            location="Oulu",
+            frequency_mhz=91.6,
             brand=model.Brand(
                 background_color="rgb(7, 118, 187)",
                 text_color="white",

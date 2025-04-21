@@ -19,6 +19,7 @@ class NorppaFetcher(base.JSONFetcher):
             id="norppa",
             name="Norpparadio",
             url="https://norpparadio.net/",
+            location="lappeen Ranta",
             brand=model.Brand(
                 background_color="rgb(15, 23, 43)",
                 text_color="white",

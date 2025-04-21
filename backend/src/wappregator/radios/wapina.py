@@ -15,6 +15,7 @@ class WapinaFetcher(base.JSONFetcher):
             id="wapina",
             name="Radio Wapina",
             url="https://wapina.fi/",
+            location="Vaasa",
             brand=model.Brand(
                 background_color="rgb(255, 180, 20)",
                 text_color="black",

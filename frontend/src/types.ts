@@ -23,8 +23,10 @@ export interface Radio {
 	id: string;
 	name: string;
 	url: string;
+	location: string;
+	frequency_mhz?: number;
 	brand: Brand;
-	streams?: Stream[];
+	streams: Stream[];
 }
 
 export interface Radios {

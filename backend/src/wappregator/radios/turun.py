@@ -19,6 +19,7 @@ class TurunFetcher(base.JSONFetcher):
             id="turun",
             name="Turun Wappuradio",
             url="https://turunwappuradio.com/",
+            location="Suomen Turku",
             brand=model.Brand(
                 background_color="rgb(0, 27, 52)",
                 text_color="rgb(246, 95, 82)",

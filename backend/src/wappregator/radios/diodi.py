@@ -15,6 +15,8 @@ class DiodiFetcher(base.JSONFetcher):
             id="diodi",
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
+            location="Otaniemi",
+            frequency_mhz=120,
             brand=model.Brand(
                 background_color="rgb(220, 246, 220)",
                 text_color="rgb(39, 83, 40)",

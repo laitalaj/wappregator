@@ -15,6 +15,8 @@ class RakkaudenFetcher(base.JSONFetcher):
             id="rakkauden",
             name="Rakkauden Wappuradio",
             url="https://wappuradio.fi/",
+            location="Tampere",
+            frequency_mhz=101.6,
             brand=model.Brand(
                 background_color="rgb(211, 59, 111)",
                 text_color="white",
