@@ -32,7 +32,7 @@ export const ProgramHeader: Component<Props> = (props) => (
 		<button
 			type="button"
 			class={classes.closeButton}
-			onClick={props.onClose}
+			onClick={() => props.onClose()}
 			title="Close"
 			aria-label="Close program description"
 		>

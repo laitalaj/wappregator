@@ -2,6 +2,7 @@ import {
 	type Component,
 	type Setter,
 	Show,
+	createMemo,
 	onCleanup,
 	onMount,
 } from "solid-js";
@@ -16,9 +17,11 @@ interface Props {
 }
 
 export const Description: Component<Props> = (props) => {
-	const startTime = new Date(props.programInfo.program.start);
-	const endTime = new Date(props.programInfo.program.end);
-	const timeStr = `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`;
+	const timeStr = createMemo(() => {
+		const startTime = new Date(props.programInfo.program.start);
+		const endTime = new Date(props.programInfo.program.end);
+		return `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`;
+	});
 
 	const handleClose = () => props.setSelectedProgram(null);
 
@@ -49,7 +52,7 @@ export const Description: Component<Props> = (props) => {
 			<div class={classes.description}>
 				<ProgramHeader
 					title={props.programInfo.program.title}
-					timeStr={timeStr}
+					timeStr={timeStr()}
 					photo={props.programInfo.program.photo}
 					brandColor={props.programInfo.radio.brand}
 					onClose={handleClose}

@@ -113,10 +113,7 @@ export function MaybeProgram(props: MaybeProgramProps) {
 	};
 
 	return (
-		<div
-			class={classes.programWrapper}
-			onClick={props.programInfo() ? handleClick : undefined}
-		>
+		<div class={classes.programWrapper} onClick={handleClick}>
 			<ScheduleLabel playingNow={props.playingNow} startTime={startTime} />
 			<Show when={program()} fallback={<NoProgram />}>
 				{(program) => (
