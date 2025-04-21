@@ -18,7 +18,14 @@ export function Channel(props: Props) {
 	const upNext = () => props.station().up_next;
 
 	return (
-		<div class={classes.channel} data-type={radio().id}>
+		<div
+			class={classes.channel}
+			data-type={radio().id}
+			style={{
+				"--bg-color": radio().brand.backgroundColor,
+				"--text-color": radio().brand.textColor,
+			}}
+		>
 			<div class={classes.channelName}>
 				<h2>{radio().name}</h2>
 				{nowPlaying() && (

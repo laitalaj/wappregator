@@ -11,8 +11,8 @@ FETCHERS = [
     rakkauden.RakkaudenFetcher(),
     turun.TurunFetcher(),
     diodi.DiodiFetcher(),
-    wapina.WapinaFetcher(),
     norppa.NorppaFetcher(),
+    wapina.WapinaFetcher(),
     ratto.RattoFetcher(),
 ]
 

@@ -15,6 +15,10 @@ class RakkaudenFetcher(base.JSONFetcher):
             id="rakkauden",
             name="Rakkauden Wappuradio",
             url="https://wappuradio.fi/",
+            brand=model.Brand(
+                backgroundColor="rgb(211, 59, 111)",
+                textColor="white",
+            ),
             streams=[
                 model.Stream(
                     url="https://stream1.wappuradio.fi/wappuradio.opus",

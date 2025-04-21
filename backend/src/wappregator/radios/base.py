@@ -9,7 +9,7 @@ import valkey.asyncio as valkey
 from wappregator import model
 
 CACHE_TTL_SECONDS = 60 * 15
-CACHE_VERSION = 3
+CACHE_VERSION = 4
 CACHE_NAMESPACE = "radios"
 CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
 
@@ -26,7 +26,7 @@ class RadioError(Exception):
 class BaseFetcher(ABC):
     """Base class for fetching radio schedules."""
 
-    def __init__(self, id: str, name: str, url: str, streams: list[model.Stream] = []) -> None:
+    def __init__(self, id: str, name: str, url: str, brand: model.Brand, streams: list[model.Stream] = []) -> None:
         """Initialize the fetcher.
 
         Args:
@@ -38,6 +38,7 @@ class BaseFetcher(ABC):
         self.id = id
         self.name = name
         self.url = url
+        self.brand = brand
         self.streams = streams
 
     @property
@@ -47,7 +48,7 @@ class BaseFetcher(ABC):
         Returns:
             A Radio object with the ID, name, and URL of the radio station.
         """
-        return model.Radio(id=self.id, name=self.name, url=self.url, streams=self.streams)
+        return model.Radio(id=self.id, name=self.name, url=self.url, brand=self.brand, streams=self.streams)
 
     @abstractmethod
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

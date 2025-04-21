@@ -24,10 +24,18 @@ class Stream(pydantic.BaseModel):
     url: str
     mime_type: str | None = None
 
+class Brand(pydantic.BaseModel):
+    """Colors and other branding information for a radio station."""
+
+    backgroundColor: str
+    textColor: str
+
 class Radio(pydantic.BaseModel):
     """A radio station."""
 
     id: str
     name: str
     url: str
+    brand: Brand
     streams: list[Stream] | None = None
+

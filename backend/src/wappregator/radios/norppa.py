@@ -19,6 +19,10 @@ class NorppaFetcher(base.JSONFetcher):
             id="norppa",
             name="Norpparadio",
             url="https://norpparadio.net/",
+            brand=model.Brand(
+                backgroundColor="rgb(15, 23, 43)",
+                textColor="white",
+            ),
             streams=[
                 model.Stream(
                     url="https://listen.norpparadio.net:8443/norpparadio.mp3",

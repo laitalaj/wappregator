@@ -15,6 +15,10 @@ class DiodiFetcher(base.JSONFetcher):
             id="diodi",
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
+            brand=model.Brand(
+                backgroundColor="rgb(220, 246, 220)",
+                textColor="rgb(39, 83, 40)",
+            ),
             streams=[
                 model.Stream(
                     url="https://virta.radiodiodi.fi/flac",

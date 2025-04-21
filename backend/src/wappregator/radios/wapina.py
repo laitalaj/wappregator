@@ -15,6 +15,10 @@ class WapinaFetcher(base.JSONFetcher):
             id="wapina",
             name="Radio Wapina",
             url="https://wapina.fi/",
+            brand=model.Brand(
+                backgroundColor="rgb(255, 180, 20)",
+                textColor="black",
+            ),
         )
         self.api_url = "https://radio-wapina-default-rtdb.firebaseio.com/programs.json"
 

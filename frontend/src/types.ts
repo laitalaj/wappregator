@@ -14,10 +14,16 @@ export interface Stream {
 	mime_type?: string;
 }
 
+export interface Brand {
+	backgroundColor: string;
+	textColor: string;
+}
+
 export interface Radio {
 	id: string;
 	name: string;
 	url: string;
+	brand: Brand;
 	streams?: Stream[];
 }
 

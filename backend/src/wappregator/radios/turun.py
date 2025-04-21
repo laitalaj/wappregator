@@ -19,6 +19,10 @@ class TurunFetcher(base.JSONFetcher):
             id="turun",
             name="Turun Wappuradio",
             url="https://turunwappuradio.com/",
+            brand=model.Brand(
+                backgroundColor="rgb(0, 27, 52)",
+                textColor="rgb(246, 95, 82)",
+            ),
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

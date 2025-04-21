@@ -12,6 +12,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	gap: 8px;
 
 	h2 {
 		margin: 0;
@@ -28,34 +29,4 @@
 		padding-bottom: 8px;
 		border-bottom: 2px solid var(--text-color, #000);
 	}
-}
-
-.channel[data-type="rakkauden"] {
-	--bg-color: rgb(211, 59, 111);
-	--text-color: white;
-}
-
-.channel[data-type="norppa"] {
-	--bg-color: rgb(15, 23, 43);
-	--text-color: white;
-}
-
-.channel[data-type="turun"] {
-	--bg-color: rgb(0, 27, 52);
-	--text-color: white;
-}
-
-.channel[data-type="wapina"] {
-	--bg-color: rgb(255, 180, 20);
-	--text-color: black;
-}
-
-.channel[data-type="diodi"] {
-	--bg-color: rgb(220, 246, 220);
-	--text-color: black;
-}
-
-.channel[data-type="ratto"] {
-	--bg-color: rgb(95, 235, 216);
-	--text-color: black;
 }
