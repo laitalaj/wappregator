@@ -7,6 +7,7 @@ export default defineConfig({
 		port: 3000,
 		cors: true,
 	},
+	publicDir: "public",
 	build: {
 		target: "esnext",
 	},
