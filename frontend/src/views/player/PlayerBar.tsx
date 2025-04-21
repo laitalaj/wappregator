@@ -30,9 +30,9 @@ export function PlayerBar(props: Props) {
 	};
 
 	const statusText = createMemo(() => {
-		const state = getNowPlayingState(props.radioState());
+		const state = props.radioState();
 
-		if (!state) {
+		if (state.type !== "channelSelected") {
 			return "Ei valittua kanavaa";
 		}
 

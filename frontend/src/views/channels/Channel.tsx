@@ -16,6 +16,7 @@ export function Channel(props: Props) {
 	const radio = () => props.station().radio;
 	const nowPlaying = () => props.station().now_playing;
 	const upNext = () => props.station().up_next;
+	const canPlay = () => (radio().streams || []).length > 0;
 
 	return (
 		<div
@@ -28,7 +29,7 @@ export function Channel(props: Props) {
 		>
 			<div class={classes.channelName}>
 				<h2>{radio().name}</h2>
-				{nowPlaying() && (
+				{canPlay() && (
 					<PlayButton
 						onClick={() => {
 							if (!props.isCurrentChannel()) {
