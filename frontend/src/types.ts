@@ -15,8 +15,8 @@ export interface Stream {
 }
 
 export interface Brand {
-	backgroundColor: string;
-	textColor: string;
+	background_color: string;
+	text_color: string;
 }
 
 export interface Radio {

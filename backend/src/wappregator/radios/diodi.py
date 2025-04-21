@@ -16,8 +16,8 @@ class DiodiFetcher(base.JSONFetcher):
             name="Radio Diodi",
             url="https://radiodiodi.fi/",
             brand=model.Brand(
-                backgroundColor="rgb(220, 246, 220)",
-                textColor="rgb(39, 83, 40)",
+                background_color="rgb(220, 246, 220)",
+                text_color="rgb(39, 83, 40)",
             ),
             streams=[
                 model.Stream(

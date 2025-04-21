@@ -20,8 +20,8 @@ class TurunFetcher(base.JSONFetcher):
             name="Turun Wappuradio",
             url="https://turunwappuradio.com/",
             brand=model.Brand(
-                backgroundColor="rgb(0, 27, 52)",
-                textColor="rgb(246, 95, 82)",
+                background_color="rgb(0, 27, 52)",
+                text_color="rgb(246, 95, 82)",
             ),
         )
 

@@ -16,8 +16,8 @@ class RakkaudenFetcher(base.JSONFetcher):
             name="Rakkauden Wappuradio",
             url="https://wappuradio.fi/",
             brand=model.Brand(
-                backgroundColor="rgb(211, 59, 111)",
-                textColor="white",
+                background_color="rgb(211, 59, 111)",
+                text_color="white",
             ),
             streams=[
                 model.Stream(
@@ -44,7 +44,7 @@ class RakkaudenFetcher(base.JSONFetcher):
                     url="https://stream2.wappuradio.fi/wappuradio.mp3",
                     mime_type="audio/mpeg",
                 ),
-            ]
+            ],
         )
         self.endpoint = "api/programs"
 

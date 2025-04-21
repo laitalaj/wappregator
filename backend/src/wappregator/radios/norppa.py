@@ -20,8 +20,8 @@ class NorppaFetcher(base.JSONFetcher):
             name="Norpparadio",
             url="https://norpparadio.net/",
             brand=model.Brand(
-                backgroundColor="rgb(15, 23, 43)",
-                textColor="white",
+                background_color="rgb(15, 23, 43)",
+                text_color="white",
             ),
             streams=[
                 model.Stream(
@@ -32,7 +32,7 @@ class NorppaFetcher(base.JSONFetcher):
                     url="https://listen.norpparadio.net:8443/norpparadio.ogg",
                     mime_type="audio/ogg",
                 ),
-            ]
+            ],
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

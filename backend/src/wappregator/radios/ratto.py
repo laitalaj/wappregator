@@ -19,8 +19,8 @@ class RattoFetcher(base.BaseFetcher):
             name="Rattoradio",
             url="https://www.rattoradio.fi/",
             brand=model.Brand(
-                backgroundColor="rgb(7, 118, 187)",
-                textColor="white",
+                background_color="rgb(7, 118, 187)",
+                text_color="white",
             ),
             streams=[
                 model.Stream(

@@ -23,8 +23,8 @@ export function Channel(props: Props) {
 			class={classes.channel}
 			data-type={radio().id}
 			style={{
-				"--bg-color": radio().brand.backgroundColor,
-				"--text-color": radio().brand.textColor,
+				"--bg-color": radio().brand.background_color,
+				"--text-color": radio().brand.text_color,
 			}}
 		>
 			<div class={classes.channelName}>
