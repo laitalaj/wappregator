@@ -1,5 +1,5 @@
 import Hls from "hls.js";
-import { createEffect, createMemo, onMount } from "solid-js";
+import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
 import type { AudioPlayerProps } from "./AudioPlayer";
 import {
 	getHlsStreamUrl,
@@ -27,6 +27,18 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 		hls = new Hls();
 		hls.attachMedia(audioRef);
 	});
+
+	onCleanup(() => {
+		if (!Hls.isSupported()) {
+			return;
+		}
+
+		if (!audioRef) {
+			return;
+		}
+
+		hls?.detachMedia()
+	})
 
 	const hlsStreamUrl = createMemo(() => getHlsStreamUrl(props.radio()));
 
