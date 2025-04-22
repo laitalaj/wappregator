@@ -20,6 +20,13 @@ class Program(pydantic.BaseModel):
     photo: str | None = None
 
 
+class Song(pydantic.BaseModel):
+    """A song."""
+
+    artist: str | None = None
+    title: str
+
+
 class Stream(pydantic.BaseModel):
     """Stream data for a radio program."""
 

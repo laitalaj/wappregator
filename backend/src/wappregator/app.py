@@ -1,5 +1,6 @@
 from typing import Annotated
 from collections.abc import AsyncIterator
+import asyncio
 import datetime
 import os
 import contextlib
@@ -28,15 +29,20 @@ async def lifespan(_: fastapi.FastAPI) -> AsyncIterator[None]:
     Yields:
         Nothing.
     """
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
+    logging.getLogger("uvicorn").setLevel(logging.INFO)
+    logging.getLogger("wappregator").setLevel(logging.INFO)
+    logging.getLogger("__main__").setLevel(logging.INFO)
 
     global valkey_pool
     valkey_pool = valkey.ConnectionPool.from_url(VALKEY_URL)
+    task = asyncio.create_task(radios.poll_loop(valkey_pool))
 
     try:
         yield
     finally:
         await valkey_pool.aclose()
+        task.cancel()
 
 
 async def valkey_client() -> AsyncIterator[valkey.Valkey]:
@@ -89,3 +95,9 @@ async def get_schedule(
         min_upcoming=min_upcoming,
     )
     return {k: filt(v) for k, v in schedule.items() if include is None or k in include}
+
+
+@app.get("/now_playing")
+async def get_now_playing(client: ValkeyClient) -> dict[str, model.Song | None]:
+    """Get currently playing songs for Wappuradios."""
+    return await radios.now_playing(client)
