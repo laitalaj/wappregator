@@ -21,7 +21,7 @@ class RakkaudenFetcher(base.JSONFetcher):
         super().__init__(
             id=RADIO_ID,
             name="Rakkauden Wappuradio",
-            url="httffps://wappuradio.fi/",
+            url="https://wappuradio.fi/",
             location="Tampere",
             frequency_mhz=101.6,
             brand=model.Brand(
