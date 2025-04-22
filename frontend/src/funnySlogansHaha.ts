@@ -44,4 +44,5 @@ export const funnySlogansHaha = [
 	"Tervetuloa Laitilan Munamarkkinoille 14.-15.6.",
 	"Melkein WCAG 2.1 AA kompliantti!",
 	"Sitten alkoi unettomuus.",
+	"tahtoisin itse olla henkilökohtaisesti paikalla kun ekan kerran jysähtää",
 ];
