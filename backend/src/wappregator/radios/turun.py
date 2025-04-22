@@ -25,6 +25,13 @@ class TurunFetcher(base.JSONFetcher):
                 background_color="rgb(0, 51, 102)",
                 text_color="rgb(238, 107, 96)",
             ),
+            streams=[
+                model.Stream(
+                    url="https://stream.turunwappuradio.com/twr_hifi.m3u8",
+                    # This means HLS
+                    mime_type="application/x-mpegURL",
+                ),
+            ]
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

@@ -1,13 +1,13 @@
-import {
-	type Accessor,
-	Index,
-	createEffect,
-	createMemo,
-	onMount,
-} from "solid-js";
+import { type Accessor, Index, createEffect, createMemo } from "solid-js";
 import type { Program, Radio } from "../../types";
+import {
+	seekToLive,
+	useMediaSessionIntegration,
+	useSyncPlaybackState,
+	useSyncVolume,
+} from "./audioPlayerCommon";
 
-interface Props {
+export interface AudioPlayerProps {
 	radio: Accessor<Radio>;
 	nowPlaying: Accessor<Program | undefined>;
 	isPlaying: Accessor<boolean>;
@@ -15,38 +15,8 @@ interface Props {
 	volume: Accessor<number>;
 }
 
-export function AudioPlayer(props: Props) {
+export function AudioPlayer(props: AudioPlayerProps) {
 	let audioRef: HTMLAudioElement | null = null;
-
-	createEffect(() => {
-		if (!audioRef) {
-			return;
-		}
-
-		if (props.isPlaying()) {
-			// If the element is paused but we should be playing, we need to load the stream again
-			// (to catch up to the current time)
-			if (audioRef.paused) {
-				audioRef.load();
-			}
-
-			audioRef.play().catch((error) => {
-				// If AbortError, ignore it
-				if (error.name !== "AbortError") {
-					console.error("Error playing audio:", error);
-				}
-			});
-		} else {
-			audioRef.pause();
-		}
-	});
-
-	createEffect(() => {
-		if (!audioRef) {
-			return;
-		}
-		audioRef.volume = props.volume() / 100;
-	});
 
 	const radioId = createMemo(() => {
 		return props.radio().id;
@@ -63,6 +33,7 @@ export function AudioPlayer(props: Props) {
 
 		if (!audioRef.paused) {
 			audioRef.load();
+			seekToLive(audioRef);
 			audioRef.play().catch((error) => {
 				// If AbortError, ignore it
 				if (error.name !== "AbortError") {
@@ -72,61 +43,15 @@ export function AudioPlayer(props: Props) {
 		}
 	});
 
-	const start = () => props.setIsPlaying(true);
-	const pause = () => props.setIsPlaying(false);
-
-	// Media Session API: play/pause
-	createEffect(() => {
-		// Not supported in e.g. Firefox
-		if (!("mediaSession" in navigator)) {
-			return;
-		}
-
-		navigator.mediaSession.setActionHandler("play", start);
-		navigator.mediaSession.setActionHandler("pause", pause);
-
-		navigator.mediaSession.playbackState = props.isPlaying()
-			? "playing"
-			: "paused";
-	});
-
-	// Media Session API: metadata
-	createEffect(() => {
-		const nowPlaying = props.nowPlaying();
-		const radio = props.radio();
-
-		if (!("mediaSession" in navigator)) {
-			return;
-		}
-
-		const mediaData = nowPlaying
-			? {
-					title: nowPlaying.title,
-					artist: radio.name,
-				}
-			: {
-					title: radio.name,
-				};
-
-		const wappregatorArtwork = {
-			src: "https://wappregat.org/appicon.png",
-			sizes: "256x256",
-			type: "image/png",
-		};
-
-		const artwork = nowPlaying?.photo
-			? [
-					{
-						src: nowPlaying.photo,
-					},
-				]
-			: [wappregatorArtwork];
-
-		navigator.mediaSession.metadata = new MediaMetadata({
-			...mediaData,
-			artwork,
-		});
-	});
+	useSyncPlaybackState(
+		() => audioRef,
+		() => props.isPlaying(),
+	);
+	useMediaSessionIntegration(props);
+	useSyncVolume(
+		() => audioRef,
+		() => props.volume(),
+	);
 
 	return (
 		// biome-ignore lint/a11y/useMediaCaption: wappu

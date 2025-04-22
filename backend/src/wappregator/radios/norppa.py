@@ -26,6 +26,10 @@ class NorppaFetcher(base.JSONFetcher):
             ),
             streams=[
                 model.Stream(
+                    url="https://norpparadio.net/manifests/master.m3u8",
+                    mime_type="application/x-mpegURL",
+                ),
+                model.Stream(
                     url="https://listen.norpparadio.net:8443/norpparadio.mp3",
                     mime_type="audio/mpeg",
                 ),

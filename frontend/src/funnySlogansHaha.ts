@@ -42,4 +42,6 @@ export const funnySlogansHaha = [
 	"Special thanks to aa ii äm äl",
 	"Älä laita tomaattia",
 	"Tervetuloa Laitilan Munamarkkinoille 14.-15.6.",
+	"Melkein WCAG 2.1 AA kompliantti!",
+	"Sitten alkoi unettomuus.",
 ];
