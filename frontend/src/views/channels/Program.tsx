@@ -2,10 +2,11 @@ import { formatRelative, isToday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
-	Match,
+	Index,
+	type JSX,
 	type Setter,
 	Show,
-	Switch,
+	children,
 	createMemo,
 	createSignal,
 	onCleanup,
@@ -29,6 +30,7 @@ interface MaybeProgramProps {
 	programInfo: Accessor<ProgramInfo | undefined>;
 	playingNow: boolean;
 	setSelectedProgram: Setter<ProgramInfo | null>;
+	showScheduleLabel: boolean;
 }
 
 export function Program(props: ProgramProps) {
@@ -58,7 +60,7 @@ export function Program(props: ProgramProps) {
 
 	return (
 		<div class={classes.program}>
-			<h3>{props.program().title}</h3>
+			<span class={classes.programTitle}>{props.program().title}</span>
 			<ProgramTime startTime={startTime} endTime={endTime} />
 			<Show when={props.playingNow}>
 				<ProgressBar
@@ -88,13 +90,12 @@ function ProgramTime(props: {
 function NoProgram() {
 	return (
 		<div class={classes.noProgram}>
-			<span>Ei ohjelmaa</span>
+			<span class={classes.programTitle}>Ei ohjelmaa</span>
 		</div>
 	);
 }
 
 export function MaybeProgram(props: MaybeProgramProps) {
-	const startTime = () => props.programInfo()?.program.start;
 	const program = createMemo(() => props.programInfo()?.program);
 	const handleClick = () => {
 		const info = props.programInfo();
@@ -111,7 +112,6 @@ export function MaybeProgram(props: MaybeProgramProps) {
 			type="button"
 			aria-label={program() ? "Näytä ohjelmatiedot" : undefined}
 		>
-			<ScheduleLabel playingNow={props.playingNow} startTime={startTime} />
 			<Show when={program()} fallback={<NoProgram />}>
 				{(program) => (
 					<Program program={() => program()} playingNow={props.playingNow} />
@@ -121,52 +121,67 @@ export function MaybeProgram(props: MaybeProgramProps) {
 	);
 }
 
+interface PresentationalProgramGroupProps {
+	title: Accessor<string>;
+	children: JSX.Element;
+}
+
+export function PresentationalProgramGroup(
+	props: PresentationalProgramGroupProps,
+) {
+	const c = children(() => props.children);
+	return (
+		<div class={classes.programGroup}>
+			<h3>{props.title()}</h3>
+			{c()}
+		</div>
+	);
+}
+
 const formatRelativeLocale = {
-	lastWeek: "'viime' eeee",
-	yesterday: "'eilen'",
-	today: "'tänään'",
-	tomorrow: "'huomenna'",
-	nextWeek: "'ensi' eeee",
+	lastWeek: "'Viime' eeee",
+	yesterday: "'Eilen'",
+	today: "'Myöhemmin tänään'",
+	tomorrow: "'Huomenna'",
+	nextWeek: "'Ensi' eeee",
 	other: "P",
 };
 
-function ScheduleLabel(props: {
-	playingNow: boolean;
-	startTime: Accessor<string | undefined>;
-}) {
-	const startTimeDate = createMemo(() => {
-		const startTime = props.startTime();
-		return startTime ? new Date(startTime) : undefined;
-	});
+interface ProgramGroupProps {
+	date: Accessor<string>;
+	programs: Accessor<ProgramInfo[]>;
+	setSelectedProgram: Setter<ProgramInfo | null>;
+}
 
-	const nextIsToday = createMemo(() => {
-		const date = startTimeDate();
-		return date ? isToday(date) : false;
-	});
-
-	const nextDate = createMemo(() => {
-		const date = startTimeDate();
-		return date
-			? formatRelative(date, new Date(), {
-					locale: {
-						...fi,
-						formatRelative: (token) => formatRelativeLocale[token],
-					},
-				})
-			: undefined;
+export function ProgramGroup(props: ProgramGroupProps) {
+	const title = createMemo(() => {
+		const date = props.date();
+		return formatRelative(date, new Date(), {
+			locale: {
+				...fi,
+				formatRelative: (token) => formatRelativeLocale[token],
+			},
+		});
 	});
 
 	return (
-		<Switch>
-			<Match when={props.playingNow}>
-				<span class={classes.scheduleLabel}>Nyt</span>
-			</Match>
-			<Match when={!props.playingNow}>
-				<span class={classes.scheduleLabel}>
-					Seuraavaksi
-					{!nextIsToday() && nextDate() ? ` (${nextDate()})` : null}
-				</span>
-			</Match>
-		</Switch>
+		<PresentationalProgramGroup title={title}>
+			<ul>
+				<Index each={props.programs()}>
+					{(program) => {
+						return (
+							<li>
+								<MaybeProgram
+									programInfo={program}
+									playingNow={false}
+									setSelectedProgram={props.setSelectedProgram}
+									showScheduleLabel={false}
+								/>
+							</li>
+						);
+					}}
+				</Index>
+			</ul>
+		</PresentationalProgramGroup>
 	);
 }

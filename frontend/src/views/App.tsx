@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
-import { getNowPlayingState, getRadiosState, getScheduleState } from "../state";
+import { getChannelState, getRadiosState, getScheduleState } from "../state";
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
@@ -21,7 +21,7 @@ import { PlayerBar } from "./player/PlayerBar";
 const App: Component = () => {
 	const radios = getRadiosState();
 	const schedule = getScheduleState();
-	const nowPlaying = getNowPlayingState(schedule, radios);
+	const channelState = getChannelState(schedule, radios);
 
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
 		null,
@@ -35,7 +35,7 @@ const App: Component = () => {
 			return { type: "channelNotSelected" };
 		}
 
-		const radio = nowPlaying().find(
+		const radio = channelState().find(
 			(station) => station.radio.id === selectedChannelId(),
 		);
 
@@ -70,7 +70,7 @@ const App: Component = () => {
 					inert={nonModalElementsInert()}
 				>
 					<Channels
-						nowPlaying={nowPlaying}
+						channelState={channelState}
 						isPlaying={isPlaying}
 						setIsPlaying={setIsPlaying}
 						selectedChannelId={selectedChannelId}

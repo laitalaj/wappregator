@@ -14,7 +14,7 @@ import {
 	createSignal,
 	onCleanup,
 } from "solid-js";
-import type { NowPlaying, Radios, Schedule } from "./types";
+import type { ChannelState, Radios, Schedule } from "./types";
 
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;
@@ -63,18 +63,18 @@ async function fetchSchedule(): Promise<Schedule> {
 	const params = new URLSearchParams({
 		start: start.toISOString(),
 		end: end.toISOString(),
-		min_upcoming: "2",
+		min_upcoming: "4",
 	});
 	const response = await fetch(`${url}?${params}`);
 	return response.json();
 }
 
-export function getNowPlayingState(
+export function getChannelState(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
-): Accessor<NowPlaying[]> {
-	const [nowPlaying, setNowPlaying] = createSignal<NowPlaying[]>([]);
-	const updateNowPlaying = () => {
+): Accessor<ChannelState[]> {
+	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
+	const updateChannelState = () => {
 		const scheduleData = schedule();
 		const radiosData = radios();
 		if (!scheduleData || !radiosData) {
@@ -82,7 +82,7 @@ export function getNowPlayingState(
 		}
 
 		const now = new Date();
-		const res: NowPlaying[] = [];
+		const res: ChannelState[] = [];
 
 		for (const [radioId, programs] of Object.entries(scheduleData)) {
 			const radio = radiosData[radioId];
@@ -96,7 +96,7 @@ export function getNowPlayingState(
 				return isWithinInterval(now, interval);
 			});
 
-			const nextProgram = programs.find((program) => {
+			const nextPrograms = programs.filter((program) => {
 				const start = parseISO(program.start);
 				return isBefore(now, start);
 			});
@@ -104,21 +104,21 @@ export function getNowPlayingState(
 			res.push({
 				radio,
 				now_playing: currentProgram,
-				up_next: nextProgram,
+				up_next: nextPrograms,
 			});
 		}
-		setNowPlaying(res);
+		setChannelState(res);
 	};
 
-	createEffect(updateNowPlaying);
+	createEffect(updateChannelState);
 
 	const nowPlayingInterval = setInterval(() => {
-		updateNowPlaying();
+		updateChannelState();
 	}, NOW_PLAYING_UPDATE_INTERVAL_MS);
 
 	onCleanup(() => {
 		clearInterval(nowPlayingInterval);
 	});
 
-	return nowPlaying;
+	return channelState;
 }

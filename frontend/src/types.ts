@@ -37,10 +37,10 @@ export interface Schedule {
 	[id: string]: Program[];
 }
 
-export interface NowPlaying {
+export interface ChannelState {
 	radio: Radio;
 	now_playing?: Program;
-	up_next?: Program;
+	up_next: Program[];
 }
 
 export interface ProgramInfo {

@@ -1,9 +1,9 @@
 .channel {
 	container: channel;
-	padding: 16px;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 8px;
+	padding: 16px 0;
 	background-color: var(--bg-color, #fff);
 	color: var(--text-color, #000);
 }
@@ -12,6 +12,7 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 8px;
+	margin: 0 16px;
 
 	/* Add container width relative top padding to compensate for h2's overflow.  */
 	padding: calc(max(0px, 0.75cqw - 16px)) 0;
@@ -24,6 +25,10 @@
 	}
 }
 
+.channelInfo {
+	margin: 0 16px;
+}
+
 .programs {
 	display: flex;
 	flex-direction: column;
@@ -33,4 +38,16 @@
 		padding-bottom: 8px;
 		border-bottom: 2px solid var(--text-color, #000);
 	}
+}
+
+.showMoreButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	background: none;
+	color: var(--text-color, #000);
+	border: none;
+	cursor: pointer;
+	padding: 8px 0;
 }

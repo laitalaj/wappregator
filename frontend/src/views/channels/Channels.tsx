@@ -1,10 +1,10 @@
 import { type Accessor, Index, type Setter, Suspense } from "solid-js";
-import type { NowPlaying, ProgramInfo } from "../../types";
+import type { ChannelState, ProgramInfo } from "../../types";
 import { Channel } from "./Channel";
 import classes from "./Channels.module.css";
 
 interface Props {
-	nowPlaying: Accessor<NowPlaying[]>;
+	channelState: Accessor<ChannelState[]>;
 	isPlaying: Accessor<boolean>;
 	setIsPlaying: Setter<boolean>;
 	selectedChannelId: Accessor<string | null>;
@@ -16,7 +16,7 @@ export function Channels(props: Props) {
 	return (
 		<Suspense fallback={<ChannelsSkeleton />}>
 			<div class={classes.channels}>
-				<Index each={props.nowPlaying()}>
+				<Index each={props.channelState()}>
 					{(station) => {
 						const isCurrentChannel = () => {
 							return props.selectedChannelId() === station().radio.id;
