@@ -5,7 +5,7 @@ import logging
 import valkey.asyncio as valkey
 
 from wappregator import model
-from wappregator.radios import diodi, norppa, rakkauden, ratto, turun, wapina
+from wappregator.radios import diodi, norppa, rakkauden, ratto, sateily, turun, wapina
 
 FETCHERS = [
     rakkauden.RakkaudenFetcher(),
@@ -14,6 +14,7 @@ FETCHERS = [
     norppa.NorppaFetcher(),
     wapina.WapinaFetcher(),
     ratto.RattoFetcher(),
+    sateily.SateilyFetcher(),
 ]
 
 POLLERS = [

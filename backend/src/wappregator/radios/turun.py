@@ -39,7 +39,7 @@ class TurunFetcher(base.JSONFetcher):
                     # This means HLS
                     mime_type="application/x-mpegURL",
                 ),
-            ]
+            ],
         )
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
