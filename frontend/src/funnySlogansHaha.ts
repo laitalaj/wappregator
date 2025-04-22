@@ -1,8 +1,13 @@
 export const funnySlogansHaha = [
 	"Suomen wappuradiot yhdessä paikassa",
 	"Wapun epävirallinen aggregoija",
+	"The Ultimate Wappu Aggregator",
 	"Wappu taskussasi",
+	"Klara vappen",
+	"Bara vatten",
+	"Gaudeamus igitur, iuvenes dum sumus!",
 	"Juokaa simaa",
+	"Onko sima jo käymässä?",
 	"Sitä kissa ostaisi",
 	"Vappu on joka torstai",
 	"Räyh t:wappre gator 🐊",
@@ -33,4 +38,8 @@ export const funnySlogansHaha = [
 	"Kuuluuko?",
 	"Shoutout to TKO-äly",
 	"Shoutout to AOP&PHK",
+	"It's a feature",
+	"Special thanks to aa ii äm äl",
+	"Älä laita tomaattia",
+	"Tervetuloa Laitilan Munamarkkinoille 14.-15.6.",
 ];
