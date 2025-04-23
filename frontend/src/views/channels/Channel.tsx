@@ -81,6 +81,7 @@ export function Channel(props: Props) {
 
 	const UPCOMING_MOBILE_LIMIT = 1;
 	const UPCOMING_STANDARD_LIMIT = 4;
+	const MAX_GROUPS_PER_CHANNEL = 3;
 
 	const maxProgramsToShow = createMemo(() => {
 		const isNowMobile = isMobile();
@@ -145,7 +146,7 @@ export function Channel(props: Props) {
 				/>
 			</PresentationalProgramGroup>
 
-			<Index each={programsByDate()}>
+			<Index each={programsByDate().slice(0, MAX_GROUPS_PER_CHANNEL)}>
 				{(chunk) => (
 					<ProgramGroup
 						date={() => chunk().date}

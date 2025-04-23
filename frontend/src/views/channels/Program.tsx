@@ -1,4 +1,4 @@
-import { formatRelative, isToday } from "date-fns";
+import { format, isToday, isTomorrow } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
@@ -155,13 +155,18 @@ interface ProgramGroupProps {
 
 export function ProgramGroup(props: ProgramGroupProps) {
 	const title = createMemo(() => {
-		const date = props.date();
-		return formatRelative(date, new Date(), {
-			locale: {
-				...fi,
-				formatRelative: (token) => formatRelativeLocale[token],
-			},
-		});
+		const date = new Date(props.date());
+
+		if (isToday(date)) {
+			return "Myöhemmin tänään";
+		}
+
+		if (isTomorrow(date)) {
+			return "Huomenna";
+		}
+
+		const weekday = format(date, "eeee", { locale: fi });
+		return weekday[0].toUpperCase() + weekday.slice(1);
 	});
 
 	return (
