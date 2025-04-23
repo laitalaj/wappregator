@@ -43,7 +43,7 @@ jobs:
           images: |
             ghcr.io/${{ github.repository_owner }}/${{ inputs.container-name }}
           flavor: |
-            latest=true
+            latest=${{ github.ref_name == github.event.repository.default_branch }}
           tags: |
             type=sha
 
@@ -54,12 +54,11 @@ jobs:
           context: "{{defaultContext}}:${{ inputs.working-directory }}"
           file: "${{ inputs.working-directory }}/${{ inputs.dockerfile}}"
           build-args: ${{ inputs.build-args }}
-          push: ${{ github.ref_name == github.event.repository.default_branch && github.event_name == 'push' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
-        if: github.ref_name == github.event.repository.default_branch && github.event_name == 'push'
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ghcr.io/${{ github.repository_owner }}/${{ inputs.container-name }}
