@@ -59,7 +59,7 @@ async function fetchSchedule(): Promise<Schedule> {
 	const start = subHours(startOfHour(now), 1);
 	const end = addHours(startOfHour(now), 2);
 
-	const url = new URL(`${import.meta.env.VITE_API_URL}/schedule`);
+	const url = `${import.meta.env.VITE_API_URL}/schedule`;
 	const params = new URLSearchParams({
 		start: start.toISOString(),
 		end: end.toISOString(),

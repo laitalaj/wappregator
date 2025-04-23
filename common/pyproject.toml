@@ -1,22 +1,13 @@
 [project]
-name = "wappregator"
+name = "wapprecommon"
 version = "0.1.0"
-description = "An aggregator for Wappuradios."
+description = "Add your description here"
 readme = "README.md"
-authors = [{ name = "Julius Laitala", email = "julius@laita.la" }]
-requires-python = ">=3.13"
-dependencies = [
-    "aiohttp[speedups]>=3.11.16",
-    "beautifulsoup4>=4.13.4",
-    "fastapi[standard]>=0.115.12",
-    "ics>=0.7.2",
-    "python-socketio[asyncio-client]~=4.6",
-    "valkey[libvalkey]>=6.1.0",
-    "wapprecommon",
+authors = [
+    { name = "Julius Laitala", email = "julius.laitala@brightlyworks.com" },
 ]
-
-[project.scripts]
-wappregator = "wappregator:main"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.11.3"]
 
 [build-system]
 requires = ["hatchling"]
@@ -44,10 +35,3 @@ ignore = [
 
 [tool.mypy]
 disallow_untyped_defs = true
-
-[[tool.mypy.overrides]]
-module = ["ics", "socketio"]
-ignore_missing_imports = true
-
-[tool.uv.sources]
-wapprecommon = { path = "../common", editable = true }

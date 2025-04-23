@@ -2,13 +2,9 @@ import datetime
 import logging
 
 import aiohttp
-import socketio
-import valkey.asyncio as valkey
+from wapprecommon import model, radios
 
-from wappregator import model
-from wappregator.radios import base, poller
-
-RADIO_ID = "rakkauden"
+from wappregator.radios import base
 
 logger = logging.getLogger(__name__)
 
@@ -18,43 +14,7 @@ class RakkaudenFetcher(base.JSONFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id=RADIO_ID,
-            name="Rakkauden Wappuradio",
-            url="https://wappuradio.fi/",
-            location="Tampere",
-            frequency_mhz=101.6,
-            brand=model.Brand(
-                background_color="rgb(211, 59, 111)",
-                text_color="white",
-            ),
-            streams=[
-                model.Stream(
-                    url="https://stream1.wappuradio.fi/wappuradio.opus",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://stream2.wappuradio.fi/wappuradio.opus",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://stream1.wappuradio.fi/wappuradio.ogg",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://stream2.wappuradio.fi/wappuradio.ogg",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://stream1.wappuradio.fi/wappuradio.mp3",
-                    mime_type="audio/mpeg",
-                ),
-                model.Stream(
-                    url="https://stream2.wappuradio.fi/wappuradio.mp3",
-                    mime_type="audio/mpeg",
-                ),
-            ],
-        )
+        super().__init__(radios.RAKKAUDEN)
         self.endpoint = "api/programs"
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
@@ -86,39 +46,3 @@ class RakkaudenFetcher(base.JSONFetcher):
             producer=entry.get("prod"),
             photo=entry.get("photo"),
         )
-
-
-class RakkaudenPoller(poller.BasePoller):
-    """Poller for Rakkauden Wappuradio."""
-
-    def __init__(self) -> None:
-        """Initialize the poller."""
-        super().__init__(RADIO_ID)
-        self.url = "https://wappuradio.fi/"
-
-    async def loop(self, valkey_client: valkey.Valkey) -> None:
-        """Poll the radio for updates.
-
-        Args:
-            valkey_client: The Valkey client to use for caching.
-        """
-        sio = socketio.AsyncClient()
-
-        @sio.event
-        async def np(data: dict[str, str]) -> None:
-            if (song := data.get("song")) is None:
-                logger.warning(f"Malformed nowplaying data received: {data}")
-                return
-            if type(song) is not str:
-                logger.warning(f"Malformed nowplaying data received: {data}")
-                return
-            parts = song.split(" - ")
-            song_model = (
-                model.Song(title=parts[0])
-                if len(parts) == 1
-                else model.Song(title=parts[1], artist=parts[0])
-            )
-            await self.update_now_playing(valkey_client, song_model)
-
-        await sio.connect(self.url)
-        await sio.wait()

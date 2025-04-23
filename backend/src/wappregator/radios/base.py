@@ -5,8 +5,7 @@ import logging
 import aiohttp
 import pydantic
 import valkey.asyncio as valkey
-
-from wappregator import model
+from wapprecommon import model
 
 CACHE_TTL_SECONDS = 60 * 15
 CACHE_VERSION = 4
@@ -29,49 +28,32 @@ class BaseFetcher(ABC):
 
     def __init__(
         self,
-        id: str,
-        name: str,
-        url: str,
-        location: str,
-        frequency_mhz: float | None = None,
-        brand: model.Brand = model.Brand.default(),
-        streams: list[model.Stream] = [],
+        radio: model.Radio,
     ) -> None:
         """Initialize the fetcher.
 
         Args:
-            id: The ID of the radio station.
-            name: The name of the radio station.
-            url: The (human) URL of the radio station.
-            location: The location of the radio station.
-            frequency_mhz: The frequency of the radio station in MHz.
-            brand: Branding for the radio station.
-            streams: The available streams.
+            radio: The Radio that this fetcher is for.
         """
-        self.id = id
-        self.name = name
-        self.url = url
-        self.location = location
-        self.frequency_mhz = frequency_mhz
-        self.brand = brand
-        self.streams = streams
+        self.radio = radio
 
     @property
-    def radio(self) -> model.Radio:
-        """Get the Radio object for this fetcher.
+    def id(self) -> str:
+        """Get the ID of the radio.
 
         Returns:
-            A Radio object with the ID, name, and URL of the radio station.
+            The ID of the radio.
         """
-        return model.Radio(
-            id=self.id,
-            name=self.name,
-            url=self.url,
-            location=self.location,
-            frequency_mhz=self.frequency_mhz,
-            brand=self.brand,
-            streams=self.streams,
-        )
+        return self.radio.id
+
+    @property
+    def url(self) -> str:
+        """Get the URL of the radio.
+
+        Returns:
+            The URL of the radio.
+        """
+        return self.radio.url
 
     @abstractmethod
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
@@ -114,7 +96,9 @@ class BaseFetcher(ABC):
                 response.raise_for_status()
                 return await self.parse_response(response)
             except (aiohttp.ClientResponseError, aiohttp.ContentTypeError) as e:
-                raise RadioError(f"Error fetching schedule from {self.name}") from e
+                raise RadioError(
+                    f"Error fetching schedule from {self.radio.name}"
+                ) from e
 
     @abstractmethod
     def parse_schedule(self, data: Any) -> list[model.Program]:
@@ -140,7 +124,7 @@ class BaseFetcher(ABC):
         Returns:
             A list of Program objects containing the radio's schedule.
         """
-        cache_key = f"{CACHE_KEY_PREFIX}{self.url}"
+        cache_key = f"{CACHE_KEY_PREFIX}{self.id}"
         cached = await valkey_client.get(cache_key)
         if cached:
             return adapter.validate_json(cached)
@@ -196,12 +180,13 @@ class JSONFetcher(BaseFetcher):
             return self.parse_one(entry)
         except KeyError:
             logger.warning(
-                f"Key error parsing entry {entry} from {self.name}", exc_info=True
+                f"Key error parsing entry {entry} from {self.radio.name}", exc_info=True
             )
             return None
         except ValueError:
             logger.warning(
-                f"Value error parsing entry {entry} from {self.name}", exc_info=True
+                f"Value error parsing entry {entry} from {self.radio.name}",
+                exc_info=True,
             )
             return None
 

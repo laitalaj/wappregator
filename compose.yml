@@ -12,9 +12,10 @@ services:
       VITE_API_URL: "http://localhost:8000"
   backend:
     build:
-      context: backend
+      dockerfile: backend.Dockerfile
       target: dev
     volumes:
+      - ./common:/common
       - ./backend:/app
       - /app/.venv/ # Anonymous volume to avoid overwriting the venv with the user's local venv
     ports: 
@@ -22,5 +23,15 @@ services:
     environment:
       VALKEY_URL: "valkey://cache"
       ALLOWED_ORIGINS: "http://localhost:3000"
+  pollers:
+    build:
+      dockerfile: pollers.Dockerfile
+      target: dev
+    volumes:
+      - ./common:/common
+      - ./pollers:/app
+      - /app/.venv/ # Anonymous volume to avoid overwriting the venv with the user's local venv
+    environment:
+      VALKEY_URL: "valkey://cache"
   cache:
     image: docker.io/valkey/valkey:8-alpine

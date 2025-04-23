@@ -1,8 +1,8 @@
 import datetime
 
 import aiohttp
+from wapprecommon import model, radios
 
-from wappregator import model
 from wappregator.radios import base
 
 
@@ -11,28 +11,7 @@ class WapinaFetcher(base.JSONFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id="wapina",
-            name="Radio Wapina",
-            url="https://wapina.fi/",
-            location="Vaasa",
-            brand=model.Brand(
-                background_color="rgb(255, 180, 20)",
-                text_color="black",
-            ),
-            streams=[
-                # These URLs are identical for both streams - maybe the endpoint serves
-                # different data depending on headers?
-                model.Stream(
-                    url="https://s5.radio.co/s484b62a6d/listen",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://s5.radio.co/s484b62a6d/listen",
-                    mime_type="audio/mpeg",
-                ),
-            ],
-        )
+        super().__init__(radios.WAPINA)
         self.api_url = "https://radio-wapina-default-rtdb.firebaseio.com/programs.json"
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

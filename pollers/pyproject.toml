@@ -1,29 +1,29 @@
 [project]
-name = "wappregator"
+name = "wapprepollers"
 version = "0.1.0"
-description = "An aggregator for Wappuradios."
+description = "Add your description here"
 readme = "README.md"
-authors = [{ name = "Julius Laitala", email = "julius@laita.la" }]
-requires-python = ">=3.13"
+authors = [
+    { name = "Julius Laitala", email = "julius.laitala@brightlyworks.com" },
+]
+requires-python = ">=3.12"
 dependencies = [
-    "aiohttp[speedups]>=3.11.16",
-    "beautifulsoup4>=4.13.4",
-    "fastapi[standard]>=0.115.12",
-    "ics>=0.7.2",
+    "aiohttp[speedups]>=3.11.18",
     "python-socketio[asyncio-client]~=4.6",
     "valkey[libvalkey]>=6.1.0",
     "wapprecommon",
+    "websockets>=15.0.1",
 ]
 
 [project.scripts]
-wappregator = "wappregator:main"
+wapprepollers = "wapprepollers:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[dependency-groups]
-dev = ["mypy>=1.15.0"]
+[tool.uv.sources]
+wapprecommon = { path = "../common", editable = true }
 
 [tool.ruff.lint]
 select = [
@@ -46,8 +46,10 @@ ignore = [
 disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
-module = ["ics", "socketio"]
+module = ["socketio"]
 ignore_missing_imports = true
 
-[tool.uv.sources]
-wapprecommon = { path = "../common", editable = true }
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+]

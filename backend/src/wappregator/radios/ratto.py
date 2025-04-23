@@ -1,7 +1,7 @@
 import aiohttp
 import ics
+from wapprecommon import model, radios
 
-from wappregator import model
 from wappregator.radios import base, utils
 
 
@@ -14,23 +14,7 @@ class RattoFetcher(base.BaseFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id="ratto",
-            name="Rattoradio",
-            url="https://www.rattoradio.fi/",
-            location="Oulu",
-            frequency_mhz=91.6,
-            brand=model.Brand(
-                background_color="rgb(7, 118, 187)",
-                text_color="white",
-            ),
-            streams=[
-                model.Stream(
-                    url="https://stream.rattoradio.fi/ratto.mp3",
-                    mime_type="audio/mpeg",
-                ),
-            ],
-        )
+        super().__init__(radios.RATTO)
         self.api_url = "https://www.rattoradio.fi/ohjelmisto.ics"
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:

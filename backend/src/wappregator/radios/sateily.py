@@ -1,7 +1,8 @@
-import aiohttp
 import datetime
 
-from wappregator import model
+import aiohttp
+from wapprecommon import model, radios
+
 from wappregator.radios import base
 
 
@@ -13,23 +14,7 @@ class SateilyFetcher(base.BaseFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id="sateily",
-            name="Radio Säteily",
-            url="https://www.radiosateily.fi/",
-            location="Lappi",
-            frequency_mhz=89,
-            brand=model.Brand(
-                background_color="rgb(72, 83, 139)",
-                text_color="rgb(198, 180, 116)",
-            ),
-            streams=[
-                model.Stream(
-                    url="https://streams.radio.co/sc2e7aecbe/listen",
-                    mime_type="audio/aac",
-                ),
-            ],
-        )
+        super().__init__(radios.SATEILY)
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Get the URL for the radio's API endpoint.

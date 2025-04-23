@@ -1,6 +1,5 @@
 from typing import Annotated
 from collections.abc import AsyncIterator
-import asyncio
 import datetime
 import os
 import contextlib
@@ -9,10 +8,11 @@ import logging
 import fastapi
 from fastapi.middleware import cors
 import valkey.asyncio as valkey
+from wapprecommon import model
+from wapprecommon.constants import VALKEY_URL
 
-from wappregator import model, radios, utils
+from wappregator import radios, utils
 
-VALKEY_URL = os.environ["VALKEY_URL"]
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS")
 ALLOWED_ORIGINS_LIST = ALLOWED_ORIGINS.split(",") if ALLOWED_ORIGINS else []
 
@@ -29,20 +29,15 @@ async def lifespan(_: fastapi.FastAPI) -> AsyncIterator[None]:
     Yields:
         Nothing.
     """
-    logging.basicConfig(level=logging.WARNING)
-    logging.getLogger("uvicorn").setLevel(logging.INFO)
-    logging.getLogger("wappregator").setLevel(logging.INFO)
-    logging.getLogger("__main__").setLevel(logging.INFO)
+    logging.basicConfig(level=logging.INFO)
 
     global valkey_pool
     valkey_pool = valkey.ConnectionPool.from_url(VALKEY_URL)
-    task = asyncio.create_task(radios.poll_loop(valkey_pool))
 
     try:
         yield
     finally:
         await valkey_pool.aclose()
-        task.cancel()
 
 
 async def valkey_client() -> AsyncIterator[valkey.Valkey]:
