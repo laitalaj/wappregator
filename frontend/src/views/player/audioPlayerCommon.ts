@@ -77,6 +77,7 @@ export function seekToLive(audioElement: HTMLAudioElement) {
 export function useSyncPlaybackState(
 	getAudioElement: Accessor<HTMLAudioElement | null>,
 	isPlaying: Accessor<boolean>,
+	seekToLiveAfterPause: boolean,
 ) {
 	// If playback state changes, sync it with the audio element
 	createEffect(() => {
@@ -89,7 +90,7 @@ export function useSyncPlaybackState(
 
 		if (isPlayingState) {
 			// If we were paused, try to seek to current live position
-			if (element.paused) {
+			if (element.paused && seekToLiveAfterPause) {
 				seekToLive(element);
 			}
 

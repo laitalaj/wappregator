@@ -46,6 +46,7 @@ export function AudioPlayer(props: AudioPlayerProps) {
 	useSyncPlaybackState(
 		() => audioRef,
 		() => props.isPlaying(),
+		true,
 	);
 	useMediaSessionIntegration(props);
 	useSyncVolume(

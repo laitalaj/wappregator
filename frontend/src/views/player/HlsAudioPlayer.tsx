@@ -1,5 +1,5 @@
 import Hls from "hls.js";
-import { createEffect, createMemo, onMount } from "solid-js";
+import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
 import type { AudioPlayerProps } from "./AudioPlayer";
 import {
 	getHlsStreamUrl,
@@ -24,8 +24,17 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 			return;
 		}
 
-		hls = new Hls();
+		hls = new Hls({
+			maxBufferLength: 20,
+			maxMaxBufferLength: 60,
+			liveSyncDuration: 30,
+			liveDurationInfinity: true,
+		});
 		hls.attachMedia(audioRef);
+		onCleanup(() => {
+			hls?.detachMedia();
+			hls?.destroy();
+		});
 	});
 
 	const hlsStreamUrl = createMemo(() => getHlsStreamUrl(props.radio()));
@@ -47,6 +56,7 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 	useSyncPlaybackState(
 		() => audioRef,
 		() => props.isPlaying(),
+		false,
 	);
 	useMediaSessionIntegration(props);
 	useSyncVolume(
