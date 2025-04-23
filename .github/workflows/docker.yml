@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:${{ inputs.working-directory }}"
-          file: "{{defaultContext}}:${{ inputs.working-directory }}/${{ inputs.dockerfile}}"
+          file: "${{ inputs.working-directory }}/${{ inputs.dockerfile}}"
           build-args: ${{ inputs.build-args }}
           push: ${{ github.ref_name == github.event.repository.default_branch && github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
