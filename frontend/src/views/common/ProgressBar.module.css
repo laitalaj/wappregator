@@ -4,7 +4,7 @@
 	background-color: color-mix(
 		in srgb,
 		var(--bg-color, #fff) 65%,
-		var(--text-color)
+		var(--contrast-color)
 	);
 	border-radius: 16px;
 	padding: 2px;
@@ -13,7 +13,7 @@
 .progressBarFill {
 	height: 100%;
 	width: var(--progress, 0%);
-	background-color: var(--text-color, #000);
+	background-color: var(--contrast-color, #000);
 	border-radius: 8px;
 	will-change: width;
 	transition: width var(--transition-time-ms) linear;

@@ -1,25 +1,27 @@
 .buttonHover {
+	color: var(--text-color);
+	transition: color 0.2s ease-out;
+
 	--hover-color: color-mix(
 		in srgb,
 		var(--bg-color, #fff) 50%,
 		var(--text-color, #000)
 	);
 
-	transition: background-color 0.2s ease-in-out;
-
 	&:hover {
-		background-color: var(--hover-color);
+		color: var(--hover-color);
 	}
 }
 
-.buttonHoverInverse {
+.buttonHoverContrast {
+	color: var(--contrast-color);
+	transition: color 0.2s ease-out;
+
 	--hover-color: color-mix(
 		in srgb,
 		var(--bg-color, #fff) 50%,
-		var(--text-color, #000)
+		var(--contrast-color, #000)
 	);
-
-	transition: color 0.2s ease-in-out;
 
 	&:hover {
 		color: var(--hover-color);

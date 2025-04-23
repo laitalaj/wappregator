@@ -2,7 +2,7 @@
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	transition: background-color 0.1s ease-in-out;
+	transition: background-color 0.1s ease-out;
 	background: none;
 	border: none;
 	text-align: left;
@@ -15,7 +15,7 @@
 			background-color: color-mix(
 				in srgb,
 				var(--bg-color, #fff) 85%,
-				var(--text-color, #000)
+				var(--contrast-color, #000)
 			);
 		}
 	}

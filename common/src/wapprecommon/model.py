@@ -39,6 +39,7 @@ class Brand(pydantic.BaseModel):
 
     background_color: str
     text_color: str
+    contrast_color: str | None = None
 
     @classmethod
     def default(cls) -> Self:
@@ -46,6 +47,7 @@ class Brand(pydantic.BaseModel):
         return cls(
             background_color="white",
             text_color="black",
+            contrast_color="black",
         )
 
 

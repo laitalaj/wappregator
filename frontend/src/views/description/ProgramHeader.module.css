@@ -57,8 +57,7 @@
 }
 
 .closeButton {
-	composes: buttonHoverInverse from "../common/common.module.css";
-
+	composes: buttonHoverContrast from "../common/common.module.css";
 	background: none;
 	border: none;
 	border-radius: 100%;
@@ -66,6 +65,5 @@
 	justify-content: center;
 	align-items: center;
 	padding: 0;
-	color: var(--text-color);
 	z-index: 1;
 }

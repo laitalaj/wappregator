@@ -138,7 +138,8 @@ SATEILY = model.Radio(
     frequency_mhz=89,
     brand=model.Brand(
         background_color="rgb(72, 83, 139)",
-        text_color="rgb(198, 180, 116)",
+        text_color="white",
+        contrast_color="rgb(198, 180, 116)",
     ),
     streams=[
         model.Stream(
@@ -156,7 +157,8 @@ TURUN = model.Radio(
     frequency_mhz=93.8,
     brand=model.Brand(
         background_color="rgb(0, 51, 102)",
-        text_color="rgb(238, 107, 96)",
+        text_color="white",
+        contrast_color="rgb(238, 107, 96)"
     ),
     streams=[
         model.Stream(

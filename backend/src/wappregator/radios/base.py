@@ -8,7 +8,7 @@ import valkey.asyncio as valkey
 from wapprecommon import model
 
 CACHE_TTL_SECONDS = 60 * 15
-CACHE_VERSION = 4
+CACHE_VERSION = 5
 CACHE_NAMESPACE = "radios"
 CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
 

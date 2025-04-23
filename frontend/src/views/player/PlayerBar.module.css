@@ -6,7 +6,7 @@
 	padding: 8px var(--horizontal-padding);
 	background-color: var(--bg-color);
 	color: var(--text-color);
-	border-top: 2px solid var(--text-color);
+	border-top: 2px solid var(--contrast-color);
 	position: sticky;
 	bottom: 0;
 	width: 100%;
@@ -36,9 +36,7 @@
 }
 
 .volumeButton {
-	composes: buttonHoverInverse from "../common/common.module.css";
-
-	color: var(--text-color);
+	composes: buttonHoverContrast from "../common/common.module.css";
 	background: none;
 	border: none;
 	padding: 0;
@@ -56,7 +54,7 @@
 	background: var(--bg-color);
 	padding: 16px;
 	z-index: 1;
-	border: 2px solid var(--text-color);
+	border: 2px solid var(--contrast-color);
 	display: flex;
 	justify-content: center;
 }

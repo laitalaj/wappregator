@@ -96,7 +96,7 @@ main {
 }
 
 .headerLink {
-	composes: buttonHoverInverse from "./common/common.module.css";
+	composes: buttonHover from "./common/common.module.css";
 
 	color: var(--text-color);
 	display: flex;
