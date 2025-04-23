@@ -1,10 +1,5 @@
-import type { Program, Radio } from "./types";
+import type { ChannelState } from "./types";
 
-export type RadioState =
-	| { type: "channelNotSelected" }
-	| {
-			type: "channelSelected";
-			radio: Radio;
-			nowPlaying: Program | undefined;
-			isPlaying: boolean;
-	  };
+export interface RadioState extends ChannelState {
+	isPlaying: boolean;
+}

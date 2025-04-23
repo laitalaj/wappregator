@@ -14,13 +14,13 @@ import {
 	createSignal,
 	onCleanup,
 } from "solid-js";
-import type { ChannelState, Radios, Schedule } from "./types";
+import type { ChannelState, NowPlaying, Radios, Schedule } from "./types";
 
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;
 const NOW_PLAYING_UPDATE_INTERVAL_MS = 1000;
 
-export function getRadiosState(): Resource<Radios> {
+export function useRadiosState(): Resource<Radios> {
 	const [radios, { refetch: refetchRadios }] = createResource(fetchRadios);
 
 	const radiosInterval = setInterval(() => {
@@ -39,7 +39,7 @@ async function fetchRadios(): Promise<Radios> {
 	return response.json();
 }
 
-export function getScheduleState(): Resource<Schedule> {
+export function useScheduleState(): Resource<Schedule> {
 	const [schedule, { refetch: refetchSchedule }] =
 		createResource(fetchSchedule);
 
@@ -69,14 +69,17 @@ async function fetchSchedule(): Promise<Schedule> {
 	return response.json();
 }
 
-export function getChannelState(
+export function useChannelStates(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
+	nowPlaying: Resource<NowPlaying>,
 ): Accessor<ChannelState[]> {
 	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
 	const updateChannelState = () => {
 		const scheduleData = schedule();
 		const radiosData = radios();
+		const nowPlayingData = nowPlaying();
+
 		if (!scheduleData || !radiosData) {
 			return;
 		}
@@ -101,10 +104,13 @@ export function getChannelState(
 				return isBefore(now, start);
 			});
 
+			const currentSong = nowPlayingData?.[radio.id] ?? undefined;
+
 			res.push({
 				radio,
-				now_playing: currentProgram,
-				up_next: nextPrograms,
+				currentProgram,
+				nextPrograms,
+				currentSong,
 			});
 		}
 		setChannelState(res);
@@ -112,13 +118,32 @@ export function getChannelState(
 
 	createEffect(updateChannelState);
 
-	const nowPlayingInterval = setInterval(() => {
+	const channelStateInterval = setInterval(() => {
 		updateChannelState();
 	}, NOW_PLAYING_UPDATE_INTERVAL_MS);
+
+	onCleanup(() => {
+		clearInterval(channelStateInterval);
+	});
+
+	return channelState;
+}
+
+export function useNowPlayingState(): Resource<NowPlaying> {
+	const [nowPlaying, { refetch }] = createResource(fetchNowPlaying);
+
+	const nowPlayingInterval = setInterval(() => {
+		refetch();
+	}, 10_000);
 
 	onCleanup(() => {
 		clearInterval(nowPlayingInterval);
 	});
 
-	return channelState;
+	return nowPlaying;
+}
+
+async function fetchNowPlaying(): Promise<NowPlaying> {
+	const response = await fetch(`${import.meta.env.VITE_API_URL}/now_playing`);
+	return response.json();
 }

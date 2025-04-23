@@ -11,7 +11,12 @@ import {
 } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
-import { getChannelState, getRadiosState, getScheduleState } from "../state";
+import {
+	useChannelStates,
+	useNowPlayingState,
+	useRadiosState,
+	useScheduleState,
+} from "../state";
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
@@ -19,9 +24,10 @@ import { Description } from "./description/Description";
 import { PlayerBar } from "./player/PlayerBar";
 
 const App: Component = () => {
-	const radios = getRadiosState();
-	const schedule = getScheduleState();
-	const channelState = getChannelState(schedule, radios);
+	const radios = useRadiosState();
+	const schedule = useScheduleState();
+	const nowPlaying = useNowPlayingState();
+	const channelStates = useChannelStates(schedule, radios, nowPlaying);
 
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
 		null,
@@ -30,12 +36,12 @@ const App: Component = () => {
 		createSignal<ProgramInfo | null>(null);
 	const [isPlaying, setIsPlaying] = createSignal(false);
 
-	const radioState = createMemo((): RadioState => {
+	const radioState = createMemo((): RadioState | undefined => {
 		if (selectedChannelId() === null) {
-			return { type: "channelNotSelected" };
+			return undefined;
 		}
 
-		const radio = channelState().find(
+		const radio = channelStates().find(
 			(station) => station.radio.id === selectedChannelId(),
 		);
 
@@ -45,13 +51,12 @@ const App: Component = () => {
 			console.warn(
 				`Selected channel ID ${selectedChannelId()} not found in nowPlaying data`,
 			);
-			return { type: "channelNotSelected" };
+
+			return undefined;
 		}
 
 		return {
-			type: "channelSelected",
-			radio: radio.radio,
-			nowPlaying: radio.now_playing,
+			...radio,
 			isPlaying: isPlaying(),
 		};
 	});
@@ -70,7 +75,7 @@ const App: Component = () => {
 					inert={nonModalElementsInert()}
 				>
 					<Channels
-						channelState={channelState}
+						channelState={channelStates}
 						isPlaying={isPlaying}
 						setIsPlaying={setIsPlaying}
 						selectedChannelId={selectedChannelId}

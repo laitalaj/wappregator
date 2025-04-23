@@ -62,9 +62,10 @@ export function Channel(props: Props) {
 	});
 
 	const radio = () => props.station().radio;
-	const nowPlaying = createMemo(() =>
-		toProgramInfo(props.station().now_playing, radio()),
+	const currentProgram = createMemo(() =>
+		toProgramInfo(props.station().currentProgram, radio()),
 	);
+	const nowPlaying = createMemo(() => props.station().currentSong);
 
 	const upNext = createMemo((): ProgramInfo[] => {
 		const radioState = radio();
@@ -74,7 +75,7 @@ export function Channel(props: Props) {
 
 		return props
 			.station()
-			.up_next.map((program) => ({ program, radio: radioState }));
+			.nextPrograms.map((program) => ({ program, radio: radioState }));
 	});
 
 	const canPlay = () => radio().streams.length > 0;
@@ -139,11 +140,36 @@ export function Channel(props: Props) {
 
 			<PresentationalProgramGroup title={() => "Nyt"}>
 				<MaybeProgram
-					programInfo={nowPlaying}
+					programInfo={currentProgram}
 					playingNow={true}
 					setSelectedProgram={props.setSelectedProgram}
 					showScheduleLabel
 				/>
+				<Show when={nowPlaying()}>
+					{(song) => {
+						const title = createMemo(() => {
+							// Radio Diodi provides actually real time song information, others report last played song
+							if (radio().id === "diodi") {
+								return "Nyt soi";
+							}
+
+							return "Viimeisimpänä soi";
+						});
+
+						return (
+							<div class={classes.nowPlaying}>
+								<h4>{title()}</h4>
+								{song().artist ? (
+									<span>
+										{song().artist} – {song().title}
+									</span>
+								) : (
+									<span>{song().title}</span>
+								)}
+							</div>
+						);
+					}}
+				</Show>
 			</PresentationalProgramGroup>
 
 			<Index each={programsByDate().slice(0, MAX_GROUPS_PER_CHANNEL)}>

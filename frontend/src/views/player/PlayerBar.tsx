@@ -10,7 +10,6 @@ import {
 import { getProgramProgress } from "../../getProgramProgress";
 import type { RadioState } from "../../radio";
 import { formatTime } from "../../timeUtils";
-import type { Program } from "../../types";
 import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
 import { brandColorVariablesStyle } from "../common/brandUtils";
@@ -21,7 +20,7 @@ import { VolumeSlider } from "./VolumeSlide";
 import { getHlsStreamUrl } from "./audioPlayerCommon";
 
 interface Props {
-	radioState: Accessor<RadioState>;
+	radioState: Accessor<RadioState | undefined>;
 	setIsPlaying: Setter<boolean>;
 }
 
@@ -29,28 +28,39 @@ export function PlayerBar(props: Props) {
 	const [volume, setVolume] = createSignal(100);
 
 	const isPlaying = createMemo(() => {
-		const state = props.radioState();
-		return state.type === "channelSelected" && state.isPlaying;
+		return props.radioState()?.isPlaying ?? false;
 	});
 
 	const statusText = createMemo(() => {
 		const state = props.radioState();
 
-		if (state.type !== "channelSelected") {
+		if (!state) {
 			return "Ei valittua kanavaa";
 		}
 
-		if (state?.nowPlaying) {
-			return `${state.nowPlaying.title} | ${state.radio.name}`;
+		const parts = [];
+
+		if (state.currentSong) {
+			if (state.currentSong.artist) {
+				parts.push(`${state.currentSong.artist} – ${state.currentSong.title}`);
+			} else {
+				parts.push(state.currentSong.title);
+			}
 		}
 
-		return state.radio.name;
+		if (state.currentProgram) {
+			parts.push(state.currentProgram.title);
+		}
+
+		parts.push(state.radio.name);
+
+		return parts.join(" | ");
 	});
 
 	const isHlsChannel = createMemo(() => {
 		const state = props.radioState();
 
-		if (state.type !== "channelSelected") {
+		if (!state) {
 			return false;
 		}
 
@@ -58,8 +68,9 @@ export function PlayerBar(props: Props) {
 	});
 
 	return (
-		<Show when={getChannelSelectedState(props.radioState())}>
+		<Show when={props.radioState()}>
 			{(state) => {
+				const nowPlaying = () => state().currentProgram;
 				return (
 					<>
 						<Switch>
@@ -68,7 +79,7 @@ export function PlayerBar(props: Props) {
 									radio={() => state().radio}
 									isPlaying={isPlaying}
 									volume={volume}
-									nowPlaying={() => state().nowPlaying}
+									nowPlaying={() => state().currentProgram}
 									setIsPlaying={props.setIsPlaying}
 								/>
 							</Match>
@@ -77,7 +88,7 @@ export function PlayerBar(props: Props) {
 									radio={() => state().radio}
 									isPlaying={isPlaying}
 									volume={volume}
-									nowPlaying={() => state().nowPlaying}
+									nowPlaying={() => state().currentProgram}
 									setIsPlaying={props.setIsPlaying}
 								/>
 							</Match>
@@ -96,18 +107,16 @@ export function PlayerBar(props: Props) {
 										props.setIsPlaying((playing: boolean) => !playing)
 									}
 								/>
-								<Show when={getNowPlayingState(state())}>
-									{(state) => {
-										const nowPlaying = () => state().nowPlaying;
-
+								<Show when={nowPlaying()}>
+									{(program) => {
 										return (
 											<div class={classes.progressBarContainer}>
-												<span>{formatTime(nowPlaying().start)}</span>
+												<span>{formatTime(program().start)}</span>
 												<ProgressBar
-													progress={() => getProgramProgress(nowPlaying())}
+													progress={() => getProgramProgress(program())}
 													transitionTimeMs={1000}
 												/>
-												<span>{formatTime(nowPlaying().end)}</span>
+												<span>{formatTime(program().end)}</span>
 											</div>
 										);
 									}}
@@ -120,26 +129,4 @@ export function PlayerBar(props: Props) {
 			}}
 		</Show>
 	);
-}
-
-function getChannelSelectedState(
-	radioState: RadioState,
-): (RadioState & { type: "channelSelected" }) | undefined {
-	if (radioState.type === "channelSelected") {
-		return radioState;
-	}
-	return undefined;
-}
-
-function getNowPlayingState(
-	radioState: RadioState,
-): (RadioState & { type: "channelSelected"; nowPlaying: Program }) | undefined {
-	if (radioState.type === "channelSelected" && radioState.nowPlaying) {
-		// lol typescript
-		return radioState as RadioState & {
-			type: "channelSelected";
-			nowPlaying: Program;
-		};
-	}
-	return undefined;
 }

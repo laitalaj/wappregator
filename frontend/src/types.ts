@@ -39,11 +39,19 @@ export interface Schedule {
 
 export interface ChannelState {
 	radio: Radio;
-	now_playing?: Program;
-	up_next: Program[];
+	currentProgram?: Program;
+	nextPrograms: Program[];
+	currentSong: Song | undefined;
 }
 
 export interface ProgramInfo {
 	program: Program;
 	radio: Radio;
 }
+
+export interface Song {
+	title: string;
+	artist?: string;
+}
+
+export type NowPlaying = Partial<Record<string, Song | null>>;
