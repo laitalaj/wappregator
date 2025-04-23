@@ -38,6 +38,7 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 		}
 
 		hls?.detachMedia()
+		hls?.destroy();
 	})
 
 	const hlsStreamUrl = createMemo(() => getHlsStreamUrl(props.radio()));
