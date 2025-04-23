@@ -58,6 +58,7 @@ export function AudioPlayer(props: AudioPlayerProps) {
 		// biome-ignore lint/a11y/useMediaCaption: wappu
 		<audio
 			hidden
+			preload="none"
 			autoplay={props.isPlaying()}
 			ref={(element) => {
 				audioRef = element;

@@ -68,6 +68,7 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 		// biome-ignore lint/a11y/useMediaCaption: <explanation>
 		<audio
 			hidden
+			preload="none"
 			ref={(el) => {
 				audioRef = el;
 			}}
