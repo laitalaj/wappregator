@@ -9,12 +9,18 @@ services:
       - "3000:3000"
   backend:
     build:
-      context: backend
+      dockerfile: backend.Dockerfile
       target: prod
     ports: 
       - "8000:8000"
     environment:
       VALKEY_URL: "valkey://cache"
       ALLOWED_ORIGINS: "http://localhost:3000"
+  pollers:
+    build:
+      dockerfile: pollers.Dockerfile
+      target: prod
+    environment:
+      VALKEY_URL: "valkey://cache"
   cache:
     image: docker.io/valkey/valkey:8-alpine

@@ -1,6 +1,6 @@
 import datetime
 
-from wappregator import model
+from wapprecommon import model
 
 
 class ScheduleFilter:

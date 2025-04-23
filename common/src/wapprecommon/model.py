@@ -61,3 +61,5 @@ class Radio(pydantic.BaseModel):
 
     brand: Brand = Brand.default()
     streams: list[Stream] = []
+
+    has_now_playing: bool = False

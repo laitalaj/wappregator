@@ -3,8 +3,8 @@ import datetime
 import aiohttp
 
 from bs4 import BeautifulSoup, element
+from wapprecommon import model, radios
 
-from wappregator import model
 from wappregator.radios import base
 
 
@@ -13,26 +13,7 @@ class JklFetcher(base.BaseFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id="jkl",
-            name="Vappuradio JKL",
-            url="https://www.vappuradiojkl.net",
-            location="Jyväääskylä",
-            brand=model.Brand(
-                background_color="rgb(43, 19, 75)",
-                text_color="rgb(255, 255, 255)",
-            ),
-            streams=[
-                model.Stream(
-                    url="https://jkl.hacklab.fi:8443/fm.opus",
-                    mime_type="audio/ogg",
-                ),
-                model.Stream(
-                    url="https://jkl.hacklab.fi:8443/fm.mp3",
-                    mime_type="audio/mpeg",
-                ),
-            ],
-        )
+        super().__init__(radios.JKL)
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Get the URL for the radio's API endpoint.

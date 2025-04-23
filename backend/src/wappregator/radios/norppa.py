@@ -1,11 +1,11 @@
 from typing import Any
 import datetime
+from urllib.parse import quote
 
 import aiohttp
+from wapprecommon import model, radios
 
-from wappregator import model
 from wappregator.radios import base
-from urllib.parse import quote
 
 WINDOW_DAYS = 7
 
@@ -15,30 +15,7 @@ class NorppaFetcher(base.JSONFetcher):
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
-        super().__init__(
-            id="norppa",
-            name="Norpparadio",
-            url="https://norpparadio.net/",
-            location="lappeen Ranta",
-            brand=model.Brand(
-                background_color="rgb(15, 23, 43)",
-                text_color="white",
-            ),
-            streams=[
-                model.Stream(
-                    url="https://norpparadio.net/manifests/master.m3u8",
-                    mime_type="application/x-mpegURL",
-                ),
-                model.Stream(
-                    url="https://listen.norpparadio.net:8443/norpparadio.mp3",
-                    mime_type="audio/mpeg",
-                ),
-                model.Stream(
-                    url="https://listen.norpparadio.net:8443/norpparadio.ogg",
-                    mime_type="audio/ogg",
-                ),
-            ],
-        )
+        super().__init__(radios.NORPPA)
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Get the URL for the radio's API endpoint.

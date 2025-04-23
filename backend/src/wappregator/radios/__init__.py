@@ -3,10 +3,17 @@ import asyncio
 import logging
 
 import valkey.asyncio as valkey
+from wapprecommon import model, keys
 
-from wappregator import model
 from wappregator.radios import (
-    diodi, jkl, norppa, rakkauden, ratto, sateily, turun, wapina
+    diodi,
+    jkl,
+    norppa,
+    rakkauden,
+    ratto,
+    sateily,
+    turun,
+    wapina,
 )
 
 FETCHERS = [
@@ -18,12 +25,6 @@ FETCHERS = [
     ratto.RattoFetcher(),
     sateily.SateilyFetcher(),
     jkl.JklFetcher(),
-]
-
-POLLERS = [
-    rakkauden.RakkaudenPoller(),
-    diodi.DiodiPoller(),
-    turun.TurunPoller(),
 ]
 
 logger = logging.getLogger(__name__)
@@ -75,14 +76,13 @@ async def schedule(valkey_client: valkey.Valkey) -> dict[str, list[model.Program
     return res
 
 
-async def poll_loop(valkey_pool: valkey.ConnectionPool) -> asyncio.Future:
-    """Poll radios for updates in an infinite loop.
-
-    Args:
-        valkey_pool: The Valkey connection pool to use for caching.
-    """
-    tasks = [poller.loop_wrapper(valkey_pool) for poller in POLLERS]
-    return asyncio.gather(*tasks)
+async def _now_playing_for_radio(
+    valkey_client: valkey.Valkey, radio_id: str
+) -> model.Song | None:
+    res = await valkey_client.get(keys.get_nowplaying_key(radio_id))
+    if res:
+        return model.Song.model_validate_json(res)
+    return None
 
 
 async def now_playing(valkey_client: valkey.Valkey) -> dict[str, model.Song | None]:
@@ -95,13 +95,16 @@ async def now_playing(valkey_client: valkey.Valkey) -> dict[str, model.Song | No
         Dictionary; keys are radio IDs, values are their currently playing songs.
     """
     res = {}
-    tasks = [poller.now_playing(valkey_client) for poller in POLLERS]
+    relevant_ids = [fetcher.id for fetcher in FETCHERS if fetcher.radio.has_now_playing]
+
+    tasks = [_now_playing_for_radio(valkey_client, id) for id in relevant_ids]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for poller, result in zip(POLLERS, results):
+    for id, result in zip(relevant_ids, results):
         if isinstance(result, BaseException):
             logger.exception("Error fetching a radio now playing", exc_info=result)
             continue
-        res[poller.id] = result
+        res[id] = result
+
     if not res:
         raise FetchingBrokenError(
             "No radios were fetched successfully. See earlier logs for details."

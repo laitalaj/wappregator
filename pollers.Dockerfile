@@ -5,13 +5,15 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=0
 
+ADD ./common /common
+
 WORKDIR /app
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=./pollers/uv.lock,target=uv.lock \
+    --mount=type=bind,source=./pollers/pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-dev --no-editable
 
-ADD . /app
+ADD ./pollers /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-editable
 
@@ -21,15 +23,13 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS dev
 WORKDIR /app
 COPY --from=builder /app /app
 
-EXPOSE 8000
-CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "app.py"]
+# TODO: Actual hot reloading
+CMD ["uv", "run", "python", "-m", "wapprepollers"]
 
 
 FROM python:3.13-slim-bookworm AS prod
 
 RUN groupadd -r app && useradd -r -g app app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
-COPY --chown=app:app app.py /app/app.py
 
-EXPOSE 8000
-CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "/app/app.py"]
+CMD ["/app/.venv/bin/python", "-m", "wapprepollers"]

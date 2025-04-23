@@ -8,7 +8,10 @@ on:
           required: true
         working-directory:
           type: string
-          required: true
+          default: '.'
+        dockerfile:
+          type: string
+          default: 'Dockerfile'
         build-args:
           type: string
 
@@ -49,12 +52,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:${{ inputs.working-directory }}"
+          file: "{{context}}/${{ inputs.dockerfile}}"
           build-args: ${{ inputs.build-args }}
-          push: true
+          push: ${{ github.ref_name == github.event.repository.default_branch && github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
+        if: github.ref_name == github.event.repository.default_branch && github.event_name == 'push'
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ghcr.io/${{ github.repository_owner }}/${{ inputs.container-name }}

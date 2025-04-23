@@ -3,8 +3,7 @@ import asyncio
 import logging
 
 import valkey.asyncio as valkey
-
-from wappregator import model
+from wapprecommon import model, keys
 
 CACHE_VERSION = 1
 CACHE_NAMESPACE = "nowplaying"
@@ -32,7 +31,7 @@ class BasePoller(ABC):
         Returns:
             The cache key for the currently playing song.
         """
-        return f"{CACHE_KEY_PREFIX}{self.id}"
+        return keys.get_nowplaying_key(self.id)
 
     async def update_now_playing(
         self,

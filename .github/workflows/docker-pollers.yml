@@ -1,4 +1,4 @@
-name: 'Docker: Frontend'
+name: 'Docker: Pollers'
 
 on:
   push:
@@ -6,8 +6,9 @@ on:
       - main
     paths:
       - '.github/workflows/docker.yml'
-      - '.github/workflows/docker-frontend.yml'
-      - 'frontend/**'
+      - '.github/workflows/docker-pollers.yml'
+      - 'common/**'
+      - 'pollers/**'
 
 jobs:
   docker:
@@ -18,7 +19,5 @@ jobs:
       id-token: write
     uses: ./.github/workflows/docker.yml
     with:
-      container-name: 'wappregator-frontend'
-      working-directory: 'frontend'
-      build-args: |
-        VITE_API_URL=/api
+      container-name: 'wappregator-pollers'
+      dockerfile: 'pollers.Dockerfile'
