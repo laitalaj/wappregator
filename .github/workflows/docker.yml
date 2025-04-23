@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:${{ inputs.working-directory }}"
-          file: "${{ inputs.working-directory }}/${{ inputs.dockerfile}}"
+          file: ${{ inputs.dockerfile}}
           build-args: ${{ inputs.build-args }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
