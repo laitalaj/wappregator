@@ -9,6 +9,14 @@ on:
       - '.github/workflows/docker-pollers.yml'
       - 'common/**'
       - 'pollers/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/docker-pollers.yml'
+      - 'common/**'
+      - 'pollers/**'
 
 jobs:
   docker:
