@@ -11,8 +11,6 @@
 	padding: 8px 16px;
 
 	&:is(button) {
-		cursor: pointer;
-
 		&:hover {
 			background-color: color-mix(
 				in srgb,

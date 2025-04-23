@@ -48,6 +48,5 @@
 	background: none;
 	color: var(--text-color, #000);
 	border: none;
-	cursor: pointer;
 	padding: 8px 0;
 }
