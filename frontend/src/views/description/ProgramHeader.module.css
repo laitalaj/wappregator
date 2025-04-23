@@ -40,6 +40,7 @@
 	flex-direction: column;
 	gap: 4px;
 	position: relative;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.41);
 }
 
 .title {
