@@ -5,7 +5,7 @@ RUN npm install --global corepack@latest
 RUN corepack enable pnpm
 
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .
 
 
 # Frontend development image

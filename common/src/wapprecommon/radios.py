@@ -158,7 +158,7 @@ TURUN = model.Radio(
     brand=model.Brand(
         background_color="rgb(0, 51, 102)",
         text_color="white",
-        contrast_color="rgb(238, 107, 96)"
+        contrast_color="rgb(238, 107, 96)",
     ),
     streams=[
         model.Stream(

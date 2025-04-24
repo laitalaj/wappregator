@@ -7,16 +7,22 @@ import logging
 
 import fastapi
 from fastapi.middleware import cors
+import socketio
 import valkey.asyncio as valkey
 from wapprecommon import model
 from wapprecommon.constants import VALKEY_URL
 
-from wappregator import radios, utils
+from wappregator import socket, radios, utils
 
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS")
 ALLOWED_ORIGINS_LIST = ALLOWED_ORIGINS.split(",") if ALLOWED_ORIGINS else []
 
+logger = logging.getLogger(__name__)
+
 valkey_pool = None
+
+
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=ALLOWED_ORIGINS_LIST)
 
 
 @contextlib.asynccontextmanager
@@ -35,7 +41,8 @@ async def lifespan(_: fastapi.FastAPI) -> AsyncIterator[None]:
     valkey_pool = valkey.ConnectionPool.from_url(VALKEY_URL)
 
     try:
-        yield
+        async with socket.setup_socketio(sio, valkey_pool):
+            yield
     finally:
         await valkey_pool.aclose()
 
@@ -64,6 +71,8 @@ if ALLOWED_ORIGINS_LIST:
         cors.CORSMiddleware,
         allow_origins=ALLOWED_ORIGINS_LIST,
     )
+
+wrapped_app = socketio.ASGIApp(sio, app)
 
 
 @app.get("/radios")

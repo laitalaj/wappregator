@@ -6,6 +6,7 @@ import {
 	startOfHour,
 	subHours,
 } from "date-fns";
+import { io } from "socket.io-client";
 import {
 	type Accessor,
 	type Resource,
@@ -72,7 +73,7 @@ async function fetchSchedule(): Promise<Schedule> {
 export function useChannelStates(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
-	nowPlaying: Resource<NowPlaying>,
+	nowPlaying: Accessor<NowPlaying>,
 ): Accessor<ChannelState[]> {
 	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
 	const updateChannelState = () => {
@@ -129,15 +130,20 @@ export function useChannelStates(
 	return channelState;
 }
 
-export function useNowPlayingState(): Resource<NowPlaying> {
-	const [nowPlaying, { refetch }] = createResource(fetchNowPlaying);
+export function useNowPlayingState(): Accessor<NowPlaying> {
+	const socket = io(import.meta.env.VITE_API_URL);
+	const [nowPlaying, setNowPlaying] = createSignal<NowPlaying>({});
 
-	const nowPlayingInterval = setInterval(() => {
-		refetch();
-	}, 10_000);
+	createEffect(() => {
+		const updateNowPlaying = (data: NowPlaying) => {
+			setNowPlaying({ ...nowPlaying(), ...data });
+		};
+		socket.removeAllListeners("now_playing");
+		socket.on("now_playing", updateNowPlaying);
+	});
 
 	onCleanup(() => {
-		clearInterval(nowPlayingInterval);
+		socket.close();
 	});
 
 	return nowPlaying;

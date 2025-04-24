@@ -10,7 +10,7 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "fastapi[standard]>=0.115.12",
     "ics>=0.7.2",
-    "python-socketio[asyncio-client]~=4.6",
+    "python-socketio>=5.13.0",
     "valkey[libvalkey]>=6.1.0",
     "wapprecommon",
 ]

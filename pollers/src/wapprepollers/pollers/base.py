@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 import valkey.asyncio as valkey
-from wapprecommon import model, keys
+from wapprecommon import model, internal_model, keys
 
 CACHE_VERSION = 1
 CACHE_NAMESPACE = "nowplaying"
@@ -53,6 +53,23 @@ class BasePoller(ABC):
                 # A safeguard for clearing this if polling breaks
                 ex=CACHE_TTL_SECONDS,
             )
+
+        n = await valkey_client.publish(
+            keys.EVENTS_CHANNEL,
+            internal_model.PollerEvent(
+                radio_id=self.id,
+                now_playing=song,
+            ).model_dump_json(),
+        )
+        log = f"{self.id} is now playing {song}"
+        if n == 0:
+            logger.warning(f"{log} (no Valkey subscribers!)")
+            logger.warning(
+                f"Sent to: {keys.EVENTS_CHANNEL}, "
+                f"channels with subscribers: {await valkey_client.pubsub_channels()}"
+            )
+        else:
+            logger.info(f"{log} (published to {n} Valkey subscriber(s))")
 
     @abstractmethod
     async def loop(self, valkey_client: valkey.Valkey) -> None:

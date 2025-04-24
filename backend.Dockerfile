@@ -24,14 +24,13 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 EXPOSE 8000
-CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "app.py"]
+CMD ["uv", "run", "uvicorn", "--host", "0.0.0.0", "--port", "8000", "--reload", "wappregator.app:wrapped_app"]
 
 
 FROM python:3.13-slim-bookworm AS prod
 
 RUN groupadd -r app && useradd -r -g app app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
-COPY --chown=app:app ./backend/app.py /app/app.py
 
 EXPOSE 8000
-CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "/app/app.py"]
+CMD ["/app/.venv/bin/uvicorn", "--host", "0.0.0.0", "--port", "8000", "wappregator.app:wrapped_app"]

@@ -26,15 +26,24 @@ class TurunPoller(base.BasePoller):
         Args:
             valkey_client: The Valkey client to use for caching.
         """
+        current_artist = None
+        current_title = None
         async with aiohttp.ClientSession() as session:
             while True:
                 try:
                     async with session.get(self.url) as response:
                         response.raise_for_status()
                         data = await response.json(content_type=None)
+                        title = data["song"]
+                        artist = data.get("artist")
+                        if title == current_title and artist == current_artist:
+                            continue
+
+                        current_title = title
+                        current_artist = artist
                         song = model.Song(
-                            title=data["song"],
-                            artist=data.get("artist"),
+                            title=title,
+                            artist=artist,
                         )
                         await self.update_now_playing(valkey_client, song)
                 except (KeyError, aiohttp.ClientResponseError, UnicodeDecodeError) as e:
