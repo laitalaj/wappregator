@@ -29,3 +29,4 @@ jobs:
       working-directory: 'frontend'
       build-args: |
         VITE_API_URL=/api
+        VITE_SOCKETIO_PATH=/api/socket.io/

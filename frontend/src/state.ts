@@ -131,7 +131,13 @@ export function useChannelStates(
 }
 
 export function useNowPlayingState(): Accessor<NowPlaying> {
-	const socket = io(import.meta.env.VITE_API_URL);
+	const socket_options = import.meta.env.VITE_SOCKETIO_PATH
+		? { path: import.meta.env.VITE_SOCKETIO_PATH }
+		: undefined;
+	const socket_url = import.meta.env.VITE_API_URL?.startsWith("http")
+		? import.meta.env.VITE_API_URL
+		: undefined; // undefined = use current location
+	const socket = io(socket_url, socket_options);
 	const [nowPlaying, setNowPlaying] = createSignal<NowPlaying>({});
 
 	createEffect(() => {
