@@ -148,8 +148,8 @@ export function Channel(props: Props) {
 				<Show when={nowPlaying()}>
 					{(song) => {
 						const title = createMemo(() => {
-							// Radio Diodi provides actually real time song information, others report last played song
-							if (radio().id === "diodi") {
+							// TODO: Move this to the backend; could have an enum instead of a boolean in has_now_playing
+							if (["diodi", "ratto"].includes(radio().id)) {
 								return "Nyt soi";
 							}
 

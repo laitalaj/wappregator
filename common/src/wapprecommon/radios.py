@@ -128,6 +128,7 @@ RATTO = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
+    has_now_playing=True,
 )
 
 SATEILY = model.Radio(

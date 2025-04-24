@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import asyncio
 import logging
 
+import aiohttp
 import valkey.asyncio as valkey
 from wapprecommon import model, internal_model, keys
 
@@ -9,6 +10,7 @@ CACHE_VERSION = 1
 CACHE_NAMESPACE = "nowplaying"
 CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
 CACHE_TTL_SECONDS = 60 * 15
+HTTP_POLL_INTERVAL_SECONDS = 30
 
 logger = logging.getLogger(__name__)
 
@@ -115,3 +117,57 @@ class BasePoller(ABC):
         if res:
             return model.Song.model_validate_json(res)
         return None
+
+
+class HTTPPoller(BasePoller):
+    """Poller for repeatedly polling a HTTP endpoint."""
+
+    def __init__(self, id: str, url: str) -> None:
+        """Initialize the poller.
+
+        Args:
+            id: The ID of the radio station.
+            url: The URL to poll for metadata.
+        """
+        super().__init__(id)
+        self.url = url
+
+    @abstractmethod
+    async def handle_response(
+        self, response: aiohttp.ClientResponse
+    ) -> model.Song | None:
+        """Handle the response from the HTTP request.
+
+        Args:
+            response: The response object from the aiohttp request.
+
+        Returns:
+            The currently playing song, or None if no song is playing.
+        """
+        ...
+
+    async def loop(self, valkey_client: valkey.Valkey) -> None:
+        """Poll the currently playing song in a loop.
+
+        Args:
+            valkey_client: The Valkey client to use for caching.
+        """
+        now_playing = None
+        async with aiohttp.ClientSession() as session:
+            while True:
+                try:
+                    async with session.get(self.url) as response:
+                        response.raise_for_status()
+                        result = await self.handle_response(response)
+                        if result == now_playing:
+                            continue
+                        now_playing = result
+                        await self.update_now_playing(valkey_client, result)
+                except (
+                    KeyError,
+                    aiohttp.ClientResponseError,
+                    aiohttp.ContentTypeError,
+                    UnicodeDecodeError,
+                ):
+                    logger.exception(f"Error loading now_playing for {self.id}")
+                await asyncio.sleep(HTTP_POLL_INTERVAL_SECONDS)

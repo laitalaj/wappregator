@@ -4,12 +4,13 @@ import logging
 import valkey.asyncio as valkey
 from wapprecommon import constants
 
-from wapprepollers.pollers import diodi, rakkauden, turun
+from wapprepollers.pollers import diodi, rakkauden, ratto, turun
 
 POLLERS = [
     rakkauden.RakkaudenPoller(),
     diodi.DiodiPoller(),
     turun.TurunPoller(),
+    ratto.RattoPoller(),
 ]
 
 logger = logging.getLogger("wapprepollers")
