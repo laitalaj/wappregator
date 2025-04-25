@@ -22,6 +22,7 @@ import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
 import { Description } from "./description/Description";
 import { PlayerBar } from "./player/PlayerBar";
+import { Ticker } from "./common/Ticker";
 
 const App: Component = () => {
 	const radios = useRadiosState();
@@ -114,6 +115,10 @@ function Header(props: HeaderProps) {
 				<img src="/appicon.png" alt="" width={64} height={64} />
 			</div>
 			<span>{funnySlogan}</span>
+			<Ticker>
+				Fix literally illegal text contrast ratios by introducing contrast_color
+				for certain unnamed radios
+			</Ticker>
 			<div class={classes.headerLinks}>
 				<a
 					class={classes.headerLink}
