@@ -156,13 +156,13 @@ class HTTPPoller(BasePoller):
         async with aiohttp.ClientSession() as session:
             while True:
                 try:
+                    logger.info(f"Polling {self.url} for {self.id}")
                     async with session.get(self.url) as response:
                         response.raise_for_status()
                         result = await self.handle_response(response)
-                        if result == now_playing:
-                            continue
-                        now_playing = result
-                        await self.update_now_playing(valkey_client, result)
+                        if result != now_playing:
+                            now_playing = result
+                            await self.update_now_playing(valkey_client, result)
                 except (
                     KeyError,
                     aiohttp.ClientResponseError,
