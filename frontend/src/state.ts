@@ -159,3 +159,53 @@ async function fetchNowPlaying(): Promise<NowPlaying> {
 	const response = await fetch(`${import.meta.env.VITE_API_URL}/now_playing`);
 	return response.json();
 }
+
+export enum WappuState {
+	Pre = "pre",
+	Wappu = "wappu",
+	Post = "post",
+}
+
+function getWappuState(): WappuState {
+	const now = new Date();
+	const year = now.getFullYear();
+	const preStart = new Date(year, 3, 1); // April 1st, midnight
+	const wappuStart = new Date(year, 3, 30); // April 30th, midnight
+	const wappuEnd = new Date(year, 4, 2); // May 2nd, midnight
+
+	if (isWithinInterval(now, { start: preStart, end: wappuStart })) {
+		return WappuState.Pre;
+	}
+	if (isWithinInterval(now, { start: wappuStart, end: wappuEnd })) {
+		return WappuState.Wappu;
+	}
+	return WappuState.Post;
+}
+
+export function useWappuState(): Accessor<WappuState> {
+	const searchParams = new URLSearchParams(window.location.search);
+	const wappuOverride = searchParams.get("wappu");
+	if (wappuOverride) {
+		if (wappuOverride === "pre") {
+			return () => WappuState.Pre;
+		}
+		if (wappuOverride === "wappu") {
+			return () => WappuState.Wappu;
+		}
+		if (wappuOverride === "post") {
+			return () => WappuState.Post;
+		}
+	}
+
+	const [wappuState, setWappuState] = createSignal<WappuState>(getWappuState());
+
+	const interval = setInterval(
+		() => setWappuState(getWappuState()),
+		1000 * 60, // Would be cool to first wait until midnight and then daily, but that'd complicate this a bunch
+	);
+	onCleanup(() => {
+		clearInterval(interval);
+	});
+
+	return wappuState;
+}

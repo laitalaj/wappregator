@@ -12,10 +12,12 @@ import {
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
 import {
+	WappuState,
 	useChannelStates,
 	useNowPlayingState,
 	useRadiosState,
 	useScheduleState,
+	useWappuState,
 } from "../state";
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
@@ -105,13 +107,22 @@ function Header(props: HeaderProps) {
 	const funnySlogan =
 		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
 
+	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
+	const wappu = useWappuState();
+	const logo = createMemo(() => {
+		if (wappu() === WappuState.Wappu) {
+			return wappuImgs[Math.floor(Math.random() * wappuImgs.length)];
+		}
+		return "/appicon.png";
+	});
+
 	return (
 		<header inert={props.inert()}>
 			<div class={classes.headerLogo}>
 				<h1>
 					Wappregat<small>.</small>or<small>g</small>
 				</h1>
-				<img src="/appicon.png" alt="" width={64} height={64} />
+				<img src={logo()} alt="" width={64} height={64} />
 			</div>
 			<span>{funnySlogan}</span>
 			<div class={classes.headerLinks}>
