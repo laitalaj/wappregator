@@ -1,0 +1,21 @@
+.ticker {
+	width: 100%;
+	overflow: hidden;
+}
+
+.tickerContent {
+	white-space: nowrap;
+}
+
+/*
+  Content is duplicated to create a seamless scrolling effect.
+*/
+
+@keyframes ticker {
+	0% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
