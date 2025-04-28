@@ -1,93 +1,67 @@
+import csv
 import datetime
+import re
 
 import aiohttp
+import bs4
 from wapprecommon import model, radios
 
 from wappregator.radios import base
+
+TIME_RE = re.compile(r"KLO (\d{2})")
+DATE_RE = re.compile(r"[A-Z]{2} (\d+)\.(\d+)")
 
 
 class SateilyFetcher(base.BaseFetcher):
     """Fetcher for Radio Säteily, the wappuradio from Rovaniemi.
 
-    If you thought Rattoradio was bad, check this out.
+    Contains good ol' CSV technology.
     """
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(radios.SATEILY)
+        self.link_url = "https://www.radiosateily.fi/ohjelmistocsv"
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Get the URL for the radio's API endpoint.
 
-        No API available.
-
-        Just a set of Excel screenshots.
-
         Args:
-            session: Not used.
+            session: The aiohttp session to use for the request.
 
         Returns:
-            An empty string.
+            The URL for a CSV file containing the schedule.
         """
-        return ""
+        res = await session.get(self.link_url)
+        res.raise_for_status()
+        soup = bs4.BeautifulSoup(await res.text(), "html.parser")
+        year = datetime.date.today().year
+        csv_link = soup.find("a", title=f"sateily_ohjelmakartta_vappu_{year}.csv")
+        if not csv_link:
+            raise ValueError("No CSV schedule found")
 
-    async def fetch_schedule(
-        self, session: aiohttp.ClientSession
-    ) -> list[model.Program]:
-        """Return a mysterious schedule.
+        url = csv_link.get("href")  # type: ignore # mypy doesn't like this for some reason
+        if not url:
+            raise ValueError("CSV link is missing href")
+        return url
 
-        Args:
-            session: Not used.
-
-        Returns:
-            The schedule for the radio station.
-        """
-        programs = []
-        start_date = datetime.date(2025, 4, 16)
-        end_date = datetime.date(2025, 4, 30)
-        current_date = start_date
-        tz = datetime.timezone(datetime.timedelta(hours=3))
-
-        while current_date <= end_date:
-            start_time = datetime.datetime.combine(
-                current_date, datetime.time.min, tzinfo=tz
-            )
-            end_time = datetime.datetime.combine(
-                current_date, datetime.time.max, tzinfo=tz
-            )
-            programs.append(
-                model.Program(
-                    title="???",
-                    description="Selvitä mysteeri Excelistä: https://www.radiosateily.fi/ohjelmakartta",
-                    start=start_time,
-                    end=end_time,
-                )
-            )
-            current_date += datetime.timedelta(days=1)
-
-        return programs
-
-    async def parse_response(self, response: aiohttp.ClientResponse) -> None:
+    async def parse_response(
+        self, response: aiohttp.ClientResponse
+    ) -> list[dict[str, str]]:
         """Parse the response from the radio station.
 
-        Never called. No responses to parse.
-
-        I mean I love the asethetics of the site, though.
-        So who cares if some poor old programmer can't access the schedule
-        programmatically?
-        Style over substance!
-
         Args:
-            response: Not used.
+            response: The response.
+
+        Returns:
+            CSV rows as a list of dictionaries.
         """
-        pass
+        text = await response.text(encoding="utf-8-sig")
+        reader = csv.DictReader(text.splitlines(), delimiter=";")
+        return list(reader)
 
-    def parse_schedule(self, data: list[model.Program]) -> list[model.Program]:
-        """Return the schedule as is.
-
-        Identity is beautiful.
-
-        Amen.
+    def parse_schedule(self, data: list[dict[str, str]]) -> list[model.Program]:
+        """Parse the schedule CSV.
 
         Args:
             data: The schedule data.
@@ -95,4 +69,70 @@ class SateilyFetcher(base.BaseFetcher):
         Returns:
             The schedule for the radio station.
         """
-        return data
+        # SPAGHETTI WARNING! I just want to ship this quickly, definitely not my
+        # proudest piece of code : -- D
+        # TODO: Refactor the hell out of this crap
+        raw: dict[str, list[model.Program]] = {}
+        previous_time = 0
+        extra_delta = 0
+        tz = datetime.timezone(datetime.timedelta(hours=3))
+
+        for row in data:
+            time = row[""]
+            time_match = TIME_RE.match(time)
+            if not time_match:
+                continue
+            hour = int(time_match.group(1))
+            if hour < previous_time:
+                extra_delta += 24
+            previous_time = hour
+            delta = datetime.timedelta(hours=hour + extra_delta)
+
+            for key, val in row.items():
+                if key == "":
+                    # Time column, handled above
+                    continue
+                if not val:
+                    # Empty column, skip
+                    continue
+
+                date_match = DATE_RE.match(key)
+                if not date_match:
+                    raise ValueError(f"Malformed header item in Säteily CSV: {key}")
+                if key not in raw:
+                    raw[key] = []
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                while month > 12:
+                    # Handle fat fingered month input
+                    month -= 10
+
+                start_date = (
+                    datetime.datetime(datetime.date.today().year, month, day, tzinfo=tz)
+                    + delta
+                )
+                end_date = start_date + datetime.timedelta(hours=1)
+                raw[key].append(
+                    model.Program(
+                        start=start_date,
+                        end=end_date,
+                        title=val,
+                    )
+                )
+
+        res = []
+        for key, vals in raw.items():
+            current = None
+            for value in vals:
+                if current is None:
+                    current = value
+                    continue
+                if current.title == value.title and current.end == value.start:
+                    current.end = value.end
+                else:
+                    res.append(current)
+                    current = value
+            if current is not None:
+                res.append(current)
+        return res

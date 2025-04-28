@@ -45,4 +45,7 @@ export const funnySlogansHaha = [
 	"Melkein WCAG 2.1 AA kompliantti!",
 	"Sitten alkoi unettomuus.",
 	"tahtoisin itse olla henkilökohtaisesti paikalla kun ekan kerran jysähtää",
+	"Nyt 100% vähemmän DOS-hyökkäys!",
+	"100% ykikkötestausvapaa",
+	"Toteutettu API-rajapintateknologialla",
 ];

@@ -102,10 +102,10 @@ class BaseFetcher(ABC):
 
     @abstractmethod
     def parse_schedule(self, data: Any) -> list[model.Program]:
-        """Parse the schedule JSON data into a list of Program objects.
+        """Parse the schedule data into a list of Program objects.
 
         Args:
-            data: The JSON data from the radio's API (as returned by fetch_schedule).
+            data: The data from the radio's API (as returned by fetch_schedule).
 
         Returns:
             A list of Program objects.
