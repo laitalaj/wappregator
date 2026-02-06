@@ -222,8 +222,9 @@ function getMaydayCountdown(): number {
 }
 
 export function useMaydayCountdownState(): Accessor<number> {
-	const [countdownState, setCountdownState] =
-		createSignal<number>(getMaydayCountdown());
+	const [countdownState, setCountdownState] = createSignal<number>(
+		getMaydayCountdown(),
+	);
 
 	const interval = setInterval(
 		() => setCountdownState(getMaydayCountdown()),

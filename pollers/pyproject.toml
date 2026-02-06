@@ -50,6 +50,4 @@ module = ["socketio"]
 ignore_missing_imports = true
 
 [dependency-groups]
-dev = [
-    "mypy>=1.15.0",
-]
+dev = ["mypy>=1.15.0"]

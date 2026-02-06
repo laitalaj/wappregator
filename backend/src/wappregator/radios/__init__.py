@@ -11,7 +11,7 @@ from wappregator.radios import (
     norppa,
     rakkauden,
     ratto,
-    sateily,
+    # sateily,
     turun,
     wapina,
 )
@@ -23,7 +23,8 @@ FETCHERS = [
     norppa.NorppaFetcher(),
     wapina.WapinaFetcher(),
     ratto.RattoFetcher(),
-    sateily.SateilyFetcher(),
+    # Domain doesn't exist as of 2026-02-06. Fix when we're closer to Wappu!
+    # sateily.SateilyFetcher(),
     jkl.JklFetcher(),
 ]
 

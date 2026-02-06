@@ -89,6 +89,10 @@ class TurunFetcher(base.JSONFetcher):
         """
         props = data["pageProps"]
         shows = props["showsByDate"]
+
+        if shows is None:
+            return []
+
         return super().parse_schedule(
             [entry for lst in shows.values() for entry in lst]
         )

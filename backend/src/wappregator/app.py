@@ -105,3 +105,16 @@ async def get_schedule(
 async def get_now_playing(client: ValkeyClient) -> dict[str, model.Song | None]:
     """Get currently playing songs for Wappuradios."""
     return await radios.now_playing(client)
+
+
+@app.get("/health/live")
+async def live_check() -> str:
+    """Check whether the app is alive."""
+    return "ok"
+
+
+@app.get("/health/ready")
+async def ready_check(client: ValkeyClient) -> str:
+    """Check whether the app is ready."""
+    await client.ping()
+    return "ok"

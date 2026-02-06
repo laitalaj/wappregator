@@ -23,4 +23,4 @@ services:
     environment:
       VALKEY_URL: "valkey://cache"
   cache:
-    image: docker.io/valkey/valkey:8-alpine
+    image: docker.io/valkey/valkey-bundle:8-alpine

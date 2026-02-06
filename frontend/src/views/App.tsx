@@ -31,10 +31,17 @@ const App: Component = () => {
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
 	const channelStates = useChannelStates(schedule, radios, nowPlaying);
+	const wappu = useWappuState();
 
 	const isOffSeason = createMemo(() => {
+		if (wappu() === WappuState.Wappu) {
+			return false;
+		}
+
 		const states = channelStates();
-		return states.length > 0 && states.every((s) => s.nextPrograms.length === 0);
+		return (
+			states.length > 0 && states.every((s) => s.nextPrograms.length === 0)
+		);
 	});
 
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
@@ -73,12 +80,9 @@ const App: Component = () => {
 
 	return (
 		<div class={classes.app}>
-			<Header inert={nonModalElementsInert} />
+			<Header inert={nonModalElementsInert} wappu={wappu} />
 			<main>
-				<Show
-					when={!isOffSeason()}
-					fallback={<OffSeasonCountdown />}
-				>
+				<Show when={!isOffSeason()} fallback={<OffSeasonCountdown />}>
 					<div
 						classList={{
 							[classes.content]: true,
@@ -136,6 +140,7 @@ function OffSeasonCountdown() {
 
 interface HeaderProps {
 	inert: Accessor<boolean>;
+	wappu: Accessor<WappuState>;
 }
 
 function Header(props: HeaderProps) {
@@ -143,9 +148,8 @@ function Header(props: HeaderProps) {
 		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
-	const wappu = useWappuState();
 	const logo = createMemo(() => {
-		if (wappu() === WappuState.Wappu) {
+		if (props.wappu() === WappuState.Wappu) {
 			return wappuImgs[Math.floor(Math.random() * wappuImgs.length)];
 		}
 		return "/appicon.png";

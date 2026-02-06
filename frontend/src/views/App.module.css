@@ -168,8 +168,7 @@ main {
 }
 
 .rainbowText {
-	background:
-		linear-gradient(
+	background: linear-gradient(
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
 		),
