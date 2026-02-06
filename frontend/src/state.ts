@@ -1,5 +1,6 @@
 import {
 	addHours,
+	differenceInCalendarDays,
 	isBefore,
 	isWithinInterval,
 	parseISO,
@@ -208,4 +209,29 @@ export function useWappuState(): Accessor<WappuState> {
 	});
 
 	return wappuState;
+}
+
+function getMaydayCountdown(): number {
+	const now = new Date();
+	const year = now.getFullYear();
+	let mayday = new Date(year, 4, 1); // May 1st
+	if (now >= mayday) {
+		mayday = new Date(year + 1, 4, 1);
+	}
+	return differenceInCalendarDays(mayday, now);
+}
+
+export function useMaydayCountdownState(): Accessor<number> {
+	const [countdownState, setCountdownState] =
+		createSignal<number>(getMaydayCountdown());
+
+	const interval = setInterval(
+		() => setCountdownState(getMaydayCountdown()),
+		1000 * 60,
+	);
+	onCleanup(() => {
+		clearInterval(interval);
+	});
+
+	return countdownState;
 }

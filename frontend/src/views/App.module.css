@@ -108,3 +108,106 @@ main {
 		color: inherit;
 	}
 }
+
+/* Vibe-CSS below, sorry B^) */
+
+.offSeasonWrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-grow: 1;
+
+	&::before {
+		content: "";
+		flex: 1;
+	}
+
+	&::after {
+		content: "";
+		flex: 2;
+	}
+}
+
+.offSeasonCountdown {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 32px 48px;
+	background-color: rgb(255 255 255 / 8%);
+	border-radius: 16px;
+}
+
+@property --gradient-angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+
+@keyframes rainbow {
+	0% {
+		--gradient-angle: 0deg;
+		background-position: 0% 50%;
+	}
+	25% {
+		--gradient-angle: 90deg;
+		background-position: 50% 50%;
+	}
+	50% {
+		--gradient-angle: 180deg;
+		background-position: 100% 50%;
+	}
+	75% {
+		--gradient-angle: 270deg;
+		background-position: 50% 50%;
+	}
+	100% {
+		--gradient-angle: 360deg;
+		background-position: 0% 50%;
+	}
+}
+
+.rainbowText {
+	background:
+		linear-gradient(
+			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
+			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
+		),
+		linear-gradient(
+			var(--gradient-angle),
+			#ff6b6b,
+			#feca57,
+			#48dbfb,
+			#ff9ff3,
+			#54a0ff,
+			#5f27cd,
+			#ff6b6b
+		);
+	background-size: 100% 100%, 300% 100%;
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	animation: rainbow 6s linear infinite;
+}
+
+.countdownNumber {
+	composes: rainbowText;
+	font-family: "Bungee", sans-serif;
+	font-size: 6rem;
+	line-height: 1;
+}
+
+.countdownLabel {
+	composes: rainbowText;
+	font-size: 1.5rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	animation-delay: 0.5s;
+}
+
+.sleepingMessage {
+	margin-top: 24px;
+	font-size: 0.9rem;
+	color: rgb(255 255 255 / 50%);
+	font-style: italic;
+}

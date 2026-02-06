@@ -14,6 +14,7 @@ import type { RadioState } from "../radio";
 import {
 	WappuState,
 	useChannelStates,
+	useMaydayCountdownState,
 	useNowPlayingState,
 	useRadiosState,
 	useScheduleState,
@@ -30,6 +31,11 @@ const App: Component = () => {
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
 	const channelStates = useChannelStates(schedule, radios, nowPlaying);
+
+	const isOffSeason = createMemo(() => {
+		const states = channelStates();
+		return states.length > 0 && states.every((s) => s.nextPrograms.length === 0);
+	});
 
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
 		null,
@@ -69,35 +75,64 @@ const App: Component = () => {
 		<div class={classes.app}>
 			<Header inert={nonModalElementsInert} />
 			<main>
-				<div
-					classList={{
-						[classes.content]: true,
-						[classes.dimmedContent]: !!selectedProgram(),
-					}}
-					inert={nonModalElementsInert()}
+				<Show
+					when={!isOffSeason()}
+					fallback={<OffSeasonCountdown />}
 				>
-					<Channels
-						channelState={channelStates}
-						isPlaying={isPlaying}
-						setIsPlaying={setIsPlaying}
-						selectedChannelId={selectedChannelId}
-						setSelectedChannelId={setSelectedChannelId}
-						setSelectedProgram={setSelectedProgram}
-					/>
-				</div>
-				<Show when={selectedProgram()}>
-					{(selected) => (
-						<Description
-							programInfo={selected()}
+					<div
+						classList={{
+							[classes.content]: true,
+							[classes.dimmedContent]: !!selectedProgram(),
+						}}
+						inert={nonModalElementsInert()}
+					>
+						<Channels
+							channelState={channelStates}
+							isPlaying={isPlaying}
+							setIsPlaying={setIsPlaying}
+							selectedChannelId={selectedChannelId}
+							setSelectedChannelId={setSelectedChannelId}
 							setSelectedProgram={setSelectedProgram}
 						/>
-					)}
+					</div>
+					<Show when={selectedProgram()}>
+						{(selected) => (
+							<Description
+								programInfo={selected()}
+								setSelectedProgram={setSelectedProgram}
+							/>
+						)}
+					</Show>
+					<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
 				</Show>
-				<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
 			</main>
 		</div>
 	);
 };
+
+function OffSeasonCountdown() {
+	const daysUntilWappu = useMaydayCountdownState();
+	const rainbowIntensity = createMemo(() =>
+		Math.max(0, Math.min(1, (100 - daysUntilWappu()) / 100)),
+	);
+
+	return (
+		<div class={classes.offSeasonWrapper}>
+			<div
+				class={classes.offSeasonCountdown}
+				style={{ "--rainbow-intensity": rainbowIntensity() }}
+			>
+				<span class={classes.countdownNumber}>{daysUntilWappu()}</span>
+				<span class={classes.countdownLabel}>
+					{daysUntilWappu() === 1 ? "day" : "days"} until Wappu
+				</span>
+				<span class={classes.sleepingMessage}>
+					Sleeping until programming is published
+				</span>
+			</div>
+		</div>
+	);
+}
 
 interface HeaderProps {
 	inert: Accessor<boolean>;
