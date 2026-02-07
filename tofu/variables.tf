@@ -192,3 +192,15 @@ variable "cert_manager_version" {
   type        = string
   default     = "v1.19.2"
 }
+
+variable "keel_image_tag" {
+  description = "Docker image tag for Keel"
+  type        = string
+  default     = "0.20"
+}
+
+variable "keel_poll_schedule" {
+  description = "Keel poll schedule for checking image updates (cron or @every syntax)"
+  type        = string
+  default     = "@every 5m"
+}
