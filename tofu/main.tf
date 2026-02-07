@@ -30,6 +30,10 @@ terraform {
       source  = "go-gandi/gandi"
       version = "~> 2.3"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.19"
+    }
   }
 }
 
@@ -46,6 +50,14 @@ provider "kubernetes" {
   client_certificate     = data.upcloud_kubernetes_cluster.wappregator.client_certificate
   client_key             = data.upcloud_kubernetes_cluster.wappregator.client_key
   cluster_ca_certificate = data.upcloud_kubernetes_cluster.wappregator.cluster_ca_certificate
+}
+
+provider "kubectl" {
+  host                   = data.upcloud_kubernetes_cluster.wappregator.host
+  client_certificate     = data.upcloud_kubernetes_cluster.wappregator.client_certificate
+  client_key             = data.upcloud_kubernetes_cluster.wappregator.client_key
+  cluster_ca_certificate = data.upcloud_kubernetes_cluster.wappregator.cluster_ca_certificate
+  load_config_file       = false
 }
 
 provider "helm" {

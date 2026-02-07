@@ -174,3 +174,21 @@ variable "frontend_memory_limit" {
   type        = string
   default     = "128Mi"
 }
+
+variable "letsencrypt_email" {
+  description = "Email address for Let's Encrypt ACME registration"
+  type        = string
+  default     = "webmaster@wappregat.org"
+}
+
+variable "use_prod_letsencrypt" {
+  description = "Use production Let's Encrypt server (set to false for staging during testing)"
+  type        = bool
+  default     = true
+}
+
+variable "cert_manager_version" {
+  description = "Version of cert-manager Helm chart"
+  type        = string
+  default     = "v1.19.2"
+}

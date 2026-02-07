@@ -17,4 +17,3 @@ resource "gandi_livedns_record" "www" {
   ttl    = 300
   values = [local.lb_hostname]
 }
-
