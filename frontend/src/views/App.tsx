@@ -131,7 +131,7 @@ function OffSeasonCountdown() {
 					{daysUntilWappu() === 1 ? "day" : "days"} until Wappu
 				</span>
 				<span class={classes.sleepingMessage}>
-					Sleeping until programming is published
+					Sleeping until programming is published...
 				</span>
 			</div>
 		</div>
