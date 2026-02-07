@@ -1,23 +1,23 @@
 import {
 	type Accessor,
+	createMemo,
+	createSignal,
 	Match,
 	type Setter,
 	Show,
 	Switch,
-	createMemo,
-	createSignal,
 } from "solid-js";
 import { getProgramProgress } from "../../getProgramProgress";
 import type { RadioState } from "../../radio";
 import { formatTime } from "../../timeUtils";
+import { brandColorVariablesStyle } from "../common/brandUtils";
 import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
-import { brandColorVariablesStyle } from "../common/brandUtils";
 import { AudioPlayer } from "./AudioPlayer";
+import { getHlsStreamUrl } from "./audioPlayerCommon";
 import { HlsAudioPlayer } from "./HlsAudioPlayer";
 import classes from "./PlayerBar.module.css";
 import { VolumeSlider } from "./VolumeSlide";
-import { getHlsStreamUrl } from "./audioPlayerCommon";
 
 interface Props {
 	radioState: Accessor<RadioState | undefined>;
@@ -99,7 +99,7 @@ export function PlayerBar(props: Props) {
 							aria-label="Mediasoitin"
 							style={brandColorVariablesStyle(state().radio.brand)}
 						>
-							<span aria-label="Nyt soi">{statusText()}</span>
+							<span>{statusText()}</span>
 							<div class={classes.controlsRow}>
 								<PlayButton
 									isPlaying={isPlaying}

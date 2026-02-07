@@ -1,10 +1,10 @@
 import {
 	type Component,
-	type Setter,
-	Show,
 	createMemo,
 	onCleanup,
 	onMount,
+	type Setter,
+	Show,
 } from "solid-js";
 import { formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
@@ -27,10 +27,8 @@ export const Description: Component<Props> = (props) => {
 
 	const handleClose = () => props.setSelectedProgram(null);
 
-	const handleClick = (
-		e: MouseEvent & { currentTarget: HTMLDivElement; target: Element },
-	) => {
-		if (e.target.classList.contains(classes.overlay)) {
+	const handleOverlayClick = (e: MouseEvent) => {
+		if (e.target === e.currentTarget) {
 			handleClose();
 		}
 	};
@@ -50,7 +48,8 @@ export const Description: Component<Props> = (props) => {
 	});
 
 	return (
-		<div class={classes.overlay} onClick={handleClick}>
+		// biome-ignore lint/a11y/noStaticElementInteractions: click-to-dismiss backdrop
+		<div class={classes.overlay} onClick={handleOverlayClick}>
 			<dialog
 				class={classes.description}
 				aria-modal

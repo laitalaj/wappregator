@@ -1,4 +1,4 @@
-import { type Accessor, Index, createEffect, createMemo } from "solid-js";
+import { type Accessor, createEffect, createMemo, Index } from "solid-js";
 import type { Program, Radio } from "../../types";
 import {
 	seekToLive,

@@ -12,7 +12,9 @@
 	width: 100%;
 	gap: 4px;
 	container: playerBar;
-	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+	transition:
+		background-color 0.2s ease-in-out,
+		color 0.2s ease-in-out;
 
 	& > * {
 		width: 100%;

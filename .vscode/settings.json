@@ -12,7 +12,12 @@
     "editor.defaultFormatter": "biomejs.biome",
     "editor.tabSize": 2
   },
-  "biome.lspBin": "./frontend/node_modules/.bin/biome",
-  "css.lint.validProperties": ["composes"],
+  "[postcss]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2
+  },
+  "css.lint.validProperties": [
+    "composes"
+  ],
   "eslint.useFlatConfig": true
 }

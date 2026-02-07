@@ -1,10 +1,10 @@
 import { IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-solidjs";
 import {
 	type Accessor,
-	Show,
 	createMemo,
 	createSignal,
 	createUniqueId,
+	Show,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import classes from "./PlayerBar.module.css";

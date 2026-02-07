@@ -65,7 +65,7 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 	);
 
 	return (
-		// biome-ignore lint/a11y/useMediaCaption: <explanation>
+		// biome-ignore lint/a11y/useMediaCaption: hidden audio element for HLS streaming, no captions needed
 		<audio
 			hidden
 			preload="none"
