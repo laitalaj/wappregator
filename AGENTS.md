@@ -28,7 +28,7 @@ Local development runs via Docker Compose (`compose.yml`). Services: frontend (p
 
 ## Frontend
 
-- Runtime: Node.js v23
+- Runtime: Node.js v24 (LTS)
 - Package manager: pnpm
 - Framework: SolidJS with TypeScript
 - Build tool: Vite

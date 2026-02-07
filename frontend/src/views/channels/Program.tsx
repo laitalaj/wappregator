@@ -2,15 +2,15 @@ import { format, isToday, isTomorrow } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
-	Index,
-	type JSX,
-	type Setter,
-	Show,
 	children,
 	createMemo,
 	createSignal,
+	Index,
+	type JSX,
 	onCleanup,
 	onMount,
+	type Setter,
+	Show,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { getProgramProgress } from "../../getProgramProgress";
@@ -137,15 +137,6 @@ export function PresentationalProgramGroup(
 		</div>
 	);
 }
-
-const formatRelativeLocale = {
-	lastWeek: "'Viime' eeee",
-	yesterday: "'Eilen'",
-	today: "'Myöhemmin tänään'",
-	tomorrow: "'Huomenna'",
-	nextWeek: "'Ensi' eeee",
-	other: "P",
-};
 
 interface ProgramGroupProps {
 	date: Accessor<string>;

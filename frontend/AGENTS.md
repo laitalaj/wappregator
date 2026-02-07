@@ -4,7 +4,7 @@ SolidJS single-page application for browsing and listening to Wappuradio station
 
 ## Tooling
 
-- Runtime: Node.js v23
+- Runtime: Node.js v24 (LTS)
 - Package manager: pnpm (version pinned in `package.json` `packageManager` field)
 - Build tool: Vite
 - Language: TypeScript (strict mode)

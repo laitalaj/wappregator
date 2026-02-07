@@ -5,20 +5,20 @@ import {
 import {
 	type Accessor,
 	type Component,
-	Show,
 	createMemo,
 	createSignal,
+	Show,
 } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
 import {
-	WappuState,
 	useChannelStates,
 	useMaydayCountdownState,
 	useNowPlayingState,
 	useRadiosState,
 	useScheduleState,
 	useWappuState,
+	WappuState,
 } from "../state";
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";

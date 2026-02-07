@@ -168,7 +168,8 @@ main {
 }
 
 .rainbowText {
-	background: linear-gradient(
+	background:
+		linear-gradient(
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
 		),
@@ -182,7 +183,9 @@ main {
 			#5f27cd,
 			#ff6b6b
 		);
-	background-size: 100% 100%, 300% 100%;
+	background-size:
+		100% 100%,
+		300% 100%;
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent;

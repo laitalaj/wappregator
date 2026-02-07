@@ -1,16 +1,16 @@
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-solidjs";
 import {
 	type Accessor,
-	Index,
-	type Setter,
-	Show,
 	createMemo,
 	createSignal,
+	Index,
 	onMount,
+	type Setter,
+	Show,
 } from "solid-js";
 import type { ChannelState, Program, ProgramInfo, Radio } from "../../types";
-import { PlayButton } from "../common/PlayButton";
 import { brandColorVariablesStyle } from "../common/brandUtils";
+import { PlayButton } from "../common/PlayButton";
 import classes from "./Channel.module.css";
 import {
 	MaybeProgram,

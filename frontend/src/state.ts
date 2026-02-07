@@ -10,11 +10,11 @@ import {
 import { io } from "socket.io-client";
 import {
 	type Accessor,
-	type Resource,
 	createEffect,
 	createResource,
 	createSignal,
 	onCleanup,
+	type Resource,
 } from "solid-js";
 import type { ChannelState, NowPlaying, Radios, Schedule } from "./types";
 
@@ -154,11 +154,6 @@ export function useNowPlayingState(): Accessor<NowPlaying> {
 	});
 
 	return nowPlaying;
-}
-
-async function fetchNowPlaying(): Promise<NowPlaying> {
-	const response = await fetch(`${import.meta.env.VITE_API_URL}/now_playing`);
-	return response.json();
 }
 
 export enum WappuState {
