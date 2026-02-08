@@ -128,11 +128,11 @@ function OffSeasonCountdown() {
 			>
 				<span class={classes.countdownNumber}>{daysUntilWappu()}</span>
 				<span class={classes.countdownLabel}>
-					{daysUntilWappu() === 1 ? "day" : "days"} until Wappu
+					{daysUntilWappu() === 1 ? "päivä" : "päivää"} Wappuun
 				</span>
-				<span class={classes.sleepingMessage}>
-					Sleeping until programming is published...
-				</span>
+				<p class={classes.offSeasonMessage}>
+					Wappregator palaa pian...
+				</p>
 			</div>
 		</div>
 	);

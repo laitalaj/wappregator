@@ -133,7 +133,7 @@ main {
 	flex-direction: column;
 	align-items: center;
 	gap: 8px;
-	padding: 32px 48px;
+	padding: 32px;
 	background-color: rgb(255 255 255 / 8%);
 	border-radius: 16px;
 }
@@ -145,25 +145,11 @@ main {
 }
 
 @keyframes rainbow {
-	0% {
+	from {
 		--gradient-angle: 0deg;
-		background-position: 0% 50%;
 	}
-	25% {
-		--gradient-angle: 90deg;
-		background-position: 50% 50%;
-	}
-	50% {
-		--gradient-angle: 180deg;
-		background-position: 100% 50%;
-	}
-	75% {
-		--gradient-angle: 270deg;
-		background-position: 50% 50%;
-	}
-	100% {
+	to {
 		--gradient-angle: 360deg;
-		background-position: 0% 50%;
 	}
 }
 
@@ -173,8 +159,8 @@ main {
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
 			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
 		),
-		linear-gradient(
-			var(--gradient-angle),
+		conic-gradient(
+			from var(--gradient-angle),
 			#ff6b6b,
 			#feca57,
 			#48dbfb,
@@ -183,9 +169,6 @@ main {
 			#5f27cd,
 			#ff6b6b
 		);
-	background-size:
-		100% 100%,
-		300% 100%;
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent;
@@ -207,9 +190,9 @@ main {
 	animation-delay: 0.5s;
 }
 
-.sleepingMessage {
-	margin-top: 24px;
-	font-size: 0.9rem;
-	color: rgb(255 255 255 / 50%);
-	font-style: italic;
+.offSeasonMessage {
+	margin-top: 16px;
+	font-size: 1rem;
+	color: white;
+	text-align: center;
 }
