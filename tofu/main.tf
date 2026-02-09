@@ -30,9 +30,15 @@ terraform {
       source  = "go-gandi/gandi"
       version = "~> 2.3"
     }
+    # Needed because for some reason the Kubernetes provider can't handle adding CRDs and resources that use those in the same apply.name = {
+    # Bit of a pain!
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.19"
+      source  = "alekc/kubectl"
+      version = "~> 2.1"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.5"
     }
   }
 }

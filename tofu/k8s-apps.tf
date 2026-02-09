@@ -142,6 +142,13 @@ resource "kubernetes_deployment_v1" "backend" {
     annotations = local.keel_annotations
   }
 
+
+  lifecycle {
+    ignore_changes = [
+      spec[0].template[0].metadata[0].annotations["keel.sh/update-time"],
+    ]
+  }
+
   spec {
     replicas = var.backend_replicas
 
@@ -231,6 +238,12 @@ resource "kubernetes_deployment_v1" "pollers" {
     annotations = local.keel_annotations
   }
 
+  lifecycle {
+    ignore_changes = [
+      spec[0].template[0].metadata[0].annotations["keel.sh/update-time"],
+    ]
+  }
+
   spec {
     replicas = 1
 
@@ -290,6 +303,12 @@ resource "kubernetes_deployment_v1" "frontend" {
     namespace   = kubernetes_namespace_v1.wappregator.metadata[0].name
     labels      = local.frontend_labels
     annotations = local.keel_annotations
+  }
+
+  lifecycle {
+    ignore_changes = [
+      spec[0].template[0].metadata[0].annotations["keel.sh/update-time"],
+    ]
   }
 
   spec {

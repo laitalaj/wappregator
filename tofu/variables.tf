@@ -204,3 +204,9 @@ variable "keel_poll_schedule" {
   type        = string
   default     = "@every 5m"
 }
+
+variable "gateway_api_version" {
+  description = "Version of Gateway API CRDs to install"
+  type        = string
+  default     = "v1.4.1"
+}

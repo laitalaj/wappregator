@@ -19,5 +19,7 @@
   "css.lint.validProperties": [
     "composes"
   ],
-  "eslint.useFlatConfig": true
+  "eslint.useFlatConfig": true,
+  "chat.useNestedAgentsMdFiles": true,
+  "chat.useAgentsMdFile": true
 }
