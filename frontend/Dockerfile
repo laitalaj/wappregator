@@ -1,5 +1,5 @@
 # Base image for frontend development and production builder
-FROM node:23-alpine3.20 AS base
+FROM node:24-alpine3.23 AS base
 
 RUN npm install --global corepack@latest
 RUN corepack enable pnpm
@@ -33,7 +33,7 @@ RUN pnpm run build
 
 
 # Production frontend image
-FROM busybox:1.36 AS prod
+FROM busybox:1.37 AS prod
 
 WORKDIR /app
 COPY --from=builder /app/dist .

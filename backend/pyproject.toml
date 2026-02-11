@@ -6,12 +6,12 @@ readme = "README.md"
 authors = [{ name = "Julius Laitala", email = "julius@laita.la" }]
 requires-python = ">=3.13"
 dependencies = [
-    "aiohttp[speedups]>=3.11.16",
-    "beautifulsoup4>=4.13.4",
-    "fastapi[standard]>=0.115.12",
+    "aiohttp[speedups]>=3.13.3",
+    "beautifulsoup4>=4.14.3",
+    "fastapi[standard]>=0.128.7",
     "ics>=0.7.2",
-    "python-socketio>=5.13.0",
-    "valkey[libvalkey]>=6.1.0",
+    "python-socketio>=5.16.1",
+    "valkey[libvalkey]>=6.1.1",
     "wapprecommon",
 ]
 
@@ -23,7 +23,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["mypy>=1.15.0"]
+dev = ["mypy>=1.19.1"]
 
 [tool.ruff.lint]
 select = [

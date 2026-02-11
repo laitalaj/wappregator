@@ -38,11 +38,13 @@ class SateilyFetcher(base.BaseFetcher):
         year = datetime.date.today().year
         csv_link = soup.find("a", title=f"sateily_ohjelmakartta_vappu_{year}.csv")
         if not csv_link:
-            raise ValueError("No CSV schedule found")
+            raise base.RadioError("No CSV schedule found")
 
-        url = csv_link.get("href")  # type: ignore # mypy doesn't like this for some reason
+        url = csv_link.get("href")
         if not url:
-            raise ValueError("CSV link is missing href")
+            raise base.RadioError("CSV link is missing href")
+        if isinstance(url, bs4.element.AttributeValueList):
+            raise base.RadioError("Multiple hrefs found for CSV link")
         return url
 
     async def parse_response(
@@ -98,7 +100,9 @@ class SateilyFetcher(base.BaseFetcher):
 
                 date_match = DATE_RE.match(key)
                 if not date_match:
-                    raise ValueError(f"Malformed header item in Säteily CSV: {key}")
+                    raise base.RadioError(
+                        f"Malformed header item in Säteily CSV: {key}"
+                    )
                 if key not in raw:
                     raw[key] = []
 

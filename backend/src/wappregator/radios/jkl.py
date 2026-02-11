@@ -53,9 +53,14 @@ class JklFetcher(base.BaseFetcher):
         # Every day has a <h4> title (Tiistai 22.4.2025) followed by a <p>, containing
         # the programs of the day separated by <br>
 
-        schedule_title = data.find("h3", string="Ohjelmakartta 2025")
+        title_content = f"Ohjelmakartta {datetime.datetime.now().year}"
+        headers = data.find_all("h3")
+        schedule_title = next(
+            (header for header in headers if header.string == title_content), None
+        )
         if schedule_title is None:
-            raise base.RadioError("Could not find schedule title")
+            return []
+
         schedule_container = schedule_title.find_parent("div", class_="container")
         if schedule_container is None:
             raise base.RadioError("Could not find schedule container")
