@@ -7,16 +7,25 @@ import {
 	startOfHour,
 	subHours,
 } from "date-fns";
-import { io } from "socket.io-client";
+import { io, type Socket } from "socket.io-client";
 import {
 	type Accessor,
+	createContext,
 	createEffect,
 	createResource,
 	createSignal,
 	onCleanup,
+	type ParentProps,
 	type Resource,
+	useContext,
 } from "solid-js";
-import type { ChannelState, NowPlaying, Radios, Schedule } from "./types";
+import type {
+	ChannelState,
+	ListenerCounts,
+	NowPlaying,
+	Radios,
+	Schedule,
+} from "./types";
 
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;
@@ -131,7 +140,9 @@ export function useChannelStates(
 	return channelState;
 }
 
-export function useNowPlayingState(): Accessor<NowPlaying> {
+const SocketContext = createContext<Socket>();
+
+export function SocketProvider(props: ParentProps) {
 	const socket_options = import.meta.env.VITE_SOCKETIO_PATH
 		? { path: import.meta.env.VITE_SOCKETIO_PATH }
 		: undefined;
@@ -139,6 +150,24 @@ export function useNowPlayingState(): Accessor<NowPlaying> {
 		? import.meta.env.VITE_API_URL
 		: undefined; // undefined = use current location
 	const socket = io(socket_url, socket_options);
+
+	onCleanup(() => {
+		socket.close();
+	});
+
+	return (
+		<SocketContext.Provider value={socket}>
+			{props.children}
+		</SocketContext.Provider>
+	);
+}
+
+export function useNowPlayingState(): Accessor<NowPlaying> {
+	const socket = useContext(SocketContext);
+	if (!socket) {
+		throw new Error("useNowPlayingState must be used within a SocketProvider");
+	}
+
 	const [nowPlaying, setNowPlaying] = createSignal<NowPlaying>({});
 
 	createEffect(() => {
@@ -149,11 +178,42 @@ export function useNowPlayingState(): Accessor<NowPlaying> {
 		socket.on("now_playing", updateNowPlaying);
 	});
 
-	onCleanup(() => {
-		socket.close();
+	return nowPlaying;
+}
+
+export function useListenersState(): Accessor<ListenerCounts> {
+	const socket = useContext(SocketContext);
+	if (!socket) {
+		throw new Error("useListenersState must be used within a SocketProvider");
+	}
+
+	const [listenerCounts, setListenerCounts] = createSignal<ListenerCounts>({});
+
+	createEffect(() => {
+		const updateListenerCounts = (data: ListenerCounts) => {
+			setListenerCounts(data);
+		};
+		socket.removeAllListeners("listeners");
+		socket.on("listeners", updateListenerCounts);
 	});
 
-	return nowPlaying;
+	return listenerCounts;
+}
+
+export function useChangeChannelEffect(
+	selectedChannelId: Accessor<string | null>,
+) {
+	const socket = useContext(SocketContext);
+	if (!socket) {
+		throw new Error(
+			"useChangeChannelEffect must be used within a SocketProvider",
+		);
+	}
+
+	createEffect(() => {
+		const channelId = selectedChannelId() || "none";
+		socket.emit("change_channel", channelId);
+	});
 }
 
 export enum WappuState {

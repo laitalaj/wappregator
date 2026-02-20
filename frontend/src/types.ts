@@ -56,3 +56,5 @@ export interface Song {
 }
 
 export type NowPlaying = Partial<Record<string, Song | null>>;
+
+export type ListenerCounts = Partial<Record<string, number>>;

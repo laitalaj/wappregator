@@ -5,6 +5,7 @@ import {
 import {
 	type Accessor,
 	type Component,
+	createEffect,
 	createMemo,
 	createSignal,
 	Show,
@@ -12,7 +13,10 @@ import {
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
 import {
+	SocketProvider,
+	useChangeChannelEffect,
 	useChannelStates,
+	useListenersState,
 	useMaydayCountdownState,
 	useNowPlayingState,
 	useRadiosState,
@@ -50,6 +54,21 @@ const App: Component = () => {
 	const [selectedProgram, setSelectedProgram] =
 		createSignal<ProgramInfo | null>(null);
 	const [isPlaying, setIsPlaying] = createSignal(false);
+
+	const selectedAndPlaying = createMemo(() => {
+		const channelId = selectedChannelId();
+		return isPlaying() ? channelId : null;
+	});
+	// We're passing this to createEffect in the function, so this is a false alarm
+	// (could still be refactored instead of ignored but I'll leave that as an exercise for the reader)
+	// eslint-disable-next-line solid/reactivity
+	useChangeChannelEffect(selectedAndPlaying);
+
+	const listeners = useListenersState();
+	createEffect(() => {
+		// TODO: Show in UI
+		console.log("Listener counts updated:", listeners());
+	});
 
 	const radioState = createMemo((): RadioState | undefined => {
 		if (selectedChannelId() === null) {
@@ -130,9 +149,7 @@ function OffSeasonCountdown() {
 				<span class={classes.countdownLabel}>
 					{daysUntilWappu() === 1 ? "päivä" : "päivää"} Wappuun
 				</span>
-				<p class={classes.offSeasonMessage}>
-					Wappregator palaa pian...
-				</p>
+				<p class={classes.offSeasonMessage}>Wappregator palaa pian...</p>
 			</div>
 		</div>
 	);
@@ -188,4 +205,12 @@ function Header(props: HeaderProps) {
 	);
 }
 
-export default App;
+const AppWithSocket: Component = () => {
+	return (
+		<SocketProvider>
+			<App />
+		</SocketProvider>
+	);
+};
+
+export default AppWithSocket;

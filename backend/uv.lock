@@ -1526,10 +1526,14 @@ version = "0.1.0"
 source = { editable = "../common" }
 dependencies = [
     { name = "pydantic" },
+    { name = "valkey" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.12.5" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "valkey", specifier = ">=6.1.1" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "mypy", specifier = ">=1.19.1" }]

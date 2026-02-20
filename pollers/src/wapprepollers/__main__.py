@@ -4,6 +4,7 @@ import logging
 import valkey.asyncio as valkey
 from wapprecommon import constants
 
+from wapprepollers.housekeeping import cleanup_dead_backends
 from wapprepollers.heartbeat import heartbeat, ready
 from wapprepollers.pollers import diodi, rakkauden, turun
 
@@ -23,7 +24,7 @@ async def main() -> None:
     """Run the pollers."""
     valkey_pool = valkey.ConnectionPool.from_url(constants.VALKEY_URL)
     tasks = [poller.loop_wrapper(valkey_pool) for poller in POLLERS]
-    tasks += [heartbeat(), ready(valkey_pool)]
+    tasks += [cleanup_dead_backends(valkey_pool), heartbeat(), ready(valkey_pool)]
     logger.info("wapprepollers are go")
     await asyncio.gather(*tasks)
 
