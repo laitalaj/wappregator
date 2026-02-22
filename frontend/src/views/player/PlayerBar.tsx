@@ -2,9 +2,11 @@ import {
 	type Accessor,
 	createMemo,
 	createSignal,
+	lazy,
 	Match,
 	type Setter,
 	Show,
+	Suspense,
 	Switch,
 } from "solid-js";
 import { getProgramProgress } from "../../getProgramProgress";
@@ -15,9 +17,14 @@ import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
 import { AudioPlayer } from "./AudioPlayer";
 import { getHlsStreamUrl } from "./audioPlayerCommon";
-import { HlsAudioPlayer } from "./HlsAudioPlayer";
 import classes from "./PlayerBar.module.css";
 import { VolumeSlider } from "./VolumeSlide";
+
+const HlsAudioPlayer = lazy(() =>
+	import("./HlsAudioPlayer").then((module) => ({
+		default: module.HlsAudioPlayer,
+	})),
+);
 
 interface Props {
 	radioState: Accessor<RadioState | undefined>;
@@ -75,13 +82,15 @@ export function PlayerBar(props: Props) {
 					<>
 						<Switch>
 							<Match when={isHlsChannel()}>
-								<HlsAudioPlayer
-									radio={() => state().radio}
-									isPlaying={isPlaying}
-									volume={volume}
-									nowPlaying={() => state().currentProgram}
-									setIsPlaying={props.setIsPlaying}
-								/>
+								<Suspense fallback={null}>
+									<HlsAudioPlayer
+										radio={() => state().radio}
+										isPlaying={isPlaying}
+										volume={volume}
+										nowPlaying={() => state().currentProgram}
+										setIsPlaying={props.setIsPlaying}
+									/>
+								</Suspense>
 							</Match>
 							<Match when={true}>
 								<AudioPlayer

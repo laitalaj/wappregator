@@ -8,7 +8,9 @@ import {
 	createEffect,
 	createMemo,
 	createSignal,
+	lazy,
 	Show,
+	Suspense,
 } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import type { RadioState } from "../radio";
@@ -27,8 +29,13 @@ import {
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
-import { Description } from "./description/Description";
 import { PlayerBar } from "./player/PlayerBar";
+
+const Description = lazy(() =>
+	import("./description/Description").then((module) => ({
+		default: module.Description,
+	})),
+);
 
 const App: Component = () => {
 	const radios = useRadiosState();
@@ -120,10 +127,12 @@ const App: Component = () => {
 					</div>
 					<Show when={selectedProgram()}>
 						{(selected) => (
-							<Description
-								programInfo={selected()}
-								setSelectedProgram={setSelectedProgram}
-							/>
+							<Suspense fallback={null}>
+								<Description
+									programInfo={selected()}
+									setSelectedProgram={setSelectedProgram}
+								/>
+							</Suspense>
 						)}
 					</Show>
 					<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
