@@ -3,6 +3,7 @@ import type { Program, Radio } from "../../types";
 import {
 	seekToLive,
 	useMediaSessionIntegration,
+	useShouldAvoidFlac,
 	useSyncPlaybackState,
 	useSyncVolume,
 } from "./audioPlayerCommon";
@@ -20,6 +21,17 @@ export function AudioPlayer(props: AudioPlayerProps) {
 
 	const radioId = createMemo(() => {
 		return props.radio().id;
+	});
+	const shouldAvoidFlac = useShouldAvoidFlac();
+
+	const streams = createMemo(() => {
+		const radioStreams = props.radio().streams ?? [];
+
+		if (!shouldAvoidFlac()) {
+			return radioStreams;
+		}
+
+		return radioStreams.filter((stream) => stream.mime_type !== "audio/flac");
 	});
 
 	// If the stream changes, we need to load the new stream
@@ -43,6 +55,31 @@ export function AudioPlayer(props: AudioPlayerProps) {
 		}
 	});
 
+	createEffect((wasAvoidingFlac) => {
+		const isAvoidingFlac = shouldAvoidFlac();
+
+		streams();
+
+		if (!audioRef) {
+			return isAvoidingFlac;
+		}
+
+		const switchedToRestrictedNetwork = !wasAvoidingFlac && isAvoidingFlac;
+
+		if (switchedToRestrictedNetwork && !audioRef.paused) {
+			audioRef.load();
+			seekToLive(audioRef);
+			audioRef.play().catch((error) => {
+				// If AbortError, ignore it
+				if (error.name !== "AbortError") {
+					console.error("Error playing audio:", error);
+				}
+			});
+		}
+
+		return isAvoidingFlac;
+	}, shouldAvoidFlac());
+
 	useSyncPlaybackState(
 		() => audioRef,
 		() => props.isPlaying(),
@@ -64,7 +101,7 @@ export function AudioPlayer(props: AudioPlayerProps) {
 				audioRef = element;
 			}}
 		>
-			<Index each={props.radio().streams ?? []}>
+			<Index each={streams()}>
 				{(stream) => <source src={stream().url} type={stream().mime_type} />}
 			</Index>
 		</audio>
