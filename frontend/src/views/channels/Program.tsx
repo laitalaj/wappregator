@@ -122,7 +122,7 @@ export function MaybeProgram(props: MaybeProgramProps) {
 }
 
 interface PresentationalProgramGroupProps {
-	title: Accessor<string>;
+	title: Accessor<JSX.Element>;
 	children: JSX.Element;
 }
 

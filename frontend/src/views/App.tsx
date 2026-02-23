@@ -5,7 +5,6 @@ import {
 import {
 	type Accessor,
 	type Component,
-	createEffect,
 	createMemo,
 	createSignal,
 	lazy,
@@ -41,7 +40,13 @@ const App: Component = () => {
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
-	const channelStates = useChannelStates(schedule, radios, nowPlaying);
+	const listeners = useListenersState();
+	const channelStates = useChannelStates(
+		schedule,
+		radios,
+		nowPlaying,
+		listeners,
+	);
 	const wappu = useWappuState();
 
 	const isOffSeason = createMemo(() => {
@@ -70,12 +75,6 @@ const App: Component = () => {
 	// (could still be refactored instead of ignored but I'll leave that as an exercise for the reader)
 	// eslint-disable-next-line solid/reactivity
 	useChangeChannelEffect(selectedAndPlaying);
-
-	const listeners = useListenersState();
-	createEffect(() => {
-		// TODO: Show in UI
-		console.log("Listener counts updated:", listeners());
-	});
 
 	const radioState = createMemo((): RadioState | undefined => {
 		if (selectedChannelId() === null) {

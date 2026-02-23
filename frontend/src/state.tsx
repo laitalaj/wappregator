@@ -84,12 +84,14 @@ export function useChannelStates(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
 	nowPlaying: Accessor<NowPlaying>,
+	listeners: Accessor<ListenerCounts>,
 ): Accessor<ChannelState[]> {
 	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
 	const updateChannelState = () => {
 		const scheduleData = schedule();
 		const radiosData = radios();
 		const nowPlayingData = nowPlaying();
+		const listenerData = listeners();
 
 		if (!scheduleData || !radiosData) {
 			return;
@@ -116,12 +118,14 @@ export function useChannelStates(
 			});
 
 			const currentSong = nowPlayingData?.[radio.id] ?? undefined;
+			const listenerCount = listenerData[radio.id];
 
 			res.push({
 				radio,
 				currentProgram,
 				nextPrograms,
 				currentSong,
+				listenerCount,
 			});
 		}
 		setChannelState(res);

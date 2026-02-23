@@ -61,6 +61,10 @@ export function PlayerBar(props: Props) {
 
 		parts.push(state.radio.name);
 
+		if (state.listenerCount) {
+			parts.push(`${state.listenerCount} kuuntelee`);
+		}
+
 		return parts.join(" | ");
 	});
 

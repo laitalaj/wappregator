@@ -43,6 +43,7 @@ export interface ChannelState {
 	currentProgram?: Program;
 	nextPrograms: Program[];
 	currentSong: Song | undefined;
+	listenerCount?: number;
 }
 
 export interface ProgramInfo {

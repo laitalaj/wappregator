@@ -1,4 +1,8 @@
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-solidjs";
+import {
+	IconChevronDown,
+	IconChevronUp,
+	IconHeadphones,
+} from "@tabler/icons-solidjs";
 import {
 	type Accessor,
 	createMemo,
@@ -132,13 +136,28 @@ export function Channel(props: Props) {
 				<Show when={radio().frequency_mhz}>
 					{radio().frequency_mhz?.toFixed(1)} MHz @{" "}
 				</Show>
-				{`${radio().location} / `}
+				{radio().location}
+				{" / "}
 				<a href={radio().url} class={classes.listenButton}>
 					WWW
 				</a>
 			</div>
 
-			<PresentationalProgramGroup title={() => "Nyt"}>
+			<PresentationalProgramGroup
+				title={() => (
+					<>
+						Nyt 
+						<Show when={props.station().listenerCount}>
+							{(count) => (
+								<span class={classes.listenerCount}>
+									<IconHeadphones size={16} aria-hidden="true" /> {count()}
+									<span class={classes.srOnly}> {count() === 1 ? "kuuntelija" : "kuuntelijaa"}</span>
+								</span>
+							)}
+						</Show>
+					</>
+				)}
+			>
 				<MaybeProgram
 					programInfo={currentProgram}
 					playingNow={true}
