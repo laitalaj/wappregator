@@ -17,6 +17,11 @@ POLLERS = [
     # ratto.RattoPoller(),
 ]
 
+if constants.INCLUDE_DEV_STATIONS:
+    from wapprepollers.pollers.somafm import get_somafm_pollers
+
+    POLLERS.extend(get_somafm_pollers())
+
 logger = logging.getLogger("wapprepollers")
 
 

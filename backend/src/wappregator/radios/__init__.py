@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 import valkey.asyncio as valkey
-from wapprecommon import model, keys
+from wapprecommon import constants, model, keys
 
 from wappregator.radios import (
     diodi,
@@ -27,6 +27,11 @@ FETCHERS = [
     # sateily.SateilyFetcher(),
     jkl.JklFetcher(),
 ]
+
+if constants.INCLUDE_DEV_STATIONS:
+    from wappregator.radios.somafm import get_somafm_fetchers
+
+    FETCHERS.extend(get_somafm_fetchers())
 
 logger = logging.getLogger(__name__)
 

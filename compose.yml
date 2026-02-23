@@ -23,6 +23,7 @@ services:
     environment:
       VALKEY_URL: "valkey://cache"
       ALLOWED_ORIGINS: "http://localhost:3000"
+      INCLUDE_DEV_STATIONS: "true"
   pollers:
     build:
       dockerfile: pollers.Dockerfile
@@ -33,5 +34,6 @@ services:
       - /app/.venv/ # Anonymous volume to avoid overwriting the venv with the user's local venv
     environment:
       VALKEY_URL: "valkey://cache"
+      INCLUDE_DEV_STATIONS: "true"
   cache:
     image: docker.io/valkey/valkey-bundle:8-alpine
