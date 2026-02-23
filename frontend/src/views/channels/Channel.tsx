@@ -146,12 +146,14 @@ export function Channel(props: Props) {
 			<PresentationalProgramGroup
 				title={() => (
 					<>
-						Nyt 
+						Nyt
 						<Show when={props.station().listenerCount}>
 							{(count) => (
 								<span class={classes.listenerCount}>
-									<IconHeadphones size={16} aria-hidden="true" /> {count()}
-									<span class={classes.srOnly}> {count() === 1 ? "kuuntelija" : "kuuntelijaa"}</span>
+									<IconHeadphones size={16} aria-hidden="true" />{" "}{count()}
+									<span class={classes.srOnly}>
+										{count() === 1 ? "kuuntelija" : "kuuntelijaa"}
+									</span>
 								</span>
 							)}
 						</Show>

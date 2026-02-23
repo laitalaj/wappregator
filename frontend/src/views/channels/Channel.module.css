@@ -21,8 +21,8 @@
 	& > h2 {
 		margin: 0;
 		/* Use fixed line-height to keep the first line aligned with the play button. */
-		line-height: 32px;
-		font-size: calc(max(1.5em, 1.5cqw));
+		line-height: 36px;
+		font-size: clamp(1.5em, 1.5cqw, 2.5em);
 	}
 }
 
@@ -77,6 +77,7 @@
 	display: inline-flex;
 	gap: 4px;
 	vertical-align: middle;
+	white-space: pre;
 }
 
 .srOnly {
