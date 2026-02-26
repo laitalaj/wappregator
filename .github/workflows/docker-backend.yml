@@ -17,6 +17,12 @@ on:
       - '.github/workflows/docker-backend.yml'
       - 'common/**'
       - 'backend/**'
+  workflow_dispatch:
+    inputs:
+      force-push:
+        description: 'Push the image even if not on default branch  (tagged with SHA only on other branches)'
+        default: false
+        type: boolean
 
 jobs:
   docker:
@@ -29,3 +35,4 @@ jobs:
     with:
       container-name: 'wappregator-backend'
       dockerfile: 'backend.Dockerfile'
+      force-push: ${{ inputs.force-push || false }}
