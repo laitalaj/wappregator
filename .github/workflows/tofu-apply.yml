@@ -1,0 +1,29 @@
+name: 'Tofu: Apply'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tofu-apply.yml'
+      - 'tofu/**'
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.UPCLOUD_S3_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.UPCLOUD_S3_SECRET_ACCESS_KEY }}
+      UPCLOUD_USERNAME: ${{ secrets.UPCLOUD_USERNAME }}
+      UPCLOUD_PASSWORD: ${{ secrets.UPCLOUD_PASSWORD }}
+      GANDI_PERSONAL_ACCESS_TOKEN: ${{ secrets.GANDI_PERSONAL_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: tofu apply
+        uses: dflook/tofu-apply@v2
+        with:
+          path: tofu
+          auto_approve: true # Don't require a PR w/ identical plan output to existbefore applying

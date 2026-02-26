@@ -1,0 +1,38 @@
+name: 'Tofu: Lint'
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tofu-lint.yml'
+      - 'tofu/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tofu-lint.yml'
+      - 'tofu/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: tofu validate
+        uses: dflook/tofu-validate@v2
+        with:
+          path: tofu
+
+  fmt-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: tofu fmt
+        uses: dflook/tofu-fmt-check@v2
+        with:
+          path: tofu
