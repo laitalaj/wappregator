@@ -1,6 +1,7 @@
 import {
 	IconBrandGithubFilled,
 	IconBrandTelegram,
+	IconMail,
 } from "@tabler/icons-solidjs";
 import {
 	type Accessor,
@@ -207,6 +208,13 @@ function Header(props: HeaderProps) {
 					title="Ota yhteyttä Telegramissa (uusi välilehti)"
 				>
 					<IconBrandTelegram height={24} />
+				</a>
+				<a
+					class={classes.headerLink}
+					href="mailto:webmaster@wappregat.org"
+					title="Lähetä sähköpostia (boomer)"
+				>
+					<IconMail height={24} />
 				</a>
 			</div>
 		</header>
