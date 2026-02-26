@@ -1,6 +1,67 @@
-import { type Accessor, createEffect } from "solid-js";
+import {
+	type Accessor,
+	createEffect,
+	createSignal,
+	onCleanup,
+	onMount,
+} from "solid-js";
 import type { Radio } from "../../types";
 import type { AudioPlayerProps } from "./AudioPlayer";
+
+interface NetworkInformationLike extends EventTarget {
+	readonly saveData?: boolean;
+	readonly type?: string;
+}
+
+interface NavigatorWithConnection extends Navigator {
+	readonly connection?: NetworkInformationLike;
+	readonly mozConnection?: NetworkInformationLike;
+	readonly webkitConnection?: NetworkInformationLike;
+}
+
+function getNetworkConnection(): NetworkInformationLike | undefined {
+	const navigatorWithConnection = navigator as NavigatorWithConnection;
+
+	return (
+		navigatorWithConnection.connection ??
+		navigatorWithConnection.mozConnection ??
+		navigatorWithConnection.webkitConnection
+	);
+}
+
+function getShouldAvoidFlac(connection: NetworkInformationLike): boolean {
+	if (connection.saveData === true) {
+		return true;
+	}
+
+	return connection.type === "cellular";
+}
+
+export function useShouldAvoidFlac(): Accessor<boolean> {
+	const [shouldAvoidFlac, setShouldAvoidFlac] = createSignal(true);
+
+	onMount(() => {
+		const connection = getNetworkConnection();
+
+		if (!connection) {
+			setShouldAvoidFlac(true);
+			return;
+		}
+
+		const syncNetworkState = () => {
+			setShouldAvoidFlac(getShouldAvoidFlac(connection));
+		};
+
+		syncNetworkState();
+		connection.addEventListener("change", syncNetworkState);
+
+		onCleanup(() => {
+			connection.removeEventListener("change", syncNetworkState);
+		});
+	});
+
+	return shouldAvoidFlac;
+}
 
 export function useMediaSessionIntegration(props: AudioPlayerProps) {
 	const play = () => props.setIsPlaying(true);
