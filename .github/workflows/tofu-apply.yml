@@ -1,13 +1,15 @@
-name: 'Tofu: Plan'
+name: 'Tofu: Apply'
 
-on: [workflow_dispatch] # Make this manual to not break CI for non-maintainer PRs
-
-permissions:
-  contents: read
-  pull-requests: write
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tofu-apply.yml'
+      - 'tofu/**'
 
 jobs:
-  plan:
+  apply:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,7 +22,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: tofu plan
-        uses: dflook/tofu-plan@v2
+      - name: tofu apply
+        uses: dflook/tofu-apply@v2
         with:
           path: tofu
+          auto_approve: true # Don't require a PR w/ identical plan output to existbefore applying
