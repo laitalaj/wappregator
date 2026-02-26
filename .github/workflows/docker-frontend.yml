@@ -36,4 +36,4 @@ jobs:
       build-args: |
         VITE_API_URL=/api
         VITE_SOCKETIO_PATH=/api/socket.io/
-      force-push: ${{ inputs.force-push }}
+      force-push: ${{ inputs.force-push || false }}

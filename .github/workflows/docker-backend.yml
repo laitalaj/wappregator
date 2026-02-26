@@ -35,4 +35,4 @@ jobs:
     with:
       container-name: 'wappregator-backend'
       dockerfile: 'backend.Dockerfile'
-      force-push: ${{ inputs.force-push }}
+      force-push: ${{ inputs.force-push || false }}
