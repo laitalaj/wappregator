@@ -1,0 +1,32 @@
+name: 'Tofu: Plan'
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tofu-plan.yml'
+      - 'tofu/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.UPCLOUD_S3_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.UPCLOUD_S3_SECRET_ACCESS_KEY }}
+      UPCLOUD_USERNAME: ${{ secrets.UPCLOUD_USERNAME }}
+      UPCLOUD_PASSWORD: ${{ secrets.UPCLOUD_PASSWORD }}
+      GANDI_PERSONAL_ACCESS_TOKEN: ${{ secrets.GANDI_PERSONAL_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: terraform plan
+        uses: dflook/tofu-plan@v2
+        with:
+          path: tofu
