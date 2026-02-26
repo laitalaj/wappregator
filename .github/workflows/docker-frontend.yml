@@ -15,6 +15,12 @@ on:
       - '.github/workflows/docker.yml'
       - '.github/workflows/docker-frontend.yml'
       - 'frontend/**'
+  workflow_dispatch:
+    inputs:
+      force-push:
+        description: 'Push the image even if not on default branch  (tagged with SHA only on other branches)'
+        default: false
+        type: boolean
 
 jobs:
   docker:
@@ -30,3 +36,4 @@ jobs:
       build-args: |
         VITE_API_URL=/api
         VITE_SOCKETIO_PATH=/api/socket.io/
+      force-push: ${{ inputs.force-push }}
