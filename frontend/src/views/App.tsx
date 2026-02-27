@@ -30,6 +30,7 @@ import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
 import { PlayerBar } from "./player/PlayerBar";
+import { Ticker } from "./common/Ticker";
 
 const Description = lazy(() =>
 	import("./description/Description").then((module) => ({
@@ -190,6 +191,10 @@ function Header(props: HeaderProps) {
 				<img src={logo()} alt="" width={64} height={64} />
 			</div>
 			<span>{funnySlogan}</span>
+			<Ticker>
+				Fix literally illegal text contrast ratios by introducing contrast_color
+				for certain unnamed radios
+			</Ticker>
 			<div class={classes.headerLinks}>
 				<a
 					class={classes.headerLink}
