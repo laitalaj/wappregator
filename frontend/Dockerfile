@@ -21,6 +21,8 @@ CMD ["npm", "run", "dev", "--", "--host"]
 # Production frontend builder image
 FROM base AS builder
 
+RUN apk add --no-cache tini-static
+
 WORKDIR /app
 RUN pnpm install --frozen-lockfile
 
@@ -34,6 +36,9 @@ RUN pnpm run build
 
 # Production frontend image
 FROM busybox:1.37 AS prod
+
+COPY --from=builder /sbin/tini-static /tini
+ENTRYPOINT ["/tini", "--"]
 
 WORKDIR /app
 COPY --from=builder /app/dist .
