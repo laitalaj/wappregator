@@ -1,7 +1,32 @@
+import logging
 import datetime
+import zoneinfo
 
 from wapprecommon import model
 
+logger = logging.getLogger(__name__)
+
+DEFAULT_TZ = zoneinfo.ZoneInfo("Europe/Helsinki")
+
+def ensure_timezone(dt: datetime.datetime, context: model.Program) -> datetime.datetime:
+    """Ensure that a datetime object has timezone information.
+
+    If the datetime object does not have timezone information, it is assumed to be in
+    Helsinki time and the appropriate timezone information is added.
+
+    Args:
+        dt: The datetime object to ensure has timezone information.
+    Returns:
+        The datetime object with timezone information.
+    """
+    if dt.tzinfo is None:
+        logging.warning(
+            "Program '%s' has a datetime without timezone information. Assuming Helsinki time.",
+            context.title,
+        )
+        helsinki_tz = DEFAULT_TZ
+        return dt.replace(tzinfo=helsinki_tz)
+    return dt
 
 class ScheduleFilter:
     """Filter for a list of Programs.
@@ -65,13 +90,16 @@ class ScheduleFilter:
         current_idx = None
         end_idx = 0
         for i, program in enumerate(schedule):
-            if program.end < self.start:
+            program_start = ensure_timezone(program.start, program)
+            program_end = ensure_timezone(program.end, program)
+
+            if program_end < self.start:
                 start_idx = i + 1
-            if program.end < now:
+            if program_end < now:
                 previous_idx = i
-            if program.start <= now and now <= program.end:
+            if program_start <= now and now <= program_end:
                 current_idx = i
-            if program.start < self.end:
+            if program_start < self.end:
                 end_idx = i + 1
 
         if self.min_previous is None and self.min_upcoming is None:
