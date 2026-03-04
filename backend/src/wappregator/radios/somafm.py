@@ -158,7 +158,5 @@ def get_somafm_fetchers() -> list[SomaFMFetcher]:
         SomaFMFetcher(dev_radios.BOSSA, "bossa nova"),
         SomaFMFetcher(dev_radios.GROOVESALAD, "ambient"),
         SomaFMFetcher(dev_radios.DEFCON, "electronic"),
-        SomaFMFetcher(
-            dev_radios.VAPORWAVES, "vaporwave", VAPORWAVE_TITLES
-        ),
+        SomaFMFetcher(dev_radios.VAPORWAVES, "vaporwave", VAPORWAVE_TITLES),
     ]

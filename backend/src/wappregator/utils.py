@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TZ = zoneinfo.ZoneInfo("Europe/Helsinki")
 
+
 def ensure_timezone(dt: datetime.datetime, context: model.Program) -> datetime.datetime:
     """Ensure that a datetime object has timezone information.
 
@@ -16,17 +17,21 @@ def ensure_timezone(dt: datetime.datetime, context: model.Program) -> datetime.d
 
     Args:
         dt: The datetime object to ensure has timezone information.
+        context: The Program object that the datetime is associated with, used for
+            logging purposes.
+
     Returns:
         The datetime object with timezone information.
     """
     if dt.tzinfo is None:
         logging.warning(
-            "Program '%s' has a datetime without timezone information. Assuming Helsinki time.",
+            "Program '%s' has a datetime without timezone information. "
+            "Assuming Helsinki time.",
             context.title,
         )
-        helsinki_tz = DEFAULT_TZ
-        return dt.replace(tzinfo=helsinki_tz)
+        return dt.replace(tzinfo=DEFAULT_TZ)
     return dt
+
 
 class ScheduleFilter:
     """Filter for a list of Programs.
