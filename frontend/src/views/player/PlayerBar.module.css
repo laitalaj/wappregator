@@ -55,7 +55,7 @@
 	right: 0;
 	background: var(--bg-color);
 	padding: 16px;
-	z-index: 1;
+	z-index: 2;
 	border: 2px solid var(--contrast-color);
 	display: flex;
 	justify-content: center;

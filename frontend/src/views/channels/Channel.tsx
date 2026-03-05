@@ -150,7 +150,7 @@ export function Channel(props: Props) {
 						<Show when={props.station().listenerCount}>
 							{(count) => (
 								<span class={classes.listenerCount}>
-									<IconHeadphones size={16} aria-hidden="true" />{" "}{count()}
+									<IconHeadphones size={16} aria-hidden="true" /> {count()}
 									<span class={classes.srOnly}>
 										{count() === 1 ? "kuuntelija" : "kuuntelijaa"}
 									</span>

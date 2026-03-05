@@ -229,7 +229,7 @@ export enum WappuState {
 function getWappuState(): WappuState {
 	const now = new Date();
 	const year = now.getFullYear();
-	const preStart = new Date(year, 3, 1); // April 1st, midnight
+	const preStart = new Date(year, 0, 1); // January 1st, midnight
 	const wappuStart = new Date(year, 3, 30); // April 30th, midnight
 	const wappuEnd = new Date(year, 4, 2); // May 2nd, midnight
 

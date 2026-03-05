@@ -1,0 +1,111 @@
+@property --gradient-angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+
+@keyframes rainbow {
+	from {
+		--gradient-angle: 0deg;
+	}
+	to {
+		--gradient-angle: 360deg;
+	}
+}
+
+.rainbowText {
+	background:
+		linear-gradient(
+			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
+			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
+		),
+		conic-gradient(
+			from var(--gradient-angle),
+			#ff6b6b,
+			#feca57,
+			#48dbfb,
+			#ff9ff3,
+			#54a0ff,
+			#5f27cd,
+			#ff6b6b
+		);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	animation: rainbow 6s linear infinite;
+}
+
+.countdownNumber {
+	composes: rainbowText;
+	font-family: "Bungee", sans-serif;
+	font-size: 6rem;
+	line-height: 1;
+}
+
+.countdownLabel {
+	composes: rainbowText;
+	font-size: 1.5rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	animation-delay: 0.5s;
+}
+
+.offSeasonWrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-grow: 1;
+
+	&::before {
+		content: "";
+		flex: 1;
+	}
+
+	&::after {
+		content: "";
+		flex: 2;
+	}
+}
+
+.offSeasonCountdown {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 32px;
+	background-color: rgb(255 255 255 / 8%);
+	border-radius: 16px;
+}
+
+.offSeasonMessage {
+	margin-top: 16px;
+	font-size: 1rem;
+	color: white;
+	text-align: center;
+}
+
+.ribbonCountdown {
+	position: fixed;
+
+	width: 100%;
+	bottom: 24px;
+	right: 24px;
+	transform-origin: bottom;
+	transform: translateX(50%) rotate(-45deg);
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	background-color: #282c3480;
+}
+
+.ribbonLabel {
+	font-weight: bold;
+	font-size: 1.1rem;
+	color: white;
+}
+
+.ribbonNumber {
+	font-size: 3.14159265359rem;
+}

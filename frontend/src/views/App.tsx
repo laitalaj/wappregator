@@ -19,7 +19,6 @@ import {
 	useChangeChannelEffect,
 	useChannelStates,
 	useListenersState,
-	useMaydayCountdownState,
 	useNowPlayingState,
 	useRadiosState,
 	useScheduleState,
@@ -29,6 +28,7 @@ import {
 import type { ProgramInfo } from "../types";
 import classes from "./App.module.css";
 import { Channels } from "./channels/Channels";
+import { OffSeasonCountdown, RibbonCountdown } from "./countdown/Countdown";
 import { PlayerBar } from "./player/PlayerBar";
 
 const Description = lazy(() =>
@@ -51,6 +51,10 @@ const App: Component = () => {
 	const wappu = useWappuState();
 
 	const isOffSeason = createMemo(() => {
+		if (wappu() === WappuState.Post) {
+			return true;
+		}
+
 		if (wappu() === WappuState.Wappu) {
 			return false;
 		}
@@ -108,7 +112,12 @@ const App: Component = () => {
 		<div class={classes.app}>
 			<Header inert={nonModalElementsInert} wappu={wappu} />
 			<main>
-				<Show when={!isOffSeason()} fallback={<OffSeasonCountdown />}>
+				<Show
+					when={!isOffSeason()}
+					fallback={
+						<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />
+					}
+				>
 					<div
 						classList={{
 							[classes.content]: true,
@@ -138,31 +147,12 @@ const App: Component = () => {
 					<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
 				</Show>
 			</main>
+			<Show when={!isOffSeason() && selectedChannelId() === null}>
+				<RibbonCountdown />
+			</Show>
 		</div>
 	);
 };
-
-function OffSeasonCountdown() {
-	const daysUntilWappu = useMaydayCountdownState();
-	const rainbowIntensity = createMemo(() =>
-		Math.max(0, Math.min(1, (100 - daysUntilWappu()) / 100)),
-	);
-
-	return (
-		<div class={classes.offSeasonWrapper}>
-			<div
-				class={classes.offSeasonCountdown}
-				style={{ "--rainbow-intensity": rainbowIntensity() }}
-			>
-				<span class={classes.countdownNumber}>{daysUntilWappu()}</span>
-				<span class={classes.countdownLabel}>
-					{daysUntilWappu() === 1 ? "päivä" : "päivää"} Wappuun
-				</span>
-				<p class={classes.offSeasonMessage}>Wappregator palaa pian...</p>
-			</div>
-		</div>
-	);
-}
 
 interface HeaderProps {
 	inert: Accessor<boolean>;
