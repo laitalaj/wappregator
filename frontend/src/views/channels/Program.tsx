@@ -1,4 +1,4 @@
-import { format, isToday, isTomorrow } from "date-fns";
+import { format, getWeek, isThisYear, isToday, isTomorrow } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
@@ -156,8 +156,24 @@ export function ProgramGroup(props: ProgramGroupProps) {
 			return "Huomenna";
 		}
 
-		const weekday = format(date, "eeee", { locale: fi });
-		return weekday[0].toUpperCase() + weekday.slice(1);
+		if (!isThisYear(date)) {
+			return format(date, "d.M.yyyy");
+		}
+
+		const weekOptions = { locale: fi };
+		const currentWeek = getWeek(new Date(), weekOptions);
+		const programWeek = getWeek(date, weekOptions);
+		const weekday = format(date, "eeee", weekOptions);
+
+		if (programWeek === currentWeek) {
+			return weekday[0].toUpperCase() + weekday.slice(1);
+		}
+
+		if (programWeek === currentWeek + 1) {
+			return `Ensi viikon ${weekday}`;
+		}
+
+		return format(date, "d.M.");
 	});
 
 	return (
