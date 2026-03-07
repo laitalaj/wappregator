@@ -148,6 +148,9 @@ SATEILY = model.Radio(
             mime_type="audio/aac",
         ),
     ],
+    # The domain doesn't exist as of 2026-03-07,
+    # enable this when Säteily is back
+    stream_check_enabled=False,
 )
 
 TURUN = model.Radio(
@@ -193,3 +196,14 @@ WAPINA = model.Radio(
         ),
     ],
 )
+
+ALL_RADIOS = [
+    DIODI,
+    JKL,
+    NORPPA,
+    RAKKAUDEN,
+    RATTO,
+    SATEILY,
+    TURUN,
+    WAPINA,
+]

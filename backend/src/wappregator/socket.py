@@ -114,7 +114,7 @@ async def setup_socketio(
 
     async def handle_valkey_message(msg: dict[str, Any]) -> None:
         """Handle messages from Valkey."""
-        event = internal_model.PollerEvent.model_validate_json(msg["data"])
+        event = internal_model.NowPlayingEvent.model_validate_json(msg["data"])
         logger.info("Broadcasting a now-playing update: %s", event)
         await sio.emit(
             NOW_PLAYING_EVENT,
@@ -151,7 +151,7 @@ async def setup_socketio(
 
     pubsub_client = valkey.Valkey(connection_pool=pool)
     pubsub = pubsub_client.pubsub()
-    await pubsub.subscribe(**{keys.EVENTS_CHANNEL: handle_valkey_message})
+    await pubsub.subscribe(**{keys.NOWPLAYING_CHANNEL: handle_valkey_message})
 
     bg_tasks = [
         sio.start_background_task(task)

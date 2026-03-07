@@ -31,9 +31,13 @@ GROOVESALAD = model.Radio(
     ),
     streams=[
         model.Stream(
-            url="https://ice1.somafm.com/groovesalad-256-mp3",
-            mime_type="audio/mpeg",
+            url="https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8",
+            mime_type="application/vnd.apple.mpegurl",
         ),
+        # model.Stream(
+        #    url="https://ice1.somafm.com/groovesalad-256-mp3",
+        #    mime_type="audio/mpeg",
+        # ),
     ],
     has_now_playing=True,
 )

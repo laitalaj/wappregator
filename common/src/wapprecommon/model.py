@@ -65,3 +65,4 @@ class Radio(pydantic.BaseModel):
     streams: list[Stream] = []
 
     has_now_playing: bool = False
+    stream_check_enabled: bool = True

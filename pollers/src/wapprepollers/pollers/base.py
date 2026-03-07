@@ -6,9 +6,8 @@ import aiohttp
 import valkey.asyncio as valkey
 from wapprecommon import model, internal_model, keys
 
-CACHE_VERSION = 1
-CACHE_NAMESPACE = "nowplaying"
-CACHE_KEY_PREFIX = f"{CACHE_NAMESPACE}:{CACHE_VERSION}:"
+from wapprepollers import utils
+
 CACHE_TTL_SECONDS = 60 * 15
 HTTP_POLL_INTERVAL_SECONDS = 30
 
@@ -40,38 +39,25 @@ class BasePoller(ABC):
         valkey_client: valkey.Valkey,
         song: model.Song | None,
     ) -> None:
-        """Update the currently playing song in the cache.
+        """Update the currently playing song in the cache & publish an event.
 
         Args:
-            valkey_client: The Valkey client to use for caching.
+            valkey_client: The Valkey client to use.
             song: The currently playing song.
         """
-        if song is None:
-            await valkey_client.delete(self.cache_key)
-        else:
-            await valkey_client.set(
-                self.cache_key,
-                song.model_dump_json(),
-                # A safeguard for clearing this if polling breaks
-                ex=CACHE_TTL_SECONDS,
-            )
-
-        n = await valkey_client.publish(
-            keys.EVENTS_CHANNEL,
-            internal_model.PollerEvent(
+        logger.info(f"{self.id} is now playing {song}")
+        await utils.store_and_publish(
+            valkey_client=valkey_client,
+            cache_key=self.cache_key,
+            cache_value=song.model_dump_json() if song else None,
+            event_channel=keys.NOWPLAYING_CHANNEL,
+            event=internal_model.NowPlayingEvent(
                 radio_id=self.id,
                 now_playing=song,
             ).model_dump_json(),
+            # A safeguard for clearing this if polling breaks
+            cache_ttl_seconds=CACHE_TTL_SECONDS,
         )
-        log = f"{self.id} is now playing {song}"
-        if n == 0:
-            logger.warning(f"{log} (no Valkey subscribers!)")
-            logger.warning(
-                f"Sent to: {keys.EVENTS_CHANNEL}, "
-                f"channels with subscribers: {await valkey_client.pubsub_channels()}"
-            )
-        else:
-            logger.info(f"{log} (published to {n} Valkey subscriber(s))")
 
     @abstractmethod
     async def loop(self, valkey_client: valkey.Valkey) -> None:
@@ -88,21 +74,14 @@ class BasePoller(ABC):
         """Poll the currently playing song in a loop while handling exceptions.
 
         Args:
-            connection_pool: The Valkey connection pool to use for caching.
+            connection_pool: The Valkey connection pool to use.
         """
-        while True:
-            try:
-                async with valkey.Valkey(
-                    connection_pool=connection_pool
-                ) as valkey_client:
-                    await self.loop(valkey_client)
-            except Exception:
-                logger.exception(f"Error in poller loop for {self.id}")
-            finally:
-                logger.warning(
-                    f"Poller loop for {self.id} ended, restarting in 5 seconds"
-                )
-                await asyncio.sleep(5)
+        await utils.loop_wrapper(
+            type="Now Playing",
+            id=self.id,
+            loop_func=self.loop,
+            connection_pool=connection_pool,
+        )
 
     async def now_playing(self, valkey_client: valkey.Valkey) -> model.Song | None:
         """Get the currently playing song.

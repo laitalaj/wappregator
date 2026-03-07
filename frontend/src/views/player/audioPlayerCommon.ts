@@ -181,8 +181,13 @@ export function useSyncVolume(
 	});
 }
 
+const HLS_MIME_TYPES = new Set([
+	"application/vnd.apple.mpegurl",
+	"application/x-mpegURL",
+]);
+
 export function getHlsStreamUrl(radio: Radio): string | undefined {
 	return radio.streams.find(
-		(stream) => stream.mime_type === "application/x-mpegURL",
+		(stream) => stream.mime_type && HLS_MIME_TYPES.has(stream.mime_type),
 	)?.url;
 }
