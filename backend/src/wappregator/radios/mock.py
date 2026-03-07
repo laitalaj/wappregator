@@ -94,7 +94,7 @@ def _generate_programs(
     return programs
 
 
-class SomaFMFetcher(base.BaseFetcher):
+class MockFetcher(base.BaseFetcher):
     """Mock schedule fetcher for SomaFM dev stations."""
 
     def __init__(
@@ -148,15 +148,18 @@ class SomaFMFetcher(base.BaseFetcher):
         )
 
 
-def get_somafm_fetchers() -> list[SomaFMFetcher]:
-    """Get fetchers for all SomaFM dev stations.
+def get_mock_fetchers() -> list[MockFetcher]:
+    """Get mock fetchers for all dev stations.
 
     Returns:
-        A list of SomaFMFetcher instances.
+        A list of MockFetcher instances.
     """
     return [
-        SomaFMFetcher(dev_radios.BOSSA, "bossa nova"),
-        SomaFMFetcher(dev_radios.GROOVESALAD, "ambient"),
-        SomaFMFetcher(dev_radios.DEFCON, "electronic"),
-        SomaFMFetcher(dev_radios.VAPORWAVES, "vaporwave", VAPORWAVE_TITLES),
+        MockFetcher(dev_radios.BOSSA, "bossa nova"),
+        MockFetcher(dev_radios.GROOVESALAD, "ambient"),
+        MockFetcher(dev_radios.DEFCON, "electronic"),
+        MockFetcher(dev_radios.VAPORWAVES, "vaporwave", VAPORWAVE_TITLES),
+        MockFetcher(
+            dev_radios.BROKEN, "industrial", ["oof", "ouch", "auts", "aiai", "au"]
+        ),
     ]

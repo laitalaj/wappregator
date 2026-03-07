@@ -38,12 +38,21 @@ export interface Schedule {
 	[id: string]: Program[];
 }
 
+export enum RadioStatus {
+	Online,
+	Offline,
+	Broken,
+	Unknown,
+}
+
 export interface ChannelState {
 	radio: Radio;
 	currentProgram?: Program;
 	nextPrograms: Program[];
 	currentSong: Song | undefined;
+	streamStatus: Record<string, boolean> | undefined;
 	listenerCount?: number;
+	radioStatus: RadioStatus;
 }
 
 export interface ProgramInfo {
@@ -57,5 +66,7 @@ export interface Song {
 }
 
 export type NowPlaying = Partial<Record<string, Song | null>>;
+
+export type StreamStatus = Partial<Record<string, Record<string, boolean>>>;
 
 export type ListenerCounts = Partial<Record<string, number>>;

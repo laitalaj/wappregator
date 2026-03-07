@@ -119,6 +119,7 @@ export function PlayerBar(props: Props) {
 									onClick={() =>
 										props.setIsPlaying((playing: boolean) => !playing)
 									}
+									radioStatus={() => state().radioStatus}
 								/>
 								<Show when={nowPlaying()}>
 									{(program) => {

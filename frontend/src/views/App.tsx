@@ -22,6 +22,7 @@ import {
 	useNowPlayingState,
 	useRadiosState,
 	useScheduleState,
+	useStreamStatusState,
 	useWappuState,
 	WappuState,
 } from "../state";
@@ -41,11 +42,13 @@ const App: Component = () => {
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
+	const streamStatus = useStreamStatusState();
 	const listeners = useListenersState();
 	const channelStates = useChannelStates(
 		schedule,
 		radios,
 		nowPlaying,
+		streamStatus,
 		listeners,
 	);
 	const wappu = useWappuState();

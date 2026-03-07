@@ -78,4 +78,21 @@ VAPORWAVES = model.Radio(
     has_now_playing=True,
 )
 
-ALL_DEV_RADIOS = [BOSSA, GROOVESALAD, DEFCON, VAPORWAVES]
+BROKEN = model.Radio(
+    id="rikki",
+    name="Radio Rikki",
+    url="https://www.youtube.com/watch?v=xuywUEdkvTM",
+    location="Tuhannen palasina",
+    brand=model.Brand(
+        background_color="rgb(183, 65, 14)",
+        text_color="white",
+    ),
+    streams=[
+        model.Stream(
+            url="oho hups",
+            mime_type="audio/mpeg",
+        )
+    ],
+)
+
+ALL_DEV_RADIOS = [BOSSA, GROOVESALAD, DEFCON, VAPORWAVES, BROKEN]

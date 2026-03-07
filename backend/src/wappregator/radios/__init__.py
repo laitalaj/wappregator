@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+import json
 import logging
 
 import valkey.asyncio as valkey
@@ -29,9 +30,9 @@ FETCHERS = [
 ]
 
 if constants.INCLUDE_DEV_STATIONS:
-    from wappregator.radios.somafm import get_somafm_fetchers
+    from wappregator.radios.mock import get_mock_fetchers
 
-    FETCHERS.extend(get_somafm_fetchers())
+    FETCHERS.extend(get_mock_fetchers())
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +114,53 @@ async def now_playing(valkey_client: valkey.Valkey) -> dict[str, model.Song | No
 
     if not res:
         raise FetchingBrokenError(
-            "No radios were fetched successfully. See earlier logs for details."
+            "No now playing information fetched successfully. "
+            "See earlier logs for details."
         )
+    return res
+
+
+async def _stream_status_for_radio(
+    valkey_client: valkey.Valkey, radio_id: str
+) -> dict[str, bool] | None:
+    res = await valkey_client.get(keys.get_streamstatus_key(radio_id))
+    if res:
+        return json.loads(res)
+    return None
+
+
+async def stream_status(valkey_client: valkey.Valkey) -> dict[str, dict[str, bool]]:
+    """Get the stream status for all relevant radios.
+
+    Args:
+        valkey_client: The Valkey client used for caching.
+
+    Returns:
+        Dictionary; keys are radio IDs, values are dicts mapping stream URLs to their
+        status.
+    """
+    res = {}
+    relevant_ids = [
+        fetcher.id for fetcher in FETCHERS if fetcher.radio.stream_check_enabled
+    ]
+
+    # TODO: We've now repeated this 3 times with minor changes,
+    # maybe make a util out of it?
+    tasks = [_stream_status_for_radio(valkey_client, id) for id in relevant_ids]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for id, result in zip(relevant_ids, results):
+        if isinstance(result, BaseException):
+            logger.exception("Error fetching a radio stream status", exc_info=result)
+            continue
+        if result is None:
+            logger.warning(f"No stream status found for {id}")
+            continue
+        res[id] = result
+
+    if not res:
+        raise FetchingBrokenError(
+            "No stream status information fetched successfully. "
+            "See earlier logs for details."
+        )
+
     return res

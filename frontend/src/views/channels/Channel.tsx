@@ -128,6 +128,7 @@ export function Channel(props: Props) {
 							}
 						}}
 						isPlaying={() => props.isCurrentChannel() && props.isPlaying()}
+						radioStatus={() => props.station().radioStatus}
 					/>
 				)}
 			</div>

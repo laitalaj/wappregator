@@ -16,6 +16,7 @@ from wappregator import radios
 logger = logging.getLogger(__name__)
 
 NOW_PLAYING_EVENT = "now_playing"
+STREAM_STATUS_EVENT = "stream_status"
 LISTENERS_EVENT = "listeners"
 
 HEARBEAT_INTERVAL_SECONDS = 30
@@ -83,6 +84,13 @@ async def setup_socketio(
                 to=sid,
             )
 
+            stream_status = await radios.stream_status(client)
+            await sio.emit(
+                STREAM_STATUS_EVENT,
+                stream_status,
+                to=sid,
+            )
+
             listener_counts = await listeners.get_listener_counts(
                 client, [r.id for r in radios.FETCHERS]
             )
@@ -112,8 +120,8 @@ async def setup_socketio(
             logger.debug("%s changed channel to %s", sid, data)
             await listeners.change_channel(client, backend_id, sid, data)
 
-    async def handle_valkey_message(msg: dict[str, Any]) -> None:
-        """Handle messages from Valkey."""
+    async def handle_nowplaying_event(msg: dict[str, Any]) -> None:
+        """Handle now playing events from Valkey."""
         event = internal_model.NowPlayingEvent.model_validate_json(msg["data"])
         logger.info("Broadcasting a now-playing update: %s", event)
         await sio.emit(
@@ -122,6 +130,17 @@ async def setup_socketio(
                 event.radio_id: event.now_playing.model_dump()
                 if event.now_playing
                 else None
+            },
+        )
+
+    async def handle_streamstatus_event(msg: dict[str, Any]) -> None:
+        """Handle stream status events from Valkey."""
+        event = internal_model.StreamStatusEvent.model_validate_json(msg["data"])
+        logger.info("Broadcasting a stream status update: %s", event)
+        await sio.emit(
+            STREAM_STATUS_EVENT,
+            {
+                event.radio_id: event.stream_status,
             },
         )
 
@@ -151,7 +170,12 @@ async def setup_socketio(
 
     pubsub_client = valkey.Valkey(connection_pool=pool)
     pubsub = pubsub_client.pubsub()
-    await pubsub.subscribe(**{keys.NOWPLAYING_CHANNEL: handle_valkey_message})
+    await pubsub.subscribe(
+        **{
+            keys.NOWPLAYING_CHANNEL: handle_nowplaying_event,
+            keys.STREAMSTATUS_CHANNEL: handle_streamstatus_event,
+        }
+    )
 
     bg_tasks = [
         sio.start_background_task(task)

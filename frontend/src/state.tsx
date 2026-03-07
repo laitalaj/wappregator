@@ -19,12 +19,14 @@ import {
 	type Resource,
 	useContext,
 } from "solid-js";
-import type {
-	ChannelState,
-	ListenerCounts,
-	NowPlaying,
-	Radios,
-	Schedule,
+import {
+	type ChannelState,
+	type ListenerCounts,
+	type NowPlaying,
+	RadioStatus,
+	type Radios,
+	type Schedule,
+	type StreamStatus,
 } from "./types";
 
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
@@ -84,6 +86,7 @@ export function useChannelStates(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
 	nowPlaying: Accessor<NowPlaying>,
+	streamStatus: Accessor<StreamStatus>,
 	listeners: Accessor<ListenerCounts>,
 ): Accessor<ChannelState[]> {
 	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
@@ -91,6 +94,7 @@ export function useChannelStates(
 		const scheduleData = schedule();
 		const radiosData = radios();
 		const nowPlayingData = nowPlaying();
+		const streamStatusData = streamStatus();
 		const listenerData = listeners();
 
 		if (!scheduleData || !radiosData) {
@@ -118,14 +122,28 @@ export function useChannelStates(
 			});
 
 			const currentSong = nowPlayingData?.[radio.id] ?? undefined;
+			const streamStatus = streamStatusData?.[radio.id] ?? undefined; // TODO: Stream selection based on what we think is available
 			const listenerCount = listenerData[radio.id];
+
+			let radioStatus: RadioStatus;
+			if (streamStatus === undefined) {
+				radioStatus = RadioStatus.Unknown;
+			} else if (Object.values(streamStatus).some((status) => status)) {
+				radioStatus = RadioStatus.Online;
+			} else if (currentProgram) {
+				radioStatus = RadioStatus.Broken;
+			} else {
+				radioStatus = RadioStatus.Offline;
+			}
 
 			res.push({
 				radio,
 				currentProgram,
 				nextPrograms,
 				currentSong,
+				streamStatus,
 				listenerCount,
+				radioStatus,
 			});
 		}
 		setChannelState(res);
@@ -183,6 +201,27 @@ export function useNowPlayingState(): Accessor<NowPlaying> {
 	});
 
 	return nowPlaying;
+}
+
+export function useStreamStatusState(): Accessor<StreamStatus> {
+	const socket = useContext(SocketContext);
+	if (!socket) {
+		throw new Error(
+			"useStreamStatusState must be used within a SocketProvider",
+		);
+	}
+
+	const [streamStatus, setStreamStatus] = createSignal<StreamStatus>({});
+
+	createEffect(() => {
+		const updateStreamStatus = (data: StreamStatus) => {
+			setStreamStatus({ ...streamStatus(), ...data });
+		};
+		socket.removeAllListeners("stream_status");
+		socket.on("stream_status", updateStreamStatus);
+	});
+
+	return streamStatus;
 }
 
 export function useListenersState(): Accessor<ListenerCounts> {
