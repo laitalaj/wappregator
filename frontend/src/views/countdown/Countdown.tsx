@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo, type JSX, Show } from "solid-js";
 import { useMaydayCountdownState } from "../../state";
 import classes from "./Countdown.module.css";
 
@@ -39,9 +39,16 @@ function MaydayCountdown(props: MaydayCountdownProps) {
 
 interface OffSeasonCountdownProps {
 	isPostWappu?: boolean;
+	overrideMessage?: string | JSX.Element;
 }
 
 export function OffSeasonCountdown(props: OffSeasonCountdownProps) {
+	const message = () =>
+		props.overrideMessage
+			? props.overrideMessage
+			: props.isPostWappu
+				? "Kiitos kuuntelusta! Nähdään ensi Wappuna!"
+				: "Wappregator palaa pian...";
 	return (
 		<div class={classes.offSeasonWrapper}>
 			<div class={classes.offSeasonCountdown}>
@@ -50,11 +57,7 @@ export function OffSeasonCountdown(props: OffSeasonCountdownProps) {
 						`${daysUntilWappu === 1 ? "päivä" : "päivää"} Wappuun`
 					}
 				/>
-				<p class={classes.offSeasonMessage}>
-					{props.isPostWappu
-						? "Kiitos kuuntelusta! Nähdään ensi Wappuna!"
-						: "Wappregator palaa pian..."}
-				</p>
+				<p class={classes.offSeasonMessage}>{message()}</p>
 			</div>
 		</div>
 	);

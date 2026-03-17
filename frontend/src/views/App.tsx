@@ -6,8 +6,10 @@ import {
 import {
 	type Accessor,
 	type Component,
+	createEffect,
 	createMemo,
 	createSignal,
+	ErrorBoundary,
 	lazy,
 	Show,
 	Suspense,
@@ -39,6 +41,47 @@ const Description = lazy(() =>
 );
 
 const App: Component = () => {
+	const wappu = useWappuState();
+
+	const [nonModalElementsInert, setNonModalElementsInert] = createSignal(false);
+
+	return (
+		<div class={classes.app}>
+			<Header inert={nonModalElementsInert} wappu={wappu} />
+			<ErrorBoundary
+				fallback={
+					<OffSeasonCountdown
+						overrideMessage={
+							<span>
+								<h2>🚧 Putkirikko! 🚧</h2>
+								<br />
+								Jotain meni pieleen meidän päässämme!
+								<br />
+								Korjaamme ongelman mahdollisimman pian.
+								<br />
+								Tiedottamiset & tiedustelut Telegrammissa.
+							</span>
+						}
+					/>
+				}
+			>
+				<AppContent
+					wappu={wappu}
+					nonModalElementsInert={nonModalElementsInert}
+					setNonModalElementsInert={setNonModalElementsInert}
+				/>
+			</ErrorBoundary>
+		</div>
+	);
+};
+
+interface AppContentProps {
+	wappu: Accessor<WappuState>;
+	nonModalElementsInert: Accessor<boolean>;
+	setNonModalElementsInert: (inert: boolean) => void;
+}
+
+function AppContent(props: AppContentProps) {
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
@@ -51,14 +94,13 @@ const App: Component = () => {
 		streamStatus,
 		listeners,
 	);
-	const wappu = useWappuState();
 
 	const isOffSeason = createMemo(() => {
-		if (wappu() === WappuState.Post) {
+		if (props.wappu() === WappuState.Post) {
 			return true;
 		}
 
-		if (wappu() === WappuState.Wappu) {
+		if (props.wappu() === WappuState.Wappu) {
 			return false;
 		}
 
@@ -109,16 +151,19 @@ const App: Component = () => {
 		};
 	});
 
-	const nonModalElementsInert = () => selectedProgram() !== null;
+	createEffect(() =>
+		props.setNonModalElementsInert(selectedProgram() !== null),
+	);
 
 	return (
-		<div class={classes.app}>
-			<Header inert={nonModalElementsInert} wappu={wappu} />
+		<>
 			<main>
 				<Show
 					when={!isOffSeason()}
 					fallback={
-						<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />
+						<OffSeasonCountdown
+							isPostWappu={props.wappu() === WappuState.Post}
+						/>
 					}
 				>
 					<div
@@ -126,7 +171,7 @@ const App: Component = () => {
 							[classes.content]: true,
 							[classes.dimmedContent]: !!selectedProgram(),
 						}}
-						inert={nonModalElementsInert()}
+						inert={props.nonModalElementsInert()}
 					>
 						<Channels
 							channelState={channelStates}
@@ -153,9 +198,9 @@ const App: Component = () => {
 			<Show when={!isOffSeason() && selectedChannelId() === null}>
 				<RibbonCountdown />
 			</Show>
-		</div>
+		</>
 	);
-};
+}
 
 interface HeaderProps {
 	inert: Accessor<boolean>;
