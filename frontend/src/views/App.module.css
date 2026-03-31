@@ -108,3 +108,13 @@ main {
 		color: inherit;
 	}
 }
+
+.navigationLink {
+	composes: buttonHover from "./common/common.module.css";
+
+	color: var(--text-color);
+
+	&:visited {
+		color: inherit;
+	}
+}

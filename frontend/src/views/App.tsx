@@ -1,53 +1,27 @@
+import { A, Route, Router } from "@solidjs/router";
 import {
 	IconBrandGithubFilled,
 	IconBrandTelegram,
 	IconMail,
 } from "@tabler/icons-solidjs";
 import {
-	type Accessor,
 	type Component,
-	createEffect,
 	createMemo,
-	createSignal,
 	ErrorBoundary,
 	lazy,
-	Show,
-	Suspense,
+	type ParentComponent,
+	type ParentProps,
 } from "solid-js";
 import { funnySlogansHaha } from "../funnySlogansHaha";
-import type { RadioState } from "../radio";
-import {
-	SocketProvider,
-	useChangeChannelEffect,
-	useChannelStates,
-	useListenersState,
-	useNowPlayingState,
-	useRadiosState,
-	useScheduleState,
-	useStreamStatusState,
-	useWappuState,
-	WappuState,
-} from "../state";
-import type { ProgramInfo } from "../types";
+import { WappuState } from "../state";
 import classes from "./App.module.css";
-import { Channels } from "./channels/Channels";
-import { OffSeasonCountdown, RibbonCountdown } from "./countdown/Countdown";
-import { PlayerBar } from "./player/PlayerBar";
+import { OffSeasonCountdown } from "./countdown/Countdown";
+import { LayoutStateProvider, useLayoutState } from "./layoutState";
 
-const Description = lazy(() =>
-	import("./description/Description").then((module) => ({
-		default: module.Description,
-	})),
-);
-
-const App: Component = () => {
-	const wappu = useWappuState();
-
-	const [nonModalElementsInert, setNonModalElementsInert] = createSignal(false);
-
+const InnerLayout: ParentComponent = (props: ParentProps) => {
 	return (
 		<div class={classes.app}>
-			<Header inert={nonModalElementsInert} wappu={wappu} />
+			<Header />
 			<ErrorBoundary
 				fallback={
 					<OffSeasonCountdown
@@ -65,162 +39,36 @@ const App: Component = () => {
 					/>
 				}
 			>
-				<AppContent
-					wappu={wappu}
-					nonModalElementsInert={nonModalElementsInert}
-					setNonModalElementsInert={setNonModalElementsInert}
-				/>
+				{props.children}
 			</ErrorBoundary>
 		</div>
 	);
 };
 
-interface AppContentProps {
-	wappu: Accessor<WappuState>;
-	nonModalElementsInert: Accessor<boolean>;
-	setNonModalElementsInert: (inert: boolean) => void;
-}
-
-function AppContent(props: AppContentProps) {
-	const radios = useRadiosState();
-	const schedule = useScheduleState();
-	const nowPlaying = useNowPlayingState();
-	const streamStatus = useStreamStatusState();
-	const listeners = useListenersState();
-	const channelStates = useChannelStates(
-		schedule,
-		radios,
-		nowPlaying,
-		streamStatus,
-		listeners,
-	);
-
-	const isOffSeason = createMemo(() => {
-		if (props.wappu() === WappuState.Post) {
-			return true;
-		}
-
-		if (props.wappu() === WappuState.Wappu) {
-			return false;
-		}
-
-		const states = channelStates();
-		return (
-			states.length > 0 && states.every((s) => s.nextPrograms.length === 0)
-		);
-	});
-
-	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
-		null,
-	);
-	const [selectedProgram, setSelectedProgram] =
-		createSignal<ProgramInfo | null>(null);
-	const [isPlaying, setIsPlaying] = createSignal(false);
-
-	const selectedAndPlaying = createMemo(() => {
-		const channelId = selectedChannelId();
-		return isPlaying() ? channelId : null;
-	});
-	// We're passing this to createEffect in the function, so this is a false alarm
-	// (could still be refactored instead of ignored but I'll leave that as an exercise for the reader)
-	// eslint-disable-next-line solid/reactivity
-	useChangeChannelEffect(selectedAndPlaying);
-
-	const radioState = createMemo((): RadioState | undefined => {
-		if (selectedChannelId() === null) {
-			return undefined;
-		}
-
-		const radio = channelStates().find(
-			(station) => station.radio.id === selectedChannelId(),
-		);
-
-		if (!radio) {
-			// TODO: Auto-deselect channel in this case?
-			// Probably can't be done inside memo, needs an effect
-			console.warn(
-				`Selected channel ID ${selectedChannelId()} not found in nowPlaying data`,
-			);
-
-			return undefined;
-		}
-
-		return {
-			...radio,
-			isPlaying: isPlaying(),
-		};
-	});
-
-	createEffect(() =>
-		props.setNonModalElementsInert(selectedProgram() !== null),
-	);
-
+const Layout: ParentComponent = (props: ParentProps) => {
 	return (
-		<>
-			<main>
-				<Show
-					when={!isOffSeason()}
-					fallback={
-						<OffSeasonCountdown
-							isPostWappu={props.wappu() === WappuState.Post}
-						/>
-					}
-				>
-					<div
-						classList={{
-							[classes.content]: true,
-							[classes.dimmedContent]: !!selectedProgram(),
-						}}
-						inert={props.nonModalElementsInert()}
-					>
-						<Channels
-							channelState={channelStates}
-							isPlaying={isPlaying}
-							setIsPlaying={setIsPlaying}
-							selectedChannelId={selectedChannelId}
-							setSelectedChannelId={setSelectedChannelId}
-							setSelectedProgram={setSelectedProgram}
-						/>
-					</div>
-					<Show when={selectedProgram()}>
-						{(selected) => (
-							<Suspense fallback={null}>
-								<Description
-									programInfo={selected()}
-									setSelectedProgram={setSelectedProgram}
-								/>
-							</Suspense>
-						)}
-					</Show>
-					<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
-				</Show>
-			</main>
-			<Show when={!isOffSeason() && selectedChannelId() === null}>
-				<RibbonCountdown />
-			</Show>
-		</>
+		<LayoutStateProvider>
+			<InnerLayout>{props.children}</InnerLayout>
+		</LayoutStateProvider>
 	);
-}
+};
 
-interface HeaderProps {
-	inert: Accessor<boolean>;
-	wappu: Accessor<WappuState>;
-}
+function Header() {
+	const { wappu, nonModalElementsInert } = useLayoutState();
 
-function Header(props: HeaderProps) {
 	const funnySlogan =
 		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
 	const logo = createMemo(() => {
-		if (props.wappu() === WappuState.Wappu) {
+		if (wappu() === WappuState.Wappu) {
 			return wappuImgs[Math.floor(Math.random() * wappuImgs.length)];
 		}
 		return "/appicon.png";
 	});
 
 	return (
-		<header inert={props.inert()}>
+		<header inert={nonModalElementsInert()}>
 			<div class={classes.headerLogo}>
 				<h1>
 					Wappregat<small>.</small>or<small>g</small>
@@ -259,12 +107,31 @@ function Header(props: HeaderProps) {
 	);
 }
 
-const AppWithSocket: Component = () => {
+const Radio = lazy(() => import("./radio/Radio"));
+
+const NotFound: Component = () => (
+	<OffSeasonCountdown
+		overrideMessage={
+			<span>
+				<h1>404</h1>
+				<br />
+				Sivua ei löytynyt!
+				<br />
+				<A href="/" class={classes.navigationLink}>
+					Palaa etusivulle
+				</A>
+			</span>
+		}
+	/>
+);
+
+const App: Component = () => {
 	return (
-		<SocketProvider>
-			<App />
-		</SocketProvider>
+		<Router root={Layout}>
+			<Route path="/" component={Radio} />
+			<Route path="*" component={NotFound} />
+		</Router>
 	);
 };
 
-export default AppWithSocket;
+export default App;

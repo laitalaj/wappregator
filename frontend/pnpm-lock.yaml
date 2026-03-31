@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@solidjs/router':
+        specifier: ^0.16.1
+        version: 0.16.1(solid-js@1.9.11)
       '@tabler/icons-solidjs':
         specifier: ^3.36.1
         version: 3.36.1(solid-js@1.9.11)
@@ -552,6 +555,11 @@ packages:
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@solidjs/router@0.16.1':
+    resolution: {integrity: sha512-IhyjedgC6LRpw/8CPGGI89FrV+r0xTHzOl2c4CRyzYQ1bLepJxbVI1LLKvsavMWY5TRBRacV7hAeOhuTXkjiqg==}
+    peerDependencies:
+      solid-js: ^1.8.6
 
   '@tabler/icons-solidjs@3.36.1':
     resolution: {integrity: sha512-lf1oJ0+S8xDVX4AojJXQk4LmHHidzrrhaxtbfsaKLaDuHHuXytJ8qBLfg3k/FceRWLJbh0HQH+vr9evLbC1lpA==}
@@ -1578,6 +1586,10 @@ snapshots:
     optional: true
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@solidjs/router@0.16.1(solid-js@1.9.11)':
+    dependencies:
+      solid-js: 1.9.11
 
   '@tabler/icons-solidjs@3.36.1(solid-js@1.9.11)':
     dependencies:
