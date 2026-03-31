@@ -1,0 +1,12 @@
+{
+    admin off
+}
+
+:3000 {
+    root * /app
+    try_files {path} /index.html
+    file_server
+    log {
+        format console
+    }
+}

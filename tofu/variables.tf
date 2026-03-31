@@ -160,19 +160,19 @@ variable "pollers_memory_limit" {
 variable "frontend_cpu_request" {
   description = "CPU request for frontend"
   type        = string
-  default     = "50m"
+  default     = "100m"
 }
 
 variable "frontend_memory_request" {
   description = "Memory request for frontend"
   type        = string
-  default     = "64Mi"
+  default     = "128Mi"
 }
 
 variable "frontend_memory_limit" {
   description = "Memory limit for frontend"
   type        = string
-  default     = "128Mi"
+  default     = "256Mi"
 }
 
 variable "letsencrypt_email" {
