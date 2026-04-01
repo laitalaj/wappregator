@@ -86,6 +86,7 @@ BROKEN = model.Radio(
     brand=model.Brand(
         background_color="rgb(183, 65, 14)",
         text_color="white",
+        contrast_color="black",
     ),
     streams=[
         model.Stream(

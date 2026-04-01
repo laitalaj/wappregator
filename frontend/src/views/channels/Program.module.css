@@ -21,6 +21,15 @@
 	}
 }
 
+.brandedProgramWrapper {
+	composes: programWrapper;
+	background-color: var(--bg-color, #fff);
+}
+
+.brandedProgramChannel {
+	color: var(--contrast-color);
+}
+
 .scheduleLabel {
 	width: 100%;
 	font-size: 1em;

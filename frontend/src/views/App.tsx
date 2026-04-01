@@ -109,6 +109,8 @@ function Header() {
 
 const Radio = lazy(() => import("./radio/Radio"));
 
+const Guide = lazy(() => import("./guide/Guide"));
+
 const NotFound: Component = () => (
 	<OffSeasonCountdown
 		overrideMessage={
@@ -129,6 +131,7 @@ const App: Component = () => {
 	return (
 		<Router root={Layout}>
 			<Route path="/" component={Radio} />
+			<Route path="/opas" component={Guide} />
 			<Route path="*" component={NotFound} />
 		</Router>
 	);

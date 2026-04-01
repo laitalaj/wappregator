@@ -1,5 +1,3 @@
-import { format, getWeek, isThisYear, isToday, isTomorrow } from "date-fns";
-import { fi } from "date-fns/locale/fi";
 import {
 	type Accessor,
 	children,
@@ -14,8 +12,9 @@ import {
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { getProgramProgress } from "../../getProgramProgress";
-import { formatTimeRange } from "../../timeUtils";
+import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo, Program as ProgramType } from "../../types";
+import { brandColorVariablesStyle } from "../common/brandUtils";
 import { ProgressBar } from "../common/ProgressBar";
 import classes from "./Program.module.css";
 
@@ -31,6 +30,12 @@ interface MaybeProgramProps {
 	playingNow: boolean;
 	setSelectedProgram: Setter<ProgramInfo | null>;
 	showScheduleLabel: boolean;
+}
+
+interface BrandedProgramProps {
+	programInfo: ProgramInfo;
+	playingNow: boolean;
+	setSelectedProgram: Setter<ProgramInfo | null>;
 }
 
 export function Program(props: ProgramProps) {
@@ -121,6 +126,30 @@ export function MaybeProgram(props: MaybeProgramProps) {
 	);
 }
 
+export function BrandedProgram(props: BrandedProgramProps) {
+	const handleClick = () => {
+		props.setSelectedProgram(props.programInfo);
+	};
+
+	return (
+		<button
+			class={classes.brandedProgramWrapper}
+			style={brandColorVariablesStyle(props.programInfo.radio.brand)}
+			onClick={handleClick}
+			type="button"
+			aria-label="Näytä ohjelmatiedot"
+		>
+			<span class={classes.brandedProgramChannel}>
+				{props.programInfo.radio.name}
+			</span>
+			<Program
+				program={() => props.programInfo.program}
+				playingNow={props.playingNow}
+			/>
+		</button>
+	);
+}
+
 interface PresentationalProgramGroupProps {
 	title: Accessor<JSX.Element>;
 	children: JSX.Element;
@@ -145,36 +174,7 @@ interface ProgramGroupProps {
 }
 
 export function ProgramGroup(props: ProgramGroupProps) {
-	const title = createMemo(() => {
-		const date = new Date(props.date());
-
-		if (isToday(date)) {
-			return "Myöhemmin tänään";
-		}
-
-		if (isTomorrow(date)) {
-			return "Huomenna";
-		}
-
-		if (!isThisYear(date)) {
-			return format(date, "d.M.yyyy");
-		}
-
-		const weekOptions = { locale: fi };
-		const currentWeek = getWeek(new Date(), weekOptions);
-		const programWeek = getWeek(date, weekOptions);
-		const weekday = format(date, "eeee", weekOptions);
-
-		if (programWeek === currentWeek) {
-			return weekday[0].toUpperCase() + weekday.slice(1);
-		}
-
-		if (programWeek === currentWeek + 1) {
-			return `Ensi viikon ${weekday}`;
-		}
-
-		return format(date, "d.M.");
-	});
+	const title = createMemo(() => formatDate(props.date()));
 
 	return (
 		<PresentationalProgramGroup title={title}>

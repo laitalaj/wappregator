@@ -20,6 +20,11 @@ import {
 	useContext,
 } from "solid-js";
 import {
+	getPreWappuStartDate,
+	getWappuEndDate,
+	getWappuStartDate,
+} from "./timeUtils";
+import {
 	type ChannelState,
 	type ListenerCounts,
 	type NowPlaying,
@@ -162,6 +167,40 @@ export function useChannelStates(
 	return channelState;
 }
 
+async function fetchFullSchedule(): Promise<Schedule> {
+	const now = new Date();
+	const year = now.getFullYear();
+	let start = startOfHour(now);
+	let end = getWappuEndDate(year);
+	if (isBefore(end, start)) {
+		start = getPreWappuStartDate(year + 1);
+		end = getWappuEndDate(year + 1);
+	}
+
+	const url = `${import.meta.env.VITE_API_URL}/schedule`;
+	const params = new URLSearchParams({
+		start: start.toISOString(),
+		end: end.toISOString(),
+	});
+	const response = await fetch(`${url}?${params}`);
+	return response.json();
+}
+
+export function useFullScheduleState(): Resource<Schedule> {
+	const [schedule, { refetch: refetchSchedule }] =
+		createResource(fetchFullSchedule);
+
+	const scheduleInterval = setInterval(() => {
+		refetchSchedule();
+	}, SCHEDULE_FETCH_INTERVAL_MS);
+
+	onCleanup(() => {
+		clearInterval(scheduleInterval);
+	});
+
+	return schedule;
+}
+
 const SocketContext = createContext<Socket>();
 
 export function SocketProvider(props: ParentProps) {
@@ -268,9 +307,9 @@ export enum WappuState {
 function getWappuState(): WappuState {
 	const now = new Date();
 	const year = now.getFullYear();
-	const preStart = new Date(year, 0, 1); // January 1st, midnight
-	const wappuStart = new Date(year, 3, 30); // April 30th, midnight
-	const wappuEnd = new Date(year, 4, 2); // May 2nd, midnight
+	const preStart = getPreWappuStartDate(year);
+	const wappuStart = getWappuStartDate(year);
+	const wappuEnd = getWappuEndDate(year);
 
 	if (isWithinInterval(now, { start: preStart, end: wappuStart })) {
 		return WappuState.Pre;
