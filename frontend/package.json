@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+    "watch:deps": "chokidar 'package.json' 'pnpm-lock.yaml' --initial -c 'pnpm i'",
     "dev": "vite",
+    "dev:container": "concurrently -k -n 'dev,watch:deps' -c 'blue,green' 'pnpm dev --host' 'pnpm watch:deps'",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "biome check --write src && eslint"
@@ -14,6 +16,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.14",
     "@typescript-eslint/parser": "^8.54.0",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-plugin-solid": "^0.14.5",
     "typescript": "^5.9.3",

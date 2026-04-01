@@ -14,8 +14,11 @@ FROM base AS dev
 WORKDIR /app
 RUN pnpm install
 
+# Needed for hot reload of deps
+ENV SHELL=/bin/sh CI=true
+
 EXPOSE 3000
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "dev:container"]
 
 
 # Production frontend builder image

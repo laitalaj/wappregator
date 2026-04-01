@@ -16,6 +16,10 @@ Check it out at <a href=https://wappregat.org>https://wappregat.org</a>!
 3. Check the aggregator at http://localhost:3000/ or the API docs at http://127.0.0.1:8000/docs
 4. Check the READMEs under each of the components - `backend`, `pollers`, `common`, `frontend` and `tofu` - for more details.
 
+If you've changed dependencies, you can refresh the compose setup with
+1. `podman compose down -v`
+2. `podman compose --podman-run-args="--rm" up --build`
+
 ## Contributing
 
 We welcome contributions!
