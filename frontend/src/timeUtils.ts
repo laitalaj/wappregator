@@ -16,7 +16,10 @@ export function formatTime(date: Date | string): string {
 	});
 }
 
-export function formatDate(date: Date | string): string {
+export function formatDate(
+	date: Date | string,
+	todayOverride?: string,
+): string {
 	const dateObj = typeof date === "string" ? new Date(date) : date;
 
 	if (isYesterday(dateObj)) {
@@ -24,7 +27,7 @@ export function formatDate(date: Date | string): string {
 	}
 
 	if (isToday(dateObj)) {
-		return "Myöhemmin tänään";
+		return todayOverride ?? "Tänään";
 	}
 
 	if (isTomorrow(dateObj)) {

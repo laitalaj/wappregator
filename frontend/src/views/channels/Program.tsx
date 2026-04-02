@@ -168,13 +168,13 @@ export function PresentationalProgramGroup(
 }
 
 interface ProgramGroupProps {
-	date: Accessor<string>;
+	date: Accessor<Date>;
 	programs: Accessor<ProgramInfo[]>;
 	setSelectedProgram: Setter<ProgramInfo | null>;
 }
 
 export function ProgramGroup(props: ProgramGroupProps) {
-	const title = createMemo(() => formatDate(props.date()));
+	const title = createMemo(() => formatDate(props.date(), "Myöhemmin tänään"));
 
 	return (
 		<PresentationalProgramGroup title={title}>

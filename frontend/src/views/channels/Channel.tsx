@@ -3,6 +3,7 @@ import {
 	IconChevronUp,
 	IconHeadphones,
 } from "@tabler/icons-solidjs";
+import { startOfDay } from "date-fns";
 import {
 	type Accessor,
 	createMemo,
@@ -248,19 +249,19 @@ export function Channel(props: Props) {
 }
 
 interface ProgramsChunk {
-	date: string;
+	date: Date;
 	programs: ProgramInfo[];
 }
 
 function chunkProgramsByDate(programInfos: ProgramInfo[]): ProgramsChunk[] {
 	const programsByDate: ProgramsChunk[] = [];
-	let currentDate: string | null = null;
+	let currentDate: Date | null = null;
 
 	for (const programInfo of programInfos) {
-		const programDate = programInfo.program.start.split("T")[0];
+		const programDate = startOfDay(new Date(programInfo.program.start));
 
 		// If there's a new date, create a new chunk
-		if (programDate !== currentDate) {
+		if (programDate.getTime() !== currentDate?.getTime()) {
 			currentDate = programDate;
 			programsByDate.push({ date: programDate, programs: [] });
 		}

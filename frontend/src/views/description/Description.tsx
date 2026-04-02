@@ -6,7 +6,7 @@ import {
 	type Setter,
 	Show,
 } from "solid-js";
-import { formatTimeRange } from "../../timeUtils";
+import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
 import classes from "./Description.module.css";
 import { InfoGrid } from "./InfoGrid";
@@ -18,12 +18,14 @@ interface Props {
 }
 
 export const Description: Component<Props> = (props) => {
-	const timeRange = createMemo(() =>
-		formatTimeRange(
+	const timeStr = createMemo(() => {
+		const date = formatDate(props.programInfo.program.start);
+		const timeRange = formatTimeRange(
 			props.programInfo.program.start,
 			props.programInfo.program.end,
-		),
-	);
+		);
+		return `${date} @ ${timeRange}`;
+	});
 
 	const handleClose = () => props.setSelectedProgram(null);
 
@@ -57,7 +59,7 @@ export const Description: Component<Props> = (props) => {
 			>
 				<ProgramHeader
 					title={props.programInfo.program.title}
-					timeStr={timeRange()}
+					timeStr={timeStr()}
 					photo={props.programInfo.program.photo}
 					brandColor={props.programInfo.radio.brand}
 					onClose={handleClose}
