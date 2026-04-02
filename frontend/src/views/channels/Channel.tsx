@@ -12,9 +12,11 @@ import {
 	type Setter,
 	Show,
 } from "solid-js";
+import { WappuState } from "../../state";
 import type { ChannelState, Program, ProgramInfo, Radio } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import { PlayButton } from "../common/PlayButton";
+import { useLayoutState } from "../layoutState";
 import classes from "./Channel.module.css";
 import {
 	MaybeProgram,
@@ -45,6 +47,8 @@ const toProgramInfo = (
 };
 
 export function Channel(props: Props) {
+	const { wappu } = useLayoutState();
+
 	const [showAllPrograms, setShowAllPrograms] = createSignal(false);
 
 	const [isMobile, setIsMobile] = createSignal(false);
@@ -66,6 +70,23 @@ export function Channel(props: Props) {
 	});
 
 	const radio = () => props.station().radio;
+
+	// Randomness needs to be memoized separately
+	// as channel states (and by extension the value of radio()) update on a 1-second interval
+	// which would cause reshuffling every second if we throw the dice in the location memo directly.
+	const luckyNumber = createMemo(Math.random);
+	const location = createMemo(() => {
+		if (wappu() !== WappuState.Wappu) {
+			return radio().location;
+		}
+
+		const wappuLocations = radio().wappu_locations;
+		if (wappuLocations && wappuLocations.length > 0) {
+			return wappuLocations[Math.floor(luckyNumber() * wappuLocations.length)];
+		}
+		return radio().location;
+	});
+
 	const currentProgram = createMemo(() =>
 		toProgramInfo(props.station().currentProgram, radio()),
 	);
@@ -137,7 +158,7 @@ export function Channel(props: Props) {
 				<Show when={radio().frequency_mhz}>
 					{radio().frequency_mhz?.toFixed(1)} MHz @{" "}
 				</Show>
-				{radio().location}
+				{location()}
 				{" / "}
 				<a href={radio().url} class={classes.listenButton}>
 					WWW

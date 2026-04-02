@@ -25,6 +25,7 @@ export interface Radio {
 	name: string;
 	url: string;
 	location: string;
+	wappu_locations?: string[];
 	frequency_mhz?: number;
 	brand: Brand;
 	streams: Stream[];

@@ -18,29 +18,37 @@ import classes from "./App.module.css";
 import { OffSeasonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
 
+const ErrorFallback = (err: unknown, reset: () => void) => {
+	console.error("ErrorBoundary caught an error:", err);
+	return (
+		<OffSeasonCountdown
+			overrideMessage={
+				<span>
+					<h2>🚧 Putkirikko! 🚧</h2>
+					<br />
+					Jotain meni pieleen!
+					<br />
+					Kokeile päivittää sivu tai{" "}
+					<button type="button" onClick={reset}>
+						painaa tästä!
+					</button>
+					<br />
+					Jos tämä ei auta, vika on luultavasti meidän päässämme.
+					<br />
+					Korjaamme ongelman mahdollisimman pian!
+					<br />
+					Tiedottamiset & tiedustelut Telegrammissa.
+				</span>
+			}
+		/>
+	);
+};
+
 const InnerLayout: ParentComponent = (props: ParentProps) => {
 	return (
 		<div class={classes.app}>
 			<Header />
-			<ErrorBoundary
-				fallback={
-					<OffSeasonCountdown
-						overrideMessage={
-							<span>
-								<h2>🚧 Putkirikko! 🚧</h2>
-								<br />
-								Jotain meni pieleen meidän päässämme!
-								<br />
-								Korjaamme ongelman mahdollisimman pian.
-								<br />
-								Tiedottamiset & tiedustelut Telegrammissa.
-							</span>
-						}
-					/>
-				}
-			>
-				{props.children}
-			</ErrorBoundary>
+			<ErrorBoundary fallback={ErrorFallback}>{props.children}</ErrorBoundary>
 		</div>
 	);
 };

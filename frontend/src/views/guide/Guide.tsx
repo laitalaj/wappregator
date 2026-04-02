@@ -43,10 +43,11 @@ interface ProgramGridProps {
 
 function ProgramGrid(props: ProgramGridProps) {
 	const [now, setNow] = createSignal(new Date());
-	if (props.watchNowPlaying) {
+	createEffect(() => {
+		if (!props.watchNowPlaying) return;
 		const interval = setInterval(() => setNow(new Date()), 1000 * 30);
 		onCleanup(() => clearInterval(interval));
-	}
+	});
 
 	return (
 		<div class={classes.programGrid}>
