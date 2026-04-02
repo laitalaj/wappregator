@@ -7,8 +7,9 @@ DIODI = model.Radio(
     location="Otaniemi",
     frequency_mhz=102,
     brand=model.Brand(
-        background_color="rgb(220, 246, 220)",
-        text_color="rgb(39, 83, 40)",
+        background_color="rgb(231, 206, 108)",
+        text_color="rgb(21, 61, 93)",
+        contrast_color="rgb(198, 72, 90)",
     ),
     streams=[
         model.Stream(
@@ -33,8 +34,8 @@ JKL = model.Radio(
     url="https://www.vappuradiojkl.net",
     location="Jyväääskylä",
     brand=model.Brand(
-        background_color="rgb(43, 19, 75)",
-        text_color="rgb(255, 255, 255)",
+        background_color="rgb(236, 0, 140)",
+        text_color="white",
     ),
     streams=[
         model.Stream(
@@ -80,8 +81,8 @@ RAKKAUDEN = model.Radio(
     location="Tampere",
     frequency_mhz=101.6,
     brand=model.Brand(
-        background_color="rgb(211, 59, 111)",
-        text_color="white",
+        background_color="rgb(240, 255, 224)",
+        text_color="rgb(82, 120, 20)",
     ),
     streams=[
         model.Stream(
@@ -181,7 +182,7 @@ WAPINA = model.Radio(
     location="Vaasa",
     brand=model.Brand(
         background_color="rgb(255, 180, 20)",
-        text_color="black",
+        text_color="rgb(42, 44, 46)",
     ),
     streams=[
         # These URLs are identical for both streams - maybe the endpoint serves
