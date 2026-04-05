@@ -15,6 +15,7 @@ import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
 import { BrandedProgram } from "../channels/Program";
 import { useLayoutState } from "../layoutState";
+import { type ProgramInfoWithId, Search } from "../search/Search";
 import classes from "./Guide.module.css";
 
 const Description = lazy(() =>
@@ -70,6 +71,30 @@ function ProgramGrid(props: ProgramGridProps) {
 	);
 }
 
+const groupPrograms = (schedule: ProgramInfo[]) =>
+	schedule
+		.sort((a, b) => {
+			const res =
+				new Date(a.program.start).getTime() -
+				new Date(b.program.start).getTime();
+			if (res !== 0) {
+				return res;
+			}
+			return (
+				new Date(a.program.end).getTime() - new Date(b.program.end).getTime()
+			);
+		})
+		.reduce<{ date: Date; programs: ProgramInfo[] }[]>((groups, item) => {
+			const day = startOfDay(new Date(item.program.start));
+			const lastGroup = groups[groups.length - 1];
+			if (lastGroup && lastGroup.date.getTime() === day.getTime()) {
+				lastGroup.programs.push(item);
+			} else {
+				groups.push({ date: day, programs: [item] });
+			}
+			return groups;
+		}, []);
+
 export default function Guide() {
 	const { nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
 	const radios = useRadiosState();
@@ -78,7 +103,13 @@ export default function Guide() {
 	const [selectedProgram, setSelectedProgram] =
 		createSignal<ProgramInfo | null>(null);
 
-	const globalSchedule = createMemo(() => {
+	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>(
+		[],
+	);
+	const [searchActive, setSearchActive] = createSignal(false);
+	const [searchInProgress, setSearchInProgress] = createSignal(false);
+
+	const programInfo = createMemo(() => {
 		const scheduleData = schedule();
 		const radiosData = radios();
 		if (!scheduleData || !radiosData) return [];
@@ -87,29 +118,17 @@ export default function Guide() {
 				([channelId, programs]) => [radiosData[channelId], programs] as const,
 			)
 			.flatMap(([radio, programs]) =>
-				programs.map((program) => ({ radio, program })),
-			)
-			.sort((a, b) => {
-				const res =
-					new Date(a.program.start).getTime() -
-					new Date(b.program.start).getTime();
-				if (res !== 0) {
-					return res;
-				}
-				return (
-					new Date(a.program.end).getTime() - new Date(b.program.end).getTime()
-				);
-			})
-			.reduce<{ date: Date; programs: ProgramInfo[] }[]>((groups, item) => {
-				const day = startOfDay(new Date(item.program.start));
-				const lastGroup = groups[groups.length - 1];
-				if (lastGroup && lastGroup.date.getTime() === day.getTime()) {
-					lastGroup.programs.push(item);
-				} else {
-					groups.push({ date: day, programs: [item] });
-				}
-				return groups;
-			}, []);
+				programs.map((program, idx) => ({
+					id: `${radio.id}-${idx}`,
+					radio,
+					program,
+				})),
+			);
+	});
+
+	const groupedSchedule = createMemo(() => {
+		const source = searchActive() ? searchResults() : programInfo();
+		return groupPrograms(source);
 	});
 
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
@@ -117,18 +136,38 @@ export default function Guide() {
 	return (
 		<main>
 			<div inert={nonModalElementsInert()}>
-				<For each={globalSchedule()}>
-					{(group, i) => (
-						<>
-							<GuideDivider date={group.date} />
-							<ProgramGrid
-								programs={group.programs}
-								setSelectedProgram={setSelectedProgram}
-								watchNowPlaying={i() === 0 || isToday(group.date)}
-							/>
-						</>
-					)}
-				</For>
+				<Search
+					schedule={programInfo}
+					radios={radios}
+					setActive={setSearchActive}
+					setInProgress={setSearchInProgress}
+					setResults={setSearchResults}
+				/>
+				<Show
+					when={groupedSchedule().length}
+					fallback={
+						<p class={classes.nothingToShow}>
+							{schedule() === undefined
+								? "Ladataan..."
+								: searchInProgress()
+									? "Haetaan..."
+									: "Ei hakutuloksia :^("}
+						</p>
+					}
+				>
+					<For each={groupedSchedule()}>
+						{(group, i) => (
+							<>
+								<GuideDivider date={group.date} />
+								<ProgramGrid
+									programs={group.programs}
+									setSelectedProgram={setSelectedProgram}
+									watchNowPlaying={i() === 0 || isToday(group.date)}
+								/>
+							</>
+						)}
+					</For>
+				</Show>
 			</div>
 			<Show when={selectedProgram()}>
 				{(selected) => (

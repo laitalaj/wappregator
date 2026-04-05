@@ -1,0 +1,144 @@
+/* Here be vibe-coded CSS */
+
+.searchContainer {
+	width: 100%;
+	background: #00000033;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem var(--horizontal-padding);
+}
+
+.searchInputWrapper {
+	position: relative;
+	width: 100%;
+}
+
+.searchInput {
+	width: 100%;
+	background: #3a3f4b;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+	color: white;
+	font-size: 1rem;
+	padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+	outline: none;
+	transition: border-color 0.2s ease-out;
+
+	&::placeholder {
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	&:focus {
+		border-color: rgba(255, 255, 255, 0.5);
+	}
+}
+
+.searchIcon {
+	position: absolute;
+	right: 0.625rem;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.searchBar {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 100%;
+	max-width: 760px;
+}
+
+@media (min-width: 600px) {
+	.searchBar {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.searchInputWrapper {
+		flex: 1;
+	}
+
+	.radioFilterWrapper {
+		flex: 0 0 auto;
+		max-width: 14rem;
+		min-width: 10rem;
+	}
+}
+
+.radioFilterWrapper {
+	position: relative;
+	width: 100%;
+}
+
+.radioFilterIcon {
+	position: absolute;
+	right: 0.625rem;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.radioFilter {
+	width: 100%;
+
+	&:global(.solid-select-container) {
+		background-color: #3a3f4b;
+		color: white;
+		border-radius: 4px;
+		font-size: 1rem;
+		font-family: inherit;
+	}
+
+	& :global(.solid-select-control) {
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 4px;
+		padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+		transition: border-color 0.2s ease-out;
+
+		&:focus-within {
+			outline: none;
+			border-color: rgba(255, 255, 255, 0.5);
+		}
+	}
+
+	& :global(.solid-select-placeholder) {
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	& :global(.solid-select-input) {
+		color: white;
+	}
+
+	& :global(.solid-select-multi-value) {
+		background-color: rgba(255, 255, 255, 0.15);
+		color: white;
+	}
+
+	& :global(.solid-select-multi-value-remove) {
+		background: none;
+		color: white;
+	}
+
+	& :global(.solid-select-list) {
+		background-color: #3a3f4b;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 4px;
+		z-index: 10;
+	}
+
+	& :global(.solid-select-option) {
+		color: white;
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.08);
+		}
+
+		&[data-focused="true"] {
+			background-color: rgba(255, 255, 255, 0.12);
+		}
+	}
+}

@@ -25,9 +25,12 @@
     "vite-plugin-solid": "^2.11.10"
   },
   "dependencies": {
+    "@solid-primitives/scheduled": "^1.5.3",
     "@solidjs/router": "^0.16.1",
     "@tabler/icons-solidjs": "^3.36.1",
+    "@thisbeyond/solid-select": "^0.16.0",
     "date-fns": "^4.1.0",
+    "flexsearch": "^0.8.212",
     "hls.js": "^1.6.15",
     "socket.io-client": "^4.8.3",
     "solid-js": "^1.9.11"
