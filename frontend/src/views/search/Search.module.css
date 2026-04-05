@@ -48,10 +48,10 @@
 	flex-direction: column;
 	gap: 0.5rem;
 	width: 100%;
-	max-width: 760px;
+	max-width: 1000px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 800px) {
 	.searchBar {
 		flex-direction: row;
 		align-items: center;
@@ -63,8 +63,8 @@
 
 	.radioFilterWrapper {
 		flex: 0 0 auto;
-		max-width: 14rem;
-		min-width: 10rem;
+		max-width: 26rem;
+		min-width: 24rem;
 	}
 }
 
@@ -121,6 +121,7 @@
 	& :global(.solid-select-multi-value-remove) {
 		background: none;
 		color: white;
+		transform: scale(1.5);
 	}
 
 	& :global(.solid-select-list) {
