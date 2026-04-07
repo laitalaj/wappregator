@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Callable
 from collections.abc import AsyncIterator
 import datetime
 import os
@@ -13,6 +13,7 @@ from wapprecommon import model
 from wapprecommon.constants import VALKEY_URL
 
 from wappregator import socket, radios, utils
+from wappregator.radios.base import CACHE_TTL_SECONDS
 
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS")
 ALLOWED_ORIGINS_LIST = ALLOWED_ORIGINS.split(",") if ALLOWED_ORIGINS else []
@@ -75,13 +76,26 @@ if ALLOWED_ORIGINS_LIST:
 wrapped_app = socketio.ASGIApp(sio, app)
 
 
-@app.get("/radios")
+def cacheable(ttl: int) -> Callable[[fastapi.Response], None]:
+    """Generate a dependency that sets cache control headers for a response.
+
+    Args:
+        ttl: Cache max age in seconds.
+    """
+
+    def dep(response: fastapi.Response) -> None:
+        response.headers["Cache-Control"] = f"public, max-age={ttl}"
+
+    return dep
+
+
+@app.get("/radios", dependencies=[fastapi.Depends(cacheable(60 * 60))])
 async def get_radios() -> dict[str, model.Radio]:
     """Get available Wappuradios."""
     return radios.radios()
 
 
-@app.get("/schedule")
+@app.get("/schedule", dependencies=[fastapi.Depends(cacheable(CACHE_TTL_SECONDS))])
 async def get_schedule(
     client: ValkeyClient,
     include: Annotated[list[str] | None, fastapi.Query()] = None,
@@ -99,6 +113,19 @@ async def get_schedule(
         min_upcoming=min_upcoming,
     )
     return {k: filt(v) for k, v in schedule.items() if include is None or k in include}
+
+
+@app.get("/offseason", dependencies=[fastapi.Depends(cacheable(CACHE_TTL_SECONDS))])
+async def get_offseason(client: ValkeyClient) -> bool:
+    """Check whether we are in off-season."""
+    schedule = await radios.schedule(client)
+    start = datetime.datetime.now(utils.DEFAULT_TZ)
+    end = datetime.datetime(start.year, 5, 2, tzinfo=utils.DEFAULT_TZ)
+    if start >= end:
+        return True
+
+    filt = utils.ScheduleFilter(start=start, end=end)
+    return all(len(filt(programs)) == 0 for programs in schedule.values())
 
 
 @app.get("/now_playing")

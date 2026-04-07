@@ -16,6 +16,7 @@ import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
 import { useSelectedProgram } from "../../useSelectedProgram";
 import { BrandedProgram } from "../channels/Program";
+import { RibbonCountdown } from "../countdown/Countdown";
 import { useLayoutState } from "../layoutState";
 import { type ProgramInfoWithId, Search } from "../search/Search";
 
@@ -129,48 +130,51 @@ export default function Guide() {
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
 
 	return (
-		<main>
-			<div inert={nonModalElementsInert()}>
-				<Search
-					schedule={programInfo}
-					radios={radios}
-					setActive={setSearchActive}
-					setInProgress={setSearchInProgress}
-					setResults={setSearchResults}
-				/>
-				<Show
-					when={groupedSchedule().length}
-					fallback={
-						<p class={classes.nothingToShow}>
-							{schedule() === undefined
-								? "Ladataan..."
-								: searchInProgress()
-									? "Haetaan..."
-									: "Ei hakutuloksia :^("}
-						</p>
-					}
-				>
-					<For each={groupedSchedule()}>
-						{(group, i) => (
-							<>
-								<GuideDivider date={group.date} />
-								<ProgramGrid
-									programs={group.programs}
-									setSelectedProgram={setSelectedProgram}
-									watchNowPlaying={i() === 0 || isToday(group.date)}
-								/>
-							</>
-						)}
-					</For>
+		<>
+			<main>
+				<div inert={nonModalElementsInert()}>
+					<Search
+						schedule={programInfo}
+						radios={radios}
+						setActive={setSearchActive}
+						setInProgress={setSearchInProgress}
+						setResults={setSearchResults}
+					/>
+					<Show
+						when={groupedSchedule().length}
+						fallback={
+							<p class={classes.nothingToShow}>
+								{schedule() === undefined
+									? "Ladataan..."
+									: searchInProgress()
+										? "Haetaan..."
+										: "Ei hakutuloksia :^("}
+							</p>
+						}
+					>
+						<For each={groupedSchedule()}>
+							{(group, i) => (
+								<>
+									<GuideDivider date={group.date} />
+									<ProgramGrid
+										programs={group.programs}
+										setSelectedProgram={setSelectedProgram}
+										watchNowPlaying={i() === 0 || isToday(group.date)}
+									/>
+								</>
+							)}
+						</For>
+					</Show>
+				</div>
+				<Show when={selectedProgram()}>
+					{(selected) => (
+						<Suspense fallback={null}>
+							<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
+						</Suspense>
+					)}
 				</Show>
-			</div>
-			<Show when={selectedProgram()}>
-				{(selected) => (
-					<Suspense fallback={null}>
-						<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
-					</Suspense>
-				)}
-			</Show>
-		</main>
+			</main>
+			<RibbonCountdown />
+		</>
 	);
 }

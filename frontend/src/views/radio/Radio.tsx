@@ -10,11 +10,10 @@ import {
 	useRadiosState,
 	useScheduleState,
 	useStreamStatusState,
-	WappuState,
 } from "../../state";
 import { useSelectedProgram } from "../../useSelectedProgram";
 import { Channels } from "../channels/Channels";
-import { OffSeasonCountdown, RibbonCountdown } from "../countdown/Countdown";
+import { RibbonCountdown } from "../countdown/Countdown";
 import { useLayoutState } from "../layoutState";
 import { PlayerBar } from "../player/PlayerBar";
 
@@ -27,26 +26,13 @@ const Description = lazy(() =>
 );
 
 function Radio() {
-	const { wappu, nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
+	const { nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
 	const streamStatus = useStreamStatusState();
 	const listeners = useListenersState();
 	const channelStates = useChannelStates(schedule, radios, nowPlaying, streamStatus, listeners);
-
-	const isOffSeason = createMemo(() => {
-		if (wappu() === WappuState.Post) {
-			return true;
-		}
-
-		if (wappu() === WappuState.Wappu) {
-			return false;
-		}
-
-		const states = channelStates();
-		return states.length > 0 && states.every((s) => s.nextPrograms.length === 0);
-	});
 
 	const allPrograms = createMemo(() => {
 		const scheduleData = schedule();
@@ -101,37 +87,32 @@ function Radio() {
 	return (
 		<>
 			<main>
-				<Show
-					when={!isOffSeason()}
-					fallback={<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />}
+				<div
+					classList={{
+						[classes.content]: true,
+						[classes.dimmedContent]: !!selectedProgram(),
+					}}
+					inert={nonModalElementsInert()}
 				>
-					<div
-						classList={{
-							[classes.content]: true,
-							[classes.dimmedContent]: !!selectedProgram(),
-						}}
-						inert={nonModalElementsInert()}
-					>
-						<Channels
-							channelState={channelStates}
-							isPlaying={isPlaying}
-							setIsPlaying={setIsPlaying}
-							selectedChannelId={selectedChannelId}
-							setSelectedChannelId={setSelectedChannelId}
-							setSelectedProgram={setSelectedProgram}
-						/>
-					</div>
-					<Show when={selectedProgram()}>
-						{(selected) => (
-							<Suspense fallback={null}>
-								<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
-							</Suspense>
-						)}
-					</Show>
-					<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
+					<Channels
+						channelState={channelStates}
+						isPlaying={isPlaying}
+						setIsPlaying={setIsPlaying}
+						selectedChannelId={selectedChannelId}
+						setSelectedChannelId={setSelectedChannelId}
+						setSelectedProgram={setSelectedProgram}
+					/>
+				</div>
+				<Show when={selectedProgram()}>
+					{(selected) => (
+						<Suspense fallback={null}>
+							<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
+						</Suspense>
+					)}
 				</Show>
+				<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
 			</main>
-			<Show when={!isOffSeason() && selectedChannelId() === null}>
+			<Show when={selectedChannelId() === null}>
 				<RibbonCountdown />
 			</Show>
 		</>

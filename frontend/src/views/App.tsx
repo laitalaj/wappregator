@@ -2,6 +2,8 @@ import { A, Route, Router } from "@solidjs/router";
 import { IconBrandGithubFilled, IconBrandTelegram, IconMail } from "@tabler/icons-solidjs";
 import {
 	type Component,
+	Switch,
+	Match,
 	createMemo,
 	ErrorBoundary,
 	lazy,
@@ -10,7 +12,7 @@ import {
 } from "solid-js";
 
 import { funnySlogansHaha } from "../funnySlogansHaha";
-import { WappuState } from "../state";
+import { WappuState, useOffSeasonState } from "../state";
 import { OffSeasonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
 
@@ -43,18 +45,33 @@ const ErrorFallback = (err: unknown, reset: () => void) => {
 };
 
 const InnerLayout: ParentComponent = (props: ParentProps) => {
+	const { wappu } = useLayoutState();
+	const offSeason = useOffSeasonState();
+	const isOffSeason = createMemo(() => {
+		if (wappu() === WappuState.Post) return true;
+		return offSeason();
+	});
 	return (
-		<div class={classes.app}>
-			<Header />
-			<ErrorBoundary fallback={ErrorFallback}>{props.children}</ErrorBoundary>
-		</div>
+		<Switch fallback={<main />}>
+			<Match when={isOffSeason()}>
+				<main>
+					<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />
+				</main>
+			</Match>
+			<Match when={!isOffSeason()}>{props.children}</Match>
+		</Switch>
 	);
 };
 
 const Layout: ParentComponent = (props: ParentProps) => {
 	return (
 		<LayoutStateProvider>
-			<InnerLayout>{props.children}</InnerLayout>
+			<div class={classes.app}>
+				<Header />
+				<ErrorBoundary fallback={ErrorFallback}>
+					<InnerLayout>{props.children}</InnerLayout>
+				</ErrorBoundary>
+			</div>
 		</LayoutStateProvider>
 	);
 };

@@ -196,6 +196,28 @@ export function useFullScheduleState(): Resource<Schedule> {
 	return schedule;
 }
 
+async function fetchOffSeason(): Promise<boolean> {
+	const response = await fetch(`${import.meta.env.VITE_API_URL}/offseason`);
+	return response.json();
+}
+
+export function useOffSeasonState(): Resource<boolean> {
+	const [offSeason, { refetch: refetchOffSeason }] = createResource(fetchOffSeason);
+
+	const offSeasonInterval = setInterval(
+		() => {
+			refetchOffSeason();
+		},
+		60 * 60 * 1000,
+	);
+
+	onCleanup(() => {
+		clearInterval(offSeasonInterval);
+	});
+
+	return offSeason;
+}
+
 const SocketContext = createContext<Socket>();
 
 export function SocketProvider(props: ParentProps) {
