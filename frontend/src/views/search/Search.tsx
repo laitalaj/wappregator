@@ -1,8 +1,5 @@
 import { debounce } from "@solid-primitives/scheduled";
-import { IconFilter, IconSearch } from "@tabler/icons-solidjs";
-
-import "@thisbeyond/solid-select/style.css";
-import { createOptions, Select } from "@thisbeyond/solid-select";
+import { IconSearch } from "@tabler/icons-solidjs";
 import { type DocumentData, Document as SearchIndex } from "flexsearch";
 import {
 	type Accessor,
@@ -13,7 +10,8 @@ import {
 	type Setter,
 } from "solid-js";
 
-import type { ProgramInfo, Radio, Radios } from "../../types";
+import type { ProgramInfo, Radios } from "../../types";
+import { RadioFilter } from "./RadioFilter";
 
 import classes from "./Search.module.css";
 
@@ -56,9 +54,9 @@ export function Search(props: SearchProps) {
 	const [index] = createResource(props.schedule, createIndex); // (false positive)
 
 	const [searchQuery, setSearchQuery] = createSignal("");
-	const [selectedRadios, setSelectedRadios] = createSignal<Radio[]>([]);
+	const [selectedRadioIds, setSelectedRadioIds] = createSignal<Set<string>>(new Set());
 
-	const radioSelectOptions = createMemo(() => {
+	const radioOptions = createMemo(() => {
 		const radiosData = props.radios();
 		if (!radiosData) return [];
 		return Object.values(radiosData).sort((a, b) => a.name.localeCompare(b.name));
@@ -103,7 +101,7 @@ export function Search(props: SearchProps) {
 
 	createEffect(() => {
 		const query = searchQuery().trim();
-		const radioIds = selectedRadios().map((r) => r.id);
+		const radioIds = [...selectedRadioIds()];
 		if (!query && radioIds.length === 0) {
 			props.setActive(false);
 			props.setResults([]);
@@ -126,18 +124,13 @@ export function Search(props: SearchProps) {
 						onInput={(e) => setSearchQuery(e.currentTarget.value)}
 						aria-label="Hae ohjelmia"
 					/>
-					<IconSearch class={classes.inputIcon} size={20} />
+					<IconSearch class={classes.inputIcon} size={20} role="presentation" />
 				</div>
-				<div class={classes.radioFilterWrapper}>
-					<Select
-						multiple
-						class={classes.radioFilter}
-						placeholder="Kaikki asemat"
-						onChange={setSelectedRadios}
-						{...createOptions(radioSelectOptions, { key: "name" })}
-					/>
-					<IconFilter class={classes.inputIcon} size={20} />
-				</div>
+				<RadioFilter
+					radios={radioOptions}
+					selectedIds={selectedRadioIds}
+					onChange={setSelectedRadioIds}
+				/>
 			</div>
 		</div>
 	);

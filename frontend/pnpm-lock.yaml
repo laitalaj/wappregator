@@ -17,9 +17,6 @@ importers:
       '@tabler/icons-solidjs':
         specifier: ^3.36.1
         version: 3.36.1(solid-js@1.9.11)
-      '@thisbeyond/solid-select':
-        specifier: ^0.16.0
-        version: 0.16.0(solid-js@1.9.11)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -778,12 +775,6 @@ packages:
 
   '@tabler/icons@3.36.1':
     resolution: {integrity: sha512-f4Jg3Fof/Vru5ioix/UO4GX+sdDsF9wQo47FbtvG+utIYYVQ/QVAC0QYgcBbAjQGfbdOh2CCf0BgiFOF9Ixtjw==}
-
-  '@thisbeyond/solid-select@0.16.0':
-    resolution: {integrity: sha512-Ig4qTISjVJBBJK4yvxhHIO8rDr0ujmhcChF1ot3fHOM8K4fWrwXBSKLJ1npAUO504x+Ig0MKNPO6y6iS2NPJsA==}
-    engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
-    peerDependencies:
-      solid-js: ^1.8
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2133,10 +2124,6 @@ snapshots:
       solid-js: 1.9.11
 
   '@tabler/icons@3.36.1': {}
-
-  '@thisbeyond/solid-select@0.16.0(solid-js@1.9.11)':
-    dependencies:
-      solid-js: 1.9.11
 
   '@types/babel__core@7.20.5':
     dependencies:
