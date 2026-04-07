@@ -15,14 +15,18 @@
 
 .guideDivider {
 	width: 100%;
-	background: #00000033;
+	background: var(--bg-color-darker);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.375rem 0;
+	padding: 6px 0;
+	position: sticky;
+	top: var(--nav-height);
+	z-index: 1;
 
 	& h2 {
-		color: white;
+		color: var(--text-color);
 		margin: 0;
+		font-weight: 500;
 	}
 }

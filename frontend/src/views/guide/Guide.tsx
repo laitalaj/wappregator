@@ -48,6 +48,14 @@ interface ProgramGridProps {
 
 function ProgramGrid(props: ProgramGridProps) {
 	const [now, setNow] = createSignal(new Date());
+	// Use the bg color of the last program for the section background to fill the gap at the end
+	const sectionBackground = createMemo(() => {
+		const lastProgram = props.programs[props.programs.length - 1];
+		return lastProgram
+			? `color-mix(in srgb, ${lastProgram.radio.brand.background_color} 80%, black)`
+			: "var(--bg-color)";
+	});
+
 	createEffect(() => {
 		if (!props.watchNowPlaying) return;
 		const interval = setInterval(() => setNow(new Date()), 1000 * 30);
@@ -55,7 +63,7 @@ function ProgramGrid(props: ProgramGridProps) {
 	});
 
 	return (
-		<div class={classes.programGrid}>
+		<div class={classes.programGrid} style={{ "background-color": sectionBackground() }}>
 			<For each={props.programs}>
 				{(programInfo) => (
 					<BrandedProgram
