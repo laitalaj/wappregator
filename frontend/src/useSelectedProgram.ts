@@ -1,6 +1,7 @@
 import { useSearchParams } from "@solidjs/router";
 import { format, parse, isSameMinute } from "date-fns";
 import { type Accessor, createEffect, createSignal, type Setter } from "solid-js";
+
 import type { ProgramInfo } from "./types";
 
 const PARAM_NAME = "ohjelma";
@@ -12,11 +13,8 @@ function encodeProgramKey(info: ProgramInfo): string {
 	return `${info.radio.id}@${format(start, TIME_FORMAT)}`;
 }
 
-function findProgram(
-	programs: ProgramInfo[],
-	key: string,
-): ProgramInfo | null {
-	const parts = key.split('@');
+function findProgram(programs: ProgramInfo[], key: string): ProgramInfo | null {
+	const parts = key.split("@");
 
 	if (parts.length !== 2) {
 		return null;
@@ -50,8 +48,7 @@ export function useSelectedProgram(
 	const [searchParams, setSearchParams] = useSearchParams<{
 		[PARAM_NAME]?: string;
 	}>();
-	const [selectedProgram, setSelectedProgram] =
-		createSignal<ProgramInfo | null>(null);
+	const [selectedProgram, setSelectedProgram] = createSignal<ProgramInfo | null>(null);
 
 	// Track whether we pushed a history entry so we know
 	// whether closing should go back or just replace the URL
@@ -74,10 +71,7 @@ export function useSelectedProgram(
 		if (value) {
 			const alreadyOpen = searchParams[PARAM_NAME] != null;
 			setSelectedProgram(value);
-			setSearchParams(
-				{ [PARAM_NAME]: encodeProgramKey(value) },
-				{ replace: alreadyOpen },
-			);
+			setSearchParams({ [PARAM_NAME]: encodeProgramKey(value) }, { replace: alreadyOpen });
 			if (!alreadyOpen) {
 				pushedEntry = true;
 			}

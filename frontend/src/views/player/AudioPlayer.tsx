@@ -1,4 +1,5 @@
 import { type Accessor, createEffect, createMemo, Index } from "solid-js";
+
 import type { Program, Radio } from "../../types";
 import {
 	seekToLive,
@@ -92,7 +93,6 @@ export function AudioPlayer(props: AudioPlayerProps) {
 	);
 
 	return (
-		// biome-ignore lint/a11y/useMediaCaption: wappu
 		<audio
 			hidden
 			preload="none"

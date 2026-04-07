@@ -1,9 +1,5 @@
 import { A, Route, Router } from "@solidjs/router";
-import {
-	IconBrandGithubFilled,
-	IconBrandTelegram,
-	IconMail,
-} from "@tabler/icons-solidjs";
+import { IconBrandGithubFilled, IconBrandTelegram, IconMail } from "@tabler/icons-solidjs";
 import {
 	type Component,
 	createMemo,
@@ -12,11 +8,13 @@ import {
 	type ParentComponent,
 	type ParentProps,
 } from "solid-js";
+
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import { WappuState } from "../state";
-import classes from "./App.module.css";
 import { OffSeasonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
+
+import classes from "./App.module.css";
 
 const ErrorFallback = (err: unknown, reset: () => void) => {
 	console.error("ErrorBoundary caught an error:", err);
@@ -64,8 +62,7 @@ const Layout: ParentComponent = (props: ParentProps) => {
 function Header() {
 	const { wappu, nonModalElementsInert } = useLayoutState();
 
-	const funnySlogan =
-		funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
+	const funnySlogan = funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
 	const logo = createMemo(() => {

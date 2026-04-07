@@ -19,11 +19,8 @@ import {
 	type Resource,
 	useContext,
 } from "solid-js";
-import {
-	getPreWappuStartDate,
-	getWappuEndDate,
-	getWappuStartDate,
-} from "./timeUtils";
+
+import { getPreWappuStartDate, getWappuEndDate, getWappuStartDate } from "./timeUtils";
 import {
 	type ChannelState,
 	type ListenerCounts,
@@ -58,8 +55,7 @@ async function fetchRadios(): Promise<Radios> {
 }
 
 export function useScheduleState(): Resource<Schedule> {
-	const [schedule, { refetch: refetchSchedule }] =
-		createResource(fetchSchedule);
+	const [schedule, { refetch: refetchSchedule }] = createResource(fetchSchedule);
 
 	const scheduleInterval = setInterval(() => {
 		refetchSchedule();
@@ -187,8 +183,7 @@ async function fetchFullSchedule(): Promise<Schedule> {
 }
 
 export function useFullScheduleState(): Resource<Schedule> {
-	const [schedule, { refetch: refetchSchedule }] =
-		createResource(fetchFullSchedule);
+	const [schedule, { refetch: refetchSchedule }] = createResource(fetchFullSchedule);
 
 	const scheduleInterval = setInterval(() => {
 		refetchSchedule();
@@ -216,11 +211,7 @@ export function SocketProvider(props: ParentProps) {
 		socket.close();
 	});
 
-	return (
-		<SocketContext.Provider value={socket}>
-			{props.children}
-		</SocketContext.Provider>
-	);
+	return <SocketContext.Provider value={socket}>{props.children}</SocketContext.Provider>;
 }
 
 export function useNowPlayingState(): Accessor<NowPlaying> {
@@ -245,9 +236,7 @@ export function useNowPlayingState(): Accessor<NowPlaying> {
 export function useStreamStatusState(): Accessor<StreamStatus> {
 	const socket = useContext(SocketContext);
 	if (!socket) {
-		throw new Error(
-			"useStreamStatusState must be used within a SocketProvider",
-		);
+		throw new Error("useStreamStatusState must be used within a SocketProvider");
 	}
 
 	const [streamStatus, setStreamStatus] = createSignal<StreamStatus>({});
@@ -282,14 +271,10 @@ export function useListenersState(): Accessor<ListenerCounts> {
 	return listenerCounts;
 }
 
-export function useChangeChannelEffect(
-	selectedChannelId: Accessor<string | null>,
-) {
+export function useChangeChannelEffect(selectedChannelId: Accessor<string | null>) {
 	const socket = useContext(SocketContext);
 	if (!socket) {
-		throw new Error(
-			"useChangeChannelEffect must be used within a SocketProvider",
-		);
+		throw new Error("useChangeChannelEffect must be used within a SocketProvider");
 	}
 
 	createEffect(() => {
@@ -359,14 +344,9 @@ function getMaydayCountdown(): number {
 }
 
 export function useMaydayCountdownState(): Accessor<number> {
-	const [countdownState, setCountdownState] = createSignal<number>(
-		getMaydayCountdown(),
-	);
+	const [countdownState, setCountdownState] = createSignal<number>(getMaydayCountdown());
 
-	const interval = setInterval(
-		() => setCountdownState(getMaydayCountdown()),
-		1000 * 60,
-	);
+	const interval = setInterval(() => setCountdownState(getMaydayCountdown()), 1000 * 60);
 	onCleanup(() => {
 		clearInterval(interval);
 	});

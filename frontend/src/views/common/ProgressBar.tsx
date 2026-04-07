@@ -1,4 +1,5 @@
 import type { Accessor } from "solid-js";
+
 import classes from "./ProgressBar.module.css";
 
 interface Props {

@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript", "import", "jsx-a11y"],
+	"categories": {
+		"correctness": "error",
+		"suspicious": "warn"
+	},
+	"rules": {
+		"jsx-a11y/click-events-have-key-events": "off",
+		"jsx-a11y/media-has-caption": "off",
+		"import/no-unassigned-import": "off",
+		"import/no-named-as-default": "off",
+		"import/no-named-as-default-member": "off",
+		"no-shadow": "off"
+	}
+}

@@ -11,11 +11,13 @@ import {
 	Show,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
 import { getProgramProgress } from "../../getProgramProgress";
 import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo, Program as ProgramType } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import { ProgressBar } from "../common/ProgressBar";
+
 import classes from "./Program.module.css";
 
 const NOW_PLAYING_UPDATE_INTERVAL = 1000;
@@ -68,22 +70,14 @@ export function Program(props: ProgramProps) {
 			<span class={classes.programTitle}>{props.program().title}</span>
 			<ProgramTime startTime={startTime} endTime={endTime} />
 			<Show when={props.playingNow}>
-				<ProgressBar
-					progress={nowPlayingProgress}
-					transitionTimeMs={NOW_PLAYING_UPDATE_INTERVAL}
-				/>
+				<ProgressBar progress={nowPlayingProgress} transitionTimeMs={NOW_PLAYING_UPDATE_INTERVAL} />
 			</Show>
 		</div>
 	);
 }
 
-function ProgramTime(props: {
-	startTime: Accessor<string>;
-	endTime: Accessor<string>;
-}) {
-	const timeRange = createMemo(() =>
-		formatTimeRange(props.startTime(), props.endTime()),
-	);
+function ProgramTime(props: { startTime: Accessor<string>; endTime: Accessor<string> }) {
+	const timeRange = createMemo(() => formatTimeRange(props.startTime(), props.endTime()));
 
 	return (
 		<div class={classes.time}>
@@ -118,9 +112,7 @@ export function MaybeProgram(props: MaybeProgramProps) {
 			aria-label={program() ? "Näytä ohjelmatiedot" : undefined}
 		>
 			<Show when={program()} fallback={<NoProgram />}>
-				{(program) => (
-					<Program program={() => program()} playingNow={props.playingNow} />
-				)}
+				{(program) => <Program program={() => program()} playingNow={props.playingNow} />}
 			</Show>
 		</Dynamic>
 	);
@@ -139,13 +131,8 @@ export function BrandedProgram(props: BrandedProgramProps) {
 			type="button"
 			aria-label="Näytä ohjelmatiedot"
 		>
-			<span class={classes.brandedProgramChannel}>
-				{props.programInfo.radio.name}
-			</span>
-			<Program
-				program={() => props.programInfo.program}
-				playingNow={props.playingNow}
-			/>
+			<span class={classes.brandedProgramChannel}>{props.programInfo.radio.name}</span>
+			<Program program={() => props.programInfo.program} playingNow={props.playingNow} />
 		</button>
 	);
 }
@@ -155,9 +142,7 @@ interface PresentationalProgramGroupProps {
 	children: JSX.Element;
 }
 
-export function PresentationalProgramGroup(
-	props: PresentationalProgramGroupProps,
-) {
+export function PresentationalProgramGroup(props: PresentationalProgramGroupProps) {
 	const c = children(() => props.children);
 	return (
 		<div class={classes.programGroup}>

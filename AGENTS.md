@@ -32,5 +32,6 @@ Local development runs via Docker Compose (`compose.yml`). Services: frontend (p
 - Package manager: pnpm
 - Framework: SolidJS with TypeScript
 - Build tool: Vite
-- Formatter/linter: Biome (tab indentation, double quotes) + ESLint with eslint-plugin-solid
-- Lint command: `pnpm lint` (runs `biome check --write src && eslint`)
+- Formatter: oxfmt (tab indentation, double quotes)
+- Linter: oxlint + ESLint with eslint-plugin-solid
+- Lint command: `pnpm lint` (runs `oxfmt src && oxlint src && eslint`)

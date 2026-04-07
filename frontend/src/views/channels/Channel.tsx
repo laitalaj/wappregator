@@ -1,8 +1,4 @@
-import {
-	IconChevronDown,
-	IconChevronUp,
-	IconHeadphones,
-} from "@tabler/icons-solidjs";
+import { IconChevronDown, IconChevronUp, IconHeadphones } from "@tabler/icons-solidjs";
 import { startOfDay } from "date-fns";
 import {
 	type Accessor,
@@ -13,17 +9,15 @@ import {
 	type Setter,
 	Show,
 } from "solid-js";
+
 import { WappuState } from "../../state";
 import type { ChannelState, Program, ProgramInfo, Radio } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import { PlayButton } from "../common/PlayButton";
 import { useLayoutState } from "../layoutState";
+import { MaybeProgram, PresentationalProgramGroup, ProgramGroup } from "./Program";
+
 import classes from "./Channel.module.css";
-import {
-	MaybeProgram,
-	PresentationalProgramGroup,
-	ProgramGroup,
-} from "./Program";
 
 interface Props {
 	station: Accessor<ChannelState>;
@@ -34,10 +28,7 @@ interface Props {
 	setSelectedProgram: Setter<ProgramInfo | null>;
 }
 
-const toProgramInfo = (
-	program: Program | undefined,
-	radio: Radio,
-): ProgramInfo | undefined => {
+const toProgramInfo = (program: Program | undefined, radio: Radio): ProgramInfo | undefined => {
 	if (!program) {
 		return undefined;
 	}
@@ -88,9 +79,7 @@ export function Channel(props: Props) {
 		return radio().location;
 	});
 
-	const currentProgram = createMemo(() =>
-		toProgramInfo(props.station().currentProgram, radio()),
-	);
+	const currentProgram = createMemo(() => toProgramInfo(props.station().currentProgram, radio()));
 	const nowPlaying = createMemo(() => props.station().currentSong);
 
 	const upNext = createMemo((): ProgramInfo[] => {
@@ -99,9 +88,7 @@ export function Channel(props: Props) {
 			return [];
 		}
 
-		return props
-			.station()
-			.nextPrograms.map((program) => ({ program, radio: radioState }));
+		return props.station().nextPrograms.map((program) => ({ program, radio: radioState }));
 	});
 
 	const canPlay = () => radio().streams.length > 0;
@@ -114,9 +101,7 @@ export function Channel(props: Props) {
 		const isNowMobile = isMobile();
 		const showAllProgramsValue = showAllPrograms();
 		const maxPrograms =
-			isNowMobile && !showAllProgramsValue
-				? UPCOMING_MOBILE_LIMIT
-				: UPCOMING_STANDARD_LIMIT;
+			isNowMobile && !showAllProgramsValue ? UPCOMING_MOBILE_LIMIT : UPCOMING_STANDARD_LIMIT;
 		return maxPrograms;
 	});
 
@@ -156,9 +141,7 @@ export function Channel(props: Props) {
 			</div>
 
 			<div class={classes.channelInfo}>
-				<Show when={radio().frequency_mhz}>
-					{radio().frequency_mhz?.toFixed(1)} MHz @{" "}
-				</Show>
+				<Show when={radio().frequency_mhz}>{radio().frequency_mhz?.toFixed(1)} MHz @ </Show>
 				{location()}
 				{" / "}
 				<a href={radio().url} class={classes.listenButton}>
@@ -174,9 +157,7 @@ export function Channel(props: Props) {
 							{(count) => (
 								<span class={classes.listenerCount}>
 									<IconHeadphones size={16} aria-hidden="true" /> {count()}
-									<span class={classes.srOnly}>
-										{count() === 1 ? "kuuntelija" : "kuuntelijaa"}
-									</span>
+									<span class={classes.srOnly}>{count() === 1 ? "kuuntelija" : "kuuntelijaa"}</span>
 								</span>
 							)}
 						</Show>

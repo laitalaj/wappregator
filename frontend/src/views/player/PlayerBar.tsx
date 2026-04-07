@@ -9,6 +9,7 @@ import {
 	Suspense,
 	Switch,
 } from "solid-js";
+
 import { getProgramProgress } from "../../getProgramProgress";
 import type { RadioState } from "../../radio";
 import { formatTime } from "../../timeUtils";
@@ -17,8 +18,9 @@ import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
 import { AudioPlayer } from "./AudioPlayer";
 import { getHlsStreamUrl } from "./audioPlayerCommon";
-import classes from "./PlayerBar.module.css";
 import { VolumeSlider } from "./VolumeSlide";
+
+import classes from "./PlayerBar.module.css";
 
 const HlsAudioPlayer = lazy(() =>
 	import("./HlsAudioPlayer").then((module) => ({
@@ -116,9 +118,7 @@ export function PlayerBar(props: Props) {
 							<div class={classes.controlsRow}>
 								<PlayButton
 									isPlaying={isPlaying}
-									onClick={() =>
-										props.setIsPlaying((playing: boolean) => !playing)
-									}
+									onClick={() => props.setIsPlaying((playing: boolean) => !playing)}
 									radioStatus={() => state().radioStatus}
 								/>
 								<Show when={nowPlaying()}>

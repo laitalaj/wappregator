@@ -1,16 +1,11 @@
-import {
-	type Component,
-	createMemo,
-	onCleanup,
-	onMount,
-	type Setter,
-	Show,
-} from "solid-js";
+import { type Component, createMemo, onCleanup, onMount, type Setter, Show } from "solid-js";
+
 import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
-import classes from "./ProgramModal.module.css";
 import { InfoGrid } from "./InfoGrid";
 import { ProgramHeader } from "./ProgramHeader";
+
+import classes from "./ProgramModal.module.css";
 
 interface Props {
 	programInfo: ProgramInfo;
@@ -50,7 +45,7 @@ export const ProgramModal: Component<Props> = (props) => {
 	});
 
 	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: click-to-dismiss backdrop
+		// oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- click-to-dismiss backdrop
 		<div class={classes.overlay} onClick={handleOverlayClick}>
 			<dialog
 				class={classes.description}

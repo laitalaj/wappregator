@@ -10,6 +10,7 @@ import {
 	Show,
 	Suspense,
 } from "solid-js";
+
 import { useFullScheduleState, useRadiosState } from "../../state";
 import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
@@ -17,6 +18,7 @@ import { useSelectedProgram } from "../../useSelectedProgram";
 import { BrandedProgram } from "../channels/Program";
 import { useLayoutState } from "../layoutState";
 import { type ProgramInfoWithId, Search } from "../search/Search";
+
 import classes from "./Guide.module.css";
 
 const Description = lazy(() =>
@@ -75,15 +77,11 @@ function ProgramGrid(props: ProgramGridProps) {
 const groupPrograms = (schedule: ProgramInfo[]) =>
 	schedule
 		.sort((a, b) => {
-			const res =
-				new Date(a.program.start).getTime() -
-				new Date(b.program.start).getTime();
+			const res = new Date(a.program.start).getTime() - new Date(b.program.start).getTime();
 			if (res !== 0) {
 				return res;
 			}
-			return (
-				new Date(a.program.end).getTime() - new Date(b.program.end).getTime()
-			);
+			return new Date(a.program.end).getTime() - new Date(b.program.end).getTime();
 		})
 		.reduce<{ date: Date; programs: ProgramInfo[] }[]>((groups, item) => {
 			const day = startOfDay(new Date(item.program.start));
@@ -106,9 +104,7 @@ export default function Guide() {
 		const radiosData = radios();
 		if (!scheduleData || !radiosData) return [];
 		return Object.entries(scheduleData)
-			.map(
-				([channelId, programs]) => [radiosData[channelId], programs] as const,
-			)
+			.map(([channelId, programs]) => [radiosData[channelId], programs] as const)
 			.flatMap(([radio, programs]) =>
 				programs.map((program, idx) => ({
 					id: `${radio.id}-${idx}`,
@@ -118,13 +114,10 @@ export default function Guide() {
 			);
 	});
 
-	
 	// eslint-disable-next-line solid/reactivity
 	const [selectedProgram, setSelectedProgram] = useSelectedProgram(programInfo);
 
-	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>(
-		[],
-	);
+	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>([]);
 	const [searchActive, setSearchActive] = createSignal(false);
 	const [searchInProgress, setSearchInProgress] = createSignal(false);
 
@@ -174,10 +167,7 @@ export default function Guide() {
 			<Show when={selectedProgram()}>
 				{(selected) => (
 					<Suspense fallback={null}>
-						<Description
-							programInfo={selected()}
-							setSelectedProgram={setSelectedProgram}
-						/>
+						<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
 					</Suspense>
 				)}
 			</Show>

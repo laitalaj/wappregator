@@ -1,5 +1,7 @@
 import { createMemo, type JSX, Show } from "solid-js";
+
 import { useMaydayCountdownState } from "../../state";
+
 import classes from "./Countdown.module.css";
 
 interface MaydayCountdownProps {
@@ -13,23 +15,16 @@ function MaydayCountdown(props: MaydayCountdownProps) {
 		Math.max(0, Math.min(1, (100 - daysUntilWappu()) / 100)),
 	);
 	const numberClass = createMemo(
-		() =>
-			`${classes.countdownNumber} ${props.numberClasses ? props.numberClasses.join(" ") : ""}`,
+		() => `${classes.countdownNumber} ${props.numberClasses ? props.numberClasses.join(" ") : ""}`,
 	);
 
 	return (
 		<>
-			<span
-				class={numberClass()}
-				style={{ "--rainbow-intensity": rainbowIntensity() }}
-			>
+			<span class={numberClass()} style={{ "--rainbow-intensity": rainbowIntensity() }}>
 				{daysUntilWappu()}
 			</span>
 			<Show when={props.labelGenerator !== undefined}>
-				<span
-					class={classes.countdownLabel}
-					style={{ "--rainbow-intensity": rainbowIntensity() }}
-				>
+				<span class={classes.countdownLabel} style={{ "--rainbow-intensity": rainbowIntensity() }}>
 					{props.labelGenerator?.(daysUntilWappu())}
 				</span>
 			</Show>

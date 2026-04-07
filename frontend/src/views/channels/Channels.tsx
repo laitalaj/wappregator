@@ -1,6 +1,8 @@
 import { type Accessor, Index, type Setter, Suspense } from "solid-js";
+
 import type { ChannelState, ProgramInfo } from "../../types";
 import { Channel } from "./Channel";
+
 import classes from "./Channels.module.css";
 
 interface Props {

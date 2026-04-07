@@ -1,5 +1,6 @@
 import Hls from "hls.js";
 import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
+
 import type { AudioPlayerProps } from "./AudioPlayer";
 import {
 	getHlsStreamUrl,
@@ -65,7 +66,6 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 	);
 
 	return (
-		// biome-ignore lint/a11y/useMediaCaption: hidden audio element for HLS streaming, no captions needed
 		<audio
 			hidden
 			preload="none"

@@ -1,11 +1,5 @@
-import {
-	createEffect,
-	createMemo,
-	createSignal,
-	lazy,
-	Show,
-	Suspense,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, lazy, Show, Suspense } from "solid-js";
+
 import type { RadioState } from "../../radio";
 import {
 	SocketProvider,
@@ -19,11 +13,12 @@ import {
 	WappuState,
 } from "../../state";
 import { useSelectedProgram } from "../../useSelectedProgram";
-import classes from "../App.module.css";
 import { Channels } from "../channels/Channels";
 import { OffSeasonCountdown, RibbonCountdown } from "../countdown/Countdown";
 import { useLayoutState } from "../layoutState";
 import { PlayerBar } from "../player/PlayerBar";
+
+import classes from "../App.module.css";
 
 const Description = lazy(() =>
 	import("../programModal/ProgramModal").then((module) => ({
@@ -32,20 +27,13 @@ const Description = lazy(() =>
 );
 
 function Radio() {
-	const { wappu, nonModalElementsInert, setNonModalElementsInert } =
-		useLayoutState();
+	const { wappu, nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
 	const streamStatus = useStreamStatusState();
 	const listeners = useListenersState();
-	const channelStates = useChannelStates(
-		schedule,
-		radios,
-		nowPlaying,
-		streamStatus,
-		listeners,
-	);
+	const channelStates = useChannelStates(schedule, radios, nowPlaying, streamStatus, listeners);
 
 	const isOffSeason = createMemo(() => {
 		if (wappu() === WappuState.Post) {
@@ -57,9 +45,7 @@ function Radio() {
 		}
 
 		const states = channelStates();
-		return (
-			states.length > 0 && states.every((s) => s.nextPrograms.length === 0)
-		);
+		return states.length > 0 && states.every((s) => s.nextPrograms.length === 0);
 	});
 
 	const allPrograms = createMemo(() => {
@@ -74,9 +60,7 @@ function Radio() {
 		);
 	});
 
-	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
-		null,
-	);
+	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(null);
 
 	// eslint-disable-next-line solid/reactivity
 	const [selectedProgram, setSelectedProgram] = useSelectedProgram(allPrograms);
@@ -96,16 +80,12 @@ function Radio() {
 			return undefined;
 		}
 
-		const radio = channelStates().find(
-			(station) => station.radio.id === selectedChannelId(),
-		);
+		const radio = channelStates().find((station) => station.radio.id === selectedChannelId());
 
 		if (!radio) {
 			// TODO: Auto-deselect channel in this case?
 			// Probably can't be done inside memo, needs an effect
-			console.warn(
-				`Selected channel ID ${selectedChannelId()} not found in nowPlaying data`,
-			);
+			console.warn(`Selected channel ID ${selectedChannelId()} not found in nowPlaying data`);
 
 			return undefined;
 		}
@@ -123,9 +103,7 @@ function Radio() {
 			<main>
 				<Show
 					when={!isOffSeason()}
-					fallback={
-						<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />
-					}
+					fallback={<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />}
 				>
 					<div
 						classList={{
@@ -146,10 +124,7 @@ function Radio() {
 					<Show when={selectedProgram()}>
 						{(selected) => (
 							<Suspense fallback={null}>
-								<Description
-									programInfo={selected()}
-									setSelectedProgram={setSelectedProgram}
-								/>
+								<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
 							</Suspense>
 						)}
 					</Show>

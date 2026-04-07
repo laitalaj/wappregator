@@ -8,16 +8,16 @@ SolidJS single-page application for browsing and listening to Wappuradio station
 - Package manager: pnpm (version pinned in `package.json` `packageManager` field)
 - Build tool: Vite
 - Language: TypeScript (strict mode)
-- Formatter/linter: Biome (config at repo root `biome.jsonc`) + ESLint with `eslint-plugin-solid`
-- Lint: `pnpm lint` (runs `biome check --write src && eslint`)
+- Formatter: oxfmt (config in `.oxfmtrc.json`)
+- Linter: oxlint (config in `.oxlintrc.json`) + ESLint with `eslint-plugin-solid`
+- Lint: `pnpm lint` (runs `oxfmt src && oxlint src && eslint`)
 - Dev server: `pnpm dev`
 - Build: `pnpm build`
 
-## Biome style
+## Code style
 
 - Indentation: tabs
 - JS quote style: double quotes
-- CSS modules enabled
 
 ## Dependencies
 

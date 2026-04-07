@@ -1,10 +1,5 @@
-import {
-	type Accessor,
-	createContext,
-	createSignal,
-	type ParentProps,
-	useContext,
-} from "solid-js";
+import { type Accessor, createContext, createSignal, type ParentProps, useContext } from "solid-js";
+
 import { useWappuState, type WappuState } from "../state";
 
 export interface LayoutState {
@@ -25,11 +20,7 @@ export function LayoutStateProvider(props: ParentProps) {
 		setNonModalElementsInert,
 	};
 
-	return (
-		<LayoutStateContext.Provider value={state}>
-			{props.children}
-		</LayoutStateContext.Provider>
-	);
+	return <LayoutStateContext.Provider value={state}>{props.children}</LayoutStateContext.Provider>;
 }
 
 export function useLayoutState(): LayoutState {

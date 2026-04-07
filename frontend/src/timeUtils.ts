@@ -1,11 +1,4 @@
-import {
-	format,
-	getWeek,
-	isThisYear,
-	isToday,
-	isTomorrow,
-	isYesterday,
-} from "date-fns";
+import { format, getWeek, isThisYear, isToday, isTomorrow, isYesterday } from "date-fns";
 import { fi } from "date-fns/locale/fi";
 
 export function formatTime(date: Date | string): string {
@@ -16,10 +9,7 @@ export function formatTime(date: Date | string): string {
 	});
 }
 
-export function formatDate(
-	date: Date | string,
-	todayOverride?: string,
-): string {
+export function formatDate(date: Date | string, todayOverride?: string): string {
 	const dateObj = typeof date === "string" ? new Date(date) : date;
 
 	if (isYesterday(dateObj)) {
@@ -54,10 +44,7 @@ export function formatDate(
 	return format(dateObj, "d.M.");
 }
 
-export function formatTimeRange(
-	start: Date | string,
-	end: Date | string,
-): string {
+export function formatTimeRange(start: Date | string, end: Date | string): string {
 	let startDate: Date;
 	let endDate: Date;
 

@@ -12,11 +12,7 @@
 
 	&:is(button) {
 		&:hover {
-			background-color: color-mix(
-				in srgb,
-				var(--bg-color, #fff) 85%,
-				var(--contrast-color, #000)
-			);
+			background-color: color-mix(in srgb, var(--bg-color, #fff) 85%, var(--contrast-color, #000));
 		}
 	}
 }

@@ -1,5 +1,7 @@
 import { type Component, Show } from "solid-js";
+
 import type { Program } from "../../types";
+
 import classes from "./InfoGrid.module.css";
 
 interface Props {
@@ -14,9 +16,7 @@ const InfoItem: Component<{ label: string; value: string }> = (props) => (
 );
 
 export const InfoGrid: Component<Props> = (props) => (
-	<Show
-		when={props.program.genre || props.program.host || props.program.producer}
-	>
+	<Show when={props.program.genre || props.program.host || props.program.producer}>
 		<dl class={classes.infoGrid}>
 			<Show when={props.program.genre}>
 				{(genre) => <InfoItem label="Lajityyppi" value={genre()} />}

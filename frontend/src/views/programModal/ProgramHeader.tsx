@@ -1,7 +1,9 @@
 import { IconX } from "@tabler/icons-solidjs";
 import type { Component } from "solid-js";
+
 import type { Brand } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
+
 import classes from "./ProgramHeader.module.css";
 
 interface Props {
@@ -13,10 +15,7 @@ interface Props {
 }
 
 export const ProgramHeader: Component<Props> = (props) => (
-	<div
-		class={classes.header}
-		style={brandColorVariablesStyle(props.brandColor)}
-	>
+	<div class={classes.header} style={brandColorVariablesStyle(props.brandColor)}>
 		{props.photo && (
 			<div
 				class={classes.headerBackground}

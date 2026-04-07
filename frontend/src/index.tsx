@@ -1,6 +1,8 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
+
 import App from "./views/App";
+
 import "./main.css";
 
 const root = document.getElementById("root");
@@ -11,5 +13,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-// biome-ignore lint: noNonNullAssertion
 render(() => <App />, root!);

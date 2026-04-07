@@ -11,11 +11,7 @@
 	flex-shrink: 0;
 	flex-grow: 0;
 
-	--hover-color: color-mix(
-		in srgb,
-		var(--bg-color, #fff) 50%,
-		var(--contrast-color, #000)
-	);
+	--hover-color: color-mix(in srgb, var(--bg-color, #fff) 50%, var(--contrast-color, #000));
 
 	transition: background-color 0.2s ease-out;
 

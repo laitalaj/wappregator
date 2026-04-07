@@ -10,16 +10,17 @@
     "dev:container": "pnpm i && concurrently -k -n 'dev,watch:deps' -c 'blue,green' 'pnpm dev --host' 'pnpm watch:deps'",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "biome check --write src && eslint"
+    "lint": "oxfmt src && oxlint src && eslint"
   },
   "license": "MIT",
   "devDependencies": {
-    "@biomejs/biome": "2.3.14",
     "@typescript-eslint/parser": "^8.54.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-plugin-solid": "^0.14.5",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-solid": "^2.11.10"

@@ -1,4 +1,9 @@
+import { debounce } from "@solid-primitives/scheduled";
+import { IconFilter, IconSearch } from "@tabler/icons-solidjs";
+
+import "@thisbeyond/solid-select/style.css";
 import { createOptions, Select } from "@thisbeyond/solid-select";
+import { type DocumentData, Document as SearchIndex } from "flexsearch";
 import {
 	type Accessor,
 	createEffect,
@@ -7,11 +12,9 @@ import {
 	createSignal,
 	type Setter,
 } from "solid-js";
-import "@thisbeyond/solid-select/style.css";
-import { debounce } from "@solid-primitives/scheduled";
-import { IconFilter, IconSearch } from "@tabler/icons-solidjs";
-import { type DocumentData, Document as SearchIndex } from "flexsearch";
+
 import type { ProgramInfo, Radio, Radios } from "../../types";
+
 import classes from "./Search.module.css";
 
 export interface ProgramInfoWithId extends ProgramInfo {
@@ -58,19 +61,15 @@ export function Search(props: SearchProps) {
 	const radioSelectOptions = createMemo(() => {
 		const radiosData = props.radios();
 		if (!radiosData) return [];
-		return Object.values(radiosData).sort((a, b) =>
-			a.name.localeCompare(b.name),
-		);
+		return Object.values(radiosData).sort((a, b) => a.name.localeCompare(b.name));
 	});
 
 	const doSearch = createMemo(() => {
-		// biome-ignore lint/suspicious/noExplicitAny: The typing here is off, so we're going wild
 		const idx = index() as any;
 		if (!idx) return () => {};
 
 		const innerFn = async (query: string, radioIds: string[]) => {
-			const tagOptions =
-				radioIds.length > 0 ? { tag: { "radio:id": radioIds } } : {};
+			const tagOptions = radioIds.length > 0 ? { tag: { "radio:id": radioIds } } : {};
 			let res: ProgramInfoWithId[];
 			if (query) {
 				res = (

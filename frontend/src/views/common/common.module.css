@@ -2,11 +2,7 @@
 	color: var(--text-color);
 	transition: color 0.2s ease-out;
 
-	--hover-color: color-mix(
-		in srgb,
-		var(--bg-color, #fff) 50%,
-		var(--text-color, #000)
-	);
+	--hover-color: color-mix(in srgb, var(--bg-color, #fff) 50%, var(--text-color, #000));
 
 	&:hover {
 		color: var(--hover-color);
@@ -17,11 +13,7 @@
 	color: var(--contrast-color);
 	transition: color 0.2s ease-out;
 
-	--hover-color: color-mix(
-		in srgb,
-		var(--bg-color, #fff) 50%,
-		var(--contrast-color, #000)
-	);
+	--hover-color: color-mix(in srgb, var(--bg-color, #fff) 50%, var(--contrast-color, #000));
 
 	&:hover {
 		color: var(--hover-color);

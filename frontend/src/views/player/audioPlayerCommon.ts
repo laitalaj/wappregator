@@ -1,10 +1,5 @@
-import {
-	type Accessor,
-	createEffect,
-	createSignal,
-	onCleanup,
-	onMount,
-} from "solid-js";
+import { type Accessor, createEffect, createSignal, onCleanup, onMount } from "solid-js";
+
 import type { Radio } from "../../types";
 import type { AudioPlayerProps } from "./AudioPlayer";
 
@@ -76,9 +71,7 @@ export function useMediaSessionIntegration(props: AudioPlayerProps) {
 		navigator.mediaSession.setActionHandler("play", play);
 		navigator.mediaSession.setActionHandler("pause", pause);
 
-		navigator.mediaSession.playbackState = props.isPlaying()
-			? "playing"
-			: "paused";
+		navigator.mediaSession.playbackState = props.isPlaying() ? "playing" : "paused";
 	});
 
 	// Media Session API: metadata
@@ -122,9 +115,7 @@ export function useMediaSessionIntegration(props: AudioPlayerProps) {
 
 export function seekToLive(audioElement: HTMLAudioElement) {
 	if (audioElement.seekable.length > 0) {
-		const seekableEnd = audioElement.seekable.end(
-			audioElement.seekable.length - 1,
-		);
+		const seekableEnd = audioElement.seekable.end(audioElement.seekable.length - 1);
 
 		if (seekableEnd > 0 && Number.isFinite(seekableEnd)) {
 			audioElement.currentTime = seekableEnd;
@@ -181,13 +172,9 @@ export function useSyncVolume(
 	});
 }
 
-const HLS_MIME_TYPES = new Set([
-	"application/vnd.apple.mpegurl",
-	"application/x-mpegURL",
-]);
+const HLS_MIME_TYPES = new Set(["application/vnd.apple.mpegurl", "application/x-mpegURL"]);
 
 export function getHlsStreamUrl(radio: Radio): string | undefined {
-	return radio.streams.find(
-		(stream) => stream.mime_type && HLS_MIME_TYPES.has(stream.mime_type),
-	)?.url;
+	return radio.streams.find((stream) => stream.mime_type && HLS_MIME_TYPES.has(stream.mime_type))
+		?.url;
 }

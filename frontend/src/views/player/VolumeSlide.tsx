@@ -1,12 +1,7 @@
 import { IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-solidjs";
-import {
-	type Accessor,
-	createMemo,
-	createSignal,
-	createUniqueId,
-	Show,
-} from "solid-js";
+import { type Accessor, createMemo, createSignal, createUniqueId, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
 import classes from "./PlayerBar.module.css";
 
 interface VolumeSliderProps {
@@ -47,12 +42,7 @@ export function VolumeSlider(props: VolumeSliderProps) {
 				aria-expanded={showVolume()}
 				aria-controls={popupId}
 			>
-				<Dynamic
-					component={volumeIcon()}
-					color="currentcolor"
-					width={32}
-					role="presentation"
-				/>
+				<Dynamic component={volumeIcon()} color="currentcolor" width={32} role="presentation" />
 			</button>
 			<Show when={showVolume()}>
 				<div class={classes.volumeSliderContainer} id={popupId}>

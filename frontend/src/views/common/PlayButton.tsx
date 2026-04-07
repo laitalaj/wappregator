@@ -7,7 +7,9 @@ import {
 } from "@tabler/icons-solidjs";
 import type { Accessor } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
 import { RadioStatus } from "../../types";
+
 import classes from "./PlayButton.module.css";
 
 interface Props {
@@ -55,11 +57,7 @@ export function PlayButton(props: Props) {
 			title={props.isPlaying() ? "Pysäytä" : playText()}
 			aria-pressed={props.isPlaying()}
 		>
-			<Dynamic
-				component={iconType()}
-				color="currentcolor"
-				role="presentation"
-			/>
+			<Dynamic component={iconType()} color="currentcolor" role="presentation" />
 		</button>
 	);
 }
