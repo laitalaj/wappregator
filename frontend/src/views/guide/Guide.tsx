@@ -16,10 +16,10 @@ import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
 import { useSelectedProgram } from "../../useSelectedProgram";
 import { BrandedProgram } from "../channels/Program";
-import { RibbonCountdown } from "../countdown/Countdown";
 import { useLayoutState } from "../layoutState";
 import { type ProgramInfoWithId, Search } from "../search/Search";
 
+import appClasses from "../App.module.css";
 import classes from "./Guide.module.css";
 
 const Description = lazy(() =>
@@ -131,50 +131,53 @@ export default function Guide() {
 
 	return (
 		<>
-			<main>
-				<div inert={nonModalElementsInert()}>
-					<Search
-						schedule={programInfo}
-						radios={radios}
-						setActive={setSearchActive}
-						setInProgress={setSearchInProgress}
-						setResults={setSearchResults}
-					/>
-					<Show
-						when={groupedSchedule().length}
-						fallback={
-							<p class={classes.nothingToShow}>
-								{schedule() === undefined
-									? "Ladataan..."
-									: searchInProgress()
-										? "Haetaan..."
-										: "Ei hakutuloksia :^("}
-							</p>
-						}
-					>
-						<For each={groupedSchedule()}>
-							{(group, i) => (
-								<>
-									<GuideDivider date={group.date} />
-									<ProgramGrid
-										programs={group.programs}
-										setSelectedProgram={setSelectedProgram}
-										watchNowPlaying={i() === 0 || isToday(group.date)}
-									/>
-								</>
-							)}
-						</For>
-					</Show>
-				</div>
-				<Show when={selectedProgram()}>
-					{(selected) => (
-						<Suspense fallback={null}>
-							<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
-						</Suspense>
-					)}
+			<div
+				classList={{
+					[appClasses.content]: true,
+					[appClasses.dimmedContent]: !!selectedProgram(),
+				}}
+				inert={nonModalElementsInert()}
+			>
+				<Search
+					schedule={programInfo}
+					radios={radios}
+					setActive={setSearchActive}
+					setInProgress={setSearchInProgress}
+					setResults={setSearchResults}
+				/>
+				<Show
+					when={groupedSchedule().length}
+					fallback={
+						<p class={classes.nothingToShow}>
+							{schedule() === undefined
+								? "Ladataan..."
+								: searchInProgress()
+									? "Haetaan..."
+									: "Ei hakutuloksia :^("}
+						</p>
+					}
+				>
+					<For each={groupedSchedule()}>
+						{(group, i) => (
+							<>
+								<GuideDivider date={group.date} />
+								<ProgramGrid
+									programs={group.programs}
+									setSelectedProgram={setSelectedProgram}
+									watchNowPlaying={i() === 0 || isToday(group.date)}
+								/>
+							</>
+						)}
+					</For>
 				</Show>
-			</main>
-			<RibbonCountdown />
+			</div>
+			<Show when={selectedProgram()}>
+				{(selected) => (
+					<Suspense fallback={null}>
+						<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
+					</Suspense>
+				)}
+			</Show>
 		</>
 	);
 }

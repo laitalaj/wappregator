@@ -1,6 +1,5 @@
 import { createEffect, createMemo, createSignal, lazy, Show, Suspense } from "solid-js";
 
-import type { RadioState } from "../../radio";
 import {
 	SocketProvider,
 	useChangeChannelEffect,
@@ -13,9 +12,8 @@ import {
 } from "../../state";
 import { useSelectedProgram } from "../../useSelectedProgram";
 import { Channels } from "../channels/Channels";
-import { RibbonCountdown } from "../countdown/Countdown";
 import { useLayoutState } from "../layoutState";
-import { PlayerBar } from "../player/PlayerBar";
+import { usePlayerState } from "../player/playerState";
 
 import classes from "../App.module.css";
 
@@ -27,6 +25,7 @@ const Description = lazy(() =>
 
 function Radio() {
 	const { nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
+	const { setChannel, isPlaying, setIsPlaying } = usePlayerState();
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
@@ -50,7 +49,6 @@ function Radio() {
 
 	// eslint-disable-next-line solid/reactivity
 	const [selectedProgram, setSelectedProgram] = useSelectedProgram(allPrograms);
-	const [isPlaying, setIsPlaying] = createSignal(false);
 
 	const selectedAndPlaying = createMemo(() => {
 		const channelId = selectedChannelId();
@@ -61,7 +59,7 @@ function Radio() {
 	// eslint-disable-next-line solid/reactivity
 	useChangeChannelEffect(selectedAndPlaying);
 
-	const radioState = createMemo((): RadioState | undefined => {
+	createEffect(() => {
 		if (selectedChannelId() === null) {
 			return undefined;
 		}
@@ -76,44 +74,35 @@ function Radio() {
 			return undefined;
 		}
 
-		return {
-			...radio,
-			isPlaying: isPlaying(),
-		};
+		setChannel(radio);
 	});
 
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
 
 	return (
 		<>
-			<main>
-				<div
-					classList={{
-						[classes.content]: true,
-						[classes.dimmedContent]: !!selectedProgram(),
-					}}
-					inert={nonModalElementsInert()}
-				>
-					<Channels
-						channelState={channelStates}
-						isPlaying={isPlaying}
-						setIsPlaying={setIsPlaying}
-						selectedChannelId={selectedChannelId}
-						setSelectedChannelId={setSelectedChannelId}
-						setSelectedProgram={setSelectedProgram}
-					/>
-				</div>
-				<Show when={selectedProgram()}>
-					{(selected) => (
-						<Suspense fallback={null}>
-							<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
-						</Suspense>
-					)}
-				</Show>
-				<PlayerBar radioState={radioState} setIsPlaying={setIsPlaying} />
-			</main>
-			<Show when={selectedChannelId() === null}>
-				<RibbonCountdown />
+			<div
+				classList={{
+					[classes.content]: true,
+					[classes.dimmedContent]: !!selectedProgram(),
+				}}
+				inert={nonModalElementsInert()}
+			>
+				<Channels
+					channelState={channelStates}
+					isPlaying={isPlaying}
+					setIsPlaying={setIsPlaying}
+					selectedChannelId={selectedChannelId}
+					setSelectedChannelId={setSelectedChannelId}
+					setSelectedProgram={setSelectedProgram}
+				/>
+			</div>
+			<Show when={selectedProgram()}>
+				{(selected) => (
+					<Suspense fallback={null}>
+						<Description programInfo={selected()} setSelectedProgram={setSelectedProgram} />
+					</Suspense>
+				)}
 			</Show>
 		</>
 	);

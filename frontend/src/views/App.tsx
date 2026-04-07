@@ -4,6 +4,7 @@ import {
 	type Component,
 	Switch,
 	Match,
+	Show,
 	createMemo,
 	ErrorBoundary,
 	lazy,
@@ -13,8 +14,10 @@ import {
 
 import { funnySlogansHaha } from "../funnySlogansHaha";
 import { WappuState, useOffSeasonState } from "../state";
-import { OffSeasonCountdown } from "./countdown/Countdown";
+import { OffSeasonCountdown, RibbonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
+import { PlayerBar } from "./player/PlayerBar";
+import { PlayerStateProvider, usePlayerState } from "./player/playerState";
 
 import classes from "./App.module.css";
 
@@ -44,6 +47,21 @@ const ErrorFallback = (err: unknown, reset: () => void) => {
 	);
 };
 
+const InnestLayout: ParentComponent = (props: ParentProps) => {
+	const { channel } = usePlayerState();
+	return (
+		<>
+			<main>
+				{props.children}
+				<PlayerBar />
+			</main>
+			<Show when={channel() === undefined}>
+				<RibbonCountdown />
+			</Show>
+		</>
+	);
+};
+
 const InnerLayout: ParentComponent = (props: ParentProps) => {
 	const { wappu } = useLayoutState();
 	const offSeason = useOffSeasonState();
@@ -58,7 +76,11 @@ const InnerLayout: ParentComponent = (props: ParentProps) => {
 					<OffSeasonCountdown isPostWappu={wappu() === WappuState.Post} />
 				</main>
 			</Match>
-			<Match when={!isOffSeason()}>{props.children}</Match>
+			<Match when={!isOffSeason()}>
+				<PlayerStateProvider>
+					<InnestLayout>{props.children}</InnestLayout>
+				</PlayerStateProvider>
+			</Match>
 		</Switch>
 	);
 };

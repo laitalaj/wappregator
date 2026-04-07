@@ -1,23 +1,13 @@
-import {
-	type Accessor,
-	createMemo,
-	createSignal,
-	lazy,
-	Match,
-	type Setter,
-	Show,
-	Suspense,
-	Switch,
-} from "solid-js";
+import { createMemo, createSignal, lazy, Match, Show, Suspense, Switch } from "solid-js";
 
 import { getProgramProgress } from "../../getProgramProgress";
-import type { RadioState } from "../../radio";
 import { formatTime } from "../../timeUtils";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import { PlayButton } from "../common/PlayButton";
 import { ProgressBar } from "../common/ProgressBar";
 import { AudioPlayer } from "./AudioPlayer";
 import { getHlsStreamUrl } from "./audioPlayerCommon";
+import { usePlayerState } from "./playerState";
 import { VolumeSlider } from "./VolumeSlide";
 
 import classes from "./PlayerBar.module.css";
@@ -28,20 +18,17 @@ const HlsAudioPlayer = lazy(() =>
 	})),
 );
 
-interface Props {
-	radioState: Accessor<RadioState | undefined>;
-	setIsPlaying: Setter<boolean>;
-}
+export function PlayerBar() {
+	const { channel, isPlaying, setIsPlaying } = usePlayerState();
 
-export function PlayerBar(props: Props) {
 	const [volume, setVolume] = createSignal(100);
 
-	const isPlaying = createMemo(() => {
-		return props.radioState()?.isPlaying ?? false;
+	const isTrulyPlaying = createMemo(() => {
+		return channel() !== undefined && isPlaying();
 	});
 
 	const statusText = createMemo(() => {
-		const state = props.radioState();
+		const state = channel();
 
 		if (!state) {
 			return "Ei valittua kanavaa";
@@ -71,7 +58,7 @@ export function PlayerBar(props: Props) {
 	});
 
 	const isHlsChannel = createMemo(() => {
-		const state = props.radioState();
+		const state = channel();
 
 		if (!state) {
 			return false;
@@ -81,7 +68,7 @@ export function PlayerBar(props: Props) {
 	});
 
 	return (
-		<Show when={props.radioState()}>
+		<Show when={channel()}>
 			{(state) => {
 				const nowPlaying = () => state().currentProgram;
 				return (
@@ -91,20 +78,20 @@ export function PlayerBar(props: Props) {
 								<Suspense fallback={null}>
 									<HlsAudioPlayer
 										radio={() => state().radio}
-										isPlaying={isPlaying}
+										isPlaying={isTrulyPlaying}
 										volume={volume}
 										nowPlaying={() => state().currentProgram}
-										setIsPlaying={props.setIsPlaying}
+										setIsPlaying={setIsPlaying}
 									/>
 								</Suspense>
 							</Match>
 							<Match when={true}>
 								<AudioPlayer
 									radio={() => state().radio}
-									isPlaying={isPlaying}
+									isPlaying={isTrulyPlaying}
 									volume={volume}
 									nowPlaying={() => state().currentProgram}
-									setIsPlaying={props.setIsPlaying}
+									setIsPlaying={setIsPlaying}
 								/>
 							</Match>
 						</Switch>
@@ -117,8 +104,8 @@ export function PlayerBar(props: Props) {
 							<span>{statusText()}</span>
 							<div class={classes.controlsRow}>
 								<PlayButton
-									isPlaying={isPlaying}
-									onClick={() => props.setIsPlaying((playing: boolean) => !playing)}
+									isPlaying={isTrulyPlaying}
+									onClick={() => setIsPlaying((playing: boolean) => !playing)}
 									radioStatus={() => state().radioStatus}
 								/>
 								<Show when={nowPlaying()}>
