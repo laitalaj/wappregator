@@ -18,7 +18,7 @@ import {
 	useStreamStatusState,
 	WappuState,
 } from "../../state";
-import type { ProgramInfo } from "../../types";
+import { useSelectedProgram } from "../../useSelectedProgram";
 import classes from "../App.module.css";
 import { Channels } from "../channels/Channels";
 import { OffSeasonCountdown, RibbonCountdown } from "../countdown/Countdown";
@@ -26,8 +26,8 @@ import { useLayoutState } from "../layoutState";
 import { PlayerBar } from "../player/PlayerBar";
 
 const Description = lazy(() =>
-	import("../description/Description").then((module) => ({
-		default: module.Description,
+	import("../programModal/ProgramModal").then((module) => ({
+		default: module.ProgramModal,
 	})),
 );
 
@@ -62,11 +62,24 @@ function Radio() {
 		);
 	});
 
+	const allPrograms = createMemo(() => {
+		const scheduleData = schedule();
+		const radiosData = radios();
+		if (!scheduleData || !radiosData) return [];
+		return Object.entries(scheduleData).flatMap(([channelId, programs]) =>
+			programs.map((program) => ({
+				radio: radiosData[channelId],
+				program,
+			})),
+		);
+	});
+
 	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(
 		null,
 	);
-	const [selectedProgram, setSelectedProgram] =
-		createSignal<ProgramInfo | null>(null);
+
+	// eslint-disable-next-line solid/reactivity
+	const [selectedProgram, setSelectedProgram] = useSelectedProgram(allPrograms);
 	const [isPlaying, setIsPlaying] = createSignal(false);
 
 	const selectedAndPlaying = createMemo(() => {

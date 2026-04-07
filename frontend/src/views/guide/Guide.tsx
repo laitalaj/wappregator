@@ -13,14 +13,15 @@ import {
 import { useFullScheduleState, useRadiosState } from "../../state";
 import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
+import { useSelectedProgram } from "../../useSelectedProgram";
 import { BrandedProgram } from "../channels/Program";
 import { useLayoutState } from "../layoutState";
 import { type ProgramInfoWithId, Search } from "../search/Search";
 import classes from "./Guide.module.css";
 
 const Description = lazy(() =>
-	import("../description/Description").then((module) => ({
-		default: module.Description,
+	import("../programModal/ProgramModal").then((module) => ({
+		default: module.ProgramModal,
 	})),
 );
 
@@ -100,15 +101,6 @@ export default function Guide() {
 	const radios = useRadiosState();
 	const schedule = useFullScheduleState();
 
-	const [selectedProgram, setSelectedProgram] =
-		createSignal<ProgramInfo | null>(null);
-
-	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>(
-		[],
-	);
-	const [searchActive, setSearchActive] = createSignal(false);
-	const [searchInProgress, setSearchInProgress] = createSignal(false);
-
 	const programInfo = createMemo(() => {
 		const scheduleData = schedule();
 		const radiosData = radios();
@@ -125,6 +117,16 @@ export default function Guide() {
 				})),
 			);
 	});
+
+	
+	// eslint-disable-next-line solid/reactivity
+	const [selectedProgram, setSelectedProgram] = useSelectedProgram(programInfo);
+
+	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>(
+		[],
+	);
+	const [searchActive, setSearchActive] = createSignal(false);
+	const [searchInProgress, setSearchInProgress] = createSignal(false);
 
 	const groupedSchedule = createMemo(() => {
 		const source = searchActive() ? searchResults() : programInfo();
