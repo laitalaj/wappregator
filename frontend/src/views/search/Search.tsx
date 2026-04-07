@@ -126,7 +126,7 @@ export function Search(props: SearchProps) {
 						onInput={(e) => setSearchQuery(e.currentTarget.value)}
 						aria-label="Hae ohjelmia"
 					/>
-					<IconSearch class={classes.searchIcon} size={20} />
+					<IconSearch class={classes.inputIcon} size={20} />
 				</div>
 				<div class={classes.radioFilterWrapper}>
 					<Select
@@ -136,7 +136,7 @@ export function Search(props: SearchProps) {
 						onChange={setSelectedRadios}
 						{...createOptions(radioSelectOptions, { key: "name" })}
 					/>
-					<IconFilter class={classes.radioFilterIcon} size={20} />
+					<IconFilter class={classes.inputIcon} size={20} />
 				</div>
 			</div>
 		</div>

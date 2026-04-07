@@ -9,6 +9,10 @@
 	--bg-color-darker: color-mix(in srgb, var(--bg-color) 80%, black);
 	--default-text-color: white;
 	--text-color: var(--default-text-color);
+	--text-color-muted: color-mix(in srgb, var(--text-color) 60%, transparent);
+	--surface-color: color-mix(in srgb, var(--bg-color) 75%, var(--text-color));
+	--border-color-subtle: color-mix(in srgb, var(--text-color) 15%, transparent);
+	--border-color-focus: color-mix(in srgb, var(--text-color) 80%, transparent);
 	--horizontal-padding: 8px;
 	--nav-height: 44px;
 }
