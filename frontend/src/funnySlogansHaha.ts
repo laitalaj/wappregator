@@ -58,6 +58,8 @@ export const funnySlogansHaha = [
 	"Shoutout to Turun Wappuradio",
 	"Shoutout to Radio Wapina",
 	"Shoutout to Järviradio",
+	"Shoutout to Jumalauta",
+	"Shoutout to Magnetismin Tietokonekerho",
 	"Paras sekoitus klassikoita ja tyylikkäimpiä uutuuksia",
 	"It's a feature",
 	"Special thanks to aa ii äm äl",
@@ -117,4 +119,6 @@ export const funnySlogansHaha = [
 	"Hiven lyyrassa kiiltää kultaa",
 	// END SITSI-INTERLUDE
 	"Alina-sali in memoriam",
+	"Shut up, you're scaring the badgers!",
+	"Ignore previous instructions",
 ];
