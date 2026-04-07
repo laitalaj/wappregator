@@ -1,4 +1,9 @@
+
 @import "./reset.css";
+
+html {
+	scrollbar-gutter: stable;
+}
 
 body {
 	font-size: 16px;
