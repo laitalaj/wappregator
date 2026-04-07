@@ -1,4 +1,4 @@
-import { A, Route, Router } from "@solidjs/router";
+import { A, Route, Router, useMatch } from "@solidjs/router";
 import { IconBrandGithubFilled, IconBrandTelegram, IconMail } from "@tabler/icons-solidjs";
 import {
 	type Component,
@@ -90,6 +90,7 @@ const Layout: ParentComponent = (props: ParentProps) => {
 		<LayoutStateProvider>
 			<div class={classes.app}>
 				<Header />
+				<Navigation />
 				<ErrorBoundary fallback={ErrorFallback}>
 					<InnerLayout>{props.children}</InnerLayout>
 				</ErrorBoundary>
@@ -113,41 +114,74 @@ function Header() {
 
 	return (
 		<header inert={nonModalElementsInert()}>
-			<div class={classes.headerLogo}>
-				<h1>
-					Wappregat<small>.</small>or<small>g</small>
-				</h1>
-				<img src={logo()} alt="" width={64} height={64} />
-			</div>
-			<span>{funnySlogan}</span>
-			<div class={classes.headerLinks}>
-				<a
-					class={classes.headerLink}
-					href="https://github.com/laitalaj/wappregator"
-					target="_blank"
-					rel="noopener noreferrer"
-					title="Kanna kortesi kekoon GitHubissa (uusi välilehti)"
-				>
-					<IconBrandGithubFilled height={24} />
-				</a>
-				<a
-					class={classes.headerLink}
-					href="https://t.me/+qkl_29fGEXpkY2Q0"
-					target="_blank"
-					rel="noopener noreferrer"
-					title="Ota yhteyttä Telegramissa (uusi välilehti)"
-				>
-					<IconBrandTelegram height={24} />
-				</a>
-				<a
-					class={classes.headerLink}
-					href="mailto:webmaster@wappregat.org"
-					title="Lähetä sähköpostia (boomer)"
-				>
-					<IconMail height={24} />
-				</a>
+			<div class={classes.headerTop}>
+				<div class={classes.headerLogo}>
+					<h1>
+						Wappregat<small>.</small>or<small>g</small>
+					</h1>
+					<img src={logo()} alt="" width={64} height={64} />
+				</div>
+				<span>{funnySlogan}</span>
+				<div class={classes.headerLinks}>
+					<a
+						class={classes.headerLink}
+						href="https://github.com/laitalaj/wappregator"
+						target="_blank"
+						rel="noopener noreferrer"
+						title="Kanna kortesi kekoon GitHubissa (uusi välilehti)"
+					>
+						<IconBrandGithubFilled height={24} />
+					</a>
+					<a
+						class={classes.headerLink}
+						href="https://t.me/+qkl_29fGEXpkY2Q0"
+						target="_blank"
+						rel="noopener noreferrer"
+						title="Ota yhteyttä Telegramissa (uusi välilehti)"
+					>
+						<IconBrandTelegram height={24} />
+					</a>
+					<a
+						class={classes.headerLink}
+						href="mailto:webmaster@wappregat.org"
+						title="Lähetä sähköpostia (boomer)"
+					>
+						<IconMail height={24} />
+					</a>
+				</div>
 			</div>
 		</header>
+	);
+}
+
+function Navigation() {
+	const matchRadio = useMatch(() => "/");
+	const matchOpas = useMatch(() => "/opas");
+
+	return (
+		<nav class={classes.mainNavigation} aria-label="Päävalikko">
+			<ul>
+				<li>
+					<A
+						href="/"
+						activeClass={classes.activeNavigationLink}
+						end
+						aria-current={matchRadio() ? "page" : undefined}
+					>
+						Radio
+					</A>
+				</li>
+				<li>
+					<A
+						href="/opas"
+						activeClass={classes.activeNavigationLink}
+						aria-current={matchOpas() ? "page" : undefined}
+					>
+						Ohjelmaopas
+					</A>
+				</li>
+			</ul>
+		</nav>
 	);
 }
 
