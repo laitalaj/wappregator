@@ -8,7 +8,7 @@ import {
 } from "solid-js";
 import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
-import classes from "./Description.module.css";
+import classes from "./ProgramModal.module.css";
 import { InfoGrid } from "./InfoGrid";
 import { ProgramHeader } from "./ProgramHeader";
 
@@ -17,7 +17,7 @@ interface Props {
 	setSelectedProgram: Setter<ProgramInfo | null>;
 }
 
-export const Description: Component<Props> = (props) => {
+export const ProgramModal: Component<Props> = (props) => {
 	const timeStr = createMemo(() => {
 		const date = formatDate(props.programInfo.program.start);
 		const timeRange = formatTimeRange(
