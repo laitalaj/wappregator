@@ -3,7 +3,7 @@
 .overlay {
 	position: fixed;
 	inset: 0;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: color-mix(in srgb, black 50%, transparent);
 	backdrop-filter: blur(4px);
 	display: flex;
 	justify-content: flex-start;
@@ -21,7 +21,7 @@
 	width: 100%;
 	max-width: 600px;
 	background-color: var(--bg-color);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 4px 16px color-mix(in srgb, black 30%, transparent);
 	display: flex;
 	flex-direction: column;
 }

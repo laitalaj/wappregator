@@ -38,13 +38,13 @@
 .countdownNumber {
 	composes: rainbowText;
 	font-family: "Bungee", sans-serif;
-	font-size: 6rem;
+	font-size: 96px;
 	line-height: 1;
 }
 
 .countdownLabel {
 	composes: rainbowText;
-	font-size: 1.5rem;
+	font-size: 24px;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 	animation-delay: 0.5s;
@@ -73,14 +73,14 @@
 	align-items: center;
 	gap: 8px;
 	padding: 32px;
-	background-color: rgb(255 255 255 / 8%);
+	background-color: color-mix(in srgb, var(--text-color) 8%, transparent);
 	border-radius: 16px;
 }
 
 .offSeasonMessage {
 	margin-top: 16px;
-	font-size: 1rem;
-	color: white;
+	font-size: 16px;
+	color: var(--text-color);
 	text-align: center;
 }
 
@@ -97,16 +97,16 @@
 	flex-direction: column;
 	align-items: center;
 
-	background-color: #00000033;
+	background-color: color-mix(in srgb, black 20%, transparent);
 	backdrop-filter: blur(4px);
 }
 
 .ribbonLabel {
 	font-weight: bold;
-	font-size: 1.1rem;
-	color: white;
+	font-size: 20px;
+	color: var(--text-color);
 }
 
 .ribbonNumber {
-	font-size: 3.14159265359rem;
+	font-size: 52px;
 }
