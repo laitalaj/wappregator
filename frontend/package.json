@@ -7,7 +7,7 @@
     "start": "vite",
     "watch:deps": "chokidar 'package.json' 'pnpm-lock.yaml' --initial -c 'pnpm i'",
     "dev": "vite",
-    "dev:container": "concurrently -k -n 'dev,watch:deps' -c 'blue,green' 'pnpm dev --host' 'pnpm watch:deps'",
+    "dev:container": "pnpm i && concurrently -k -n 'dev,watch:deps' -c 'blue,green' 'pnpm dev --host' 'pnpm watch:deps'",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "biome check --write src && eslint"
