@@ -1,4 +1,6 @@
 import datetime
+import re
+import logging
 
 import aiohttp
 
@@ -6,6 +8,37 @@ from bs4 import BeautifulSoup, element
 from wapprecommon import model, radios
 
 from wappregator.radios import base
+
+DATE_RE = re.compile(r"^\d{1,2}\.\d{1,2}\.(\d{4})?$")
+TIME_RE = re.compile(r"^\d{1,2}(([:.])?\d{2})?$")
+SPLIT_RE = re.compile(r"[\u2013\u2014-]")  # Matches (e[nm])?dash
+
+logger = logging.getLogger(__name__)
+
+
+def parse_time(time_str: str) -> datetime.time:
+    """Parse a time string.
+
+    The string can be any of the following formats:
+    - %H.%M
+    - %H:%M
+    - %H
+
+    Args:
+        time_str: The time string to parse.
+
+    Returns:
+        A datetime.time object representing the parsed time.
+    """
+    time_str = time_str.strip()
+    match = TIME_RE.match(time_str)
+    if match is None:
+        raise ValueError(f"Could not parse time from string '{time_str}'")
+    delimiter = match.group(2) if match.group(2) else ":"
+    if match.group(1) is None:
+        # No minutes, add :00
+        time_str += f"{delimiter}00"
+    return datetime.datetime.strptime(time_str, f"%H{delimiter}%M").time()
 
 
 class JklFetcher(base.BaseFetcher):
@@ -85,14 +118,21 @@ class JklFetcher(base.BaseFetcher):
                 raise base.RadioError("Could not find day title")
 
             # Get the date from the title
-            # The title is in the format "Tiistai 22.4.2025"
+            # The title was in the format "Tiistai 22.4.2025" back in 2025
+            # As of 2026 we seem to be doing "Ti 22.4."
+            # Let's handle both cases, maybe it'll work out of the box come 2027 :^)
             # Split at the first space and parse the date
             date = None
 
             try:
-                date = datetime.datetime.strptime(
-                    day_title.split(" ", 1)[1], "%d.%m.%Y"
-                )
+                date_str = day_title.split(" ", 1)[1]
+                match = DATE_RE.match(date_str)
+                if match is None:
+                    raise base.RadioError("Could not parse date from day title")
+                if match.group(1) is None:
+                    # Year is missing, add the current year
+                    date_str += str(datetime.datetime.now().year)
+                date = datetime.datetime.strptime(date_str, "%d.%m.%Y")
             except ValueError:
                 raise base.RadioError("Could not parse date from day title")
 
@@ -100,8 +140,16 @@ class JklFetcher(base.BaseFetcher):
             # Programs are text nodes, delimited by <br> tags
 
             # trust me bro
-            programs = day.find_next("p").find_next("b").find_all(string=True)  # type: ignore
+            # Again let's handle both 2025 and 2026 formats
+            # with fingers crossed that there's no new 2027 format
+            program_p = day.find_next("p")
+            if program_p is None:
+                logger.warning("Could not find program container for day %s", day_title)
+                continue
+            program_b = program_p.find_next("b")
+            programs = (program_b if program_b else program_p).find_all(string=True)
 
+            # 2025:
             # A program looks like this: "10.00 Nopeet aamujaffat"
             # OR "12.00-13.00 VAPPURADION FINAALI"
             # Most programs don't have a time range, except for the very final one
@@ -114,15 +162,23 @@ class JklFetcher(base.BaseFetcher):
             # (or previous, depending on how you look at it) program
             # as the end time of the current program.
 
+            # 2026:
+            # (noqa as the endashes are indeed intentional and [sic] copied from source)
+            # Programs look like this: "10–12 VAPPURADION STARTTI" # noqa: RUF003
+            # OR "13:30–15:30 Kuumat otot" # noqa: RUF003
+            # With the possibility to have a :30 on just one end
+            # Again I WILL OVERENGINEER THIS to accept both :sunglasses:
+            # "because I am a madman" -Copilot
+
             # why the flying duck does Python enforce maximum line length
             # for comments??? while being unable to fix it???
 
             for program in reversed(programs):
                 # Trim, and split at the first space
-                program = program.strip()
-                if not program:
+                stripped_program = program.strip()
+                if not stripped_program:
                     continue
-                parts = program.split(" ", 1)
+                parts = stripped_program.split(" ", 1)
                 if len(parts) != 2:
                     raise base.RadioError("Could not parse program")
 
@@ -132,18 +188,14 @@ class JklFetcher(base.BaseFetcher):
                 end = None
 
                 # Check if the program is a time range
-                if "-" in time_str:
+                if SPLIT_RE.search(time_str):
                     # This is a time range
                     # Split at the first dash
-                    start_time_str, end_time_str = time_str.split("-", 1)
+                    start_time_str, end_time_str = SPLIT_RE.split(time_str, 1)
                     # Parse the start time
                     try:
-                        start_time = datetime.datetime.strptime(
-                            start_time_str.strip(), "%H.%M"
-                        ).time()
-                        end_time = datetime.datetime.strptime(
-                            end_time_str.strip(), "%H.%M"
-                        ).time()
+                        start_time = parse_time(start_time_str.strip())
+                        end_time = parse_time(end_time_str.strip())
                     except ValueError:
                         raise base.RadioError("Could not parse time from program")
                     # Combine date and time
