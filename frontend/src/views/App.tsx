@@ -13,7 +13,7 @@ import {
 } from "solid-js";
 
 import { funnySlogansHaha } from "../funnySlogansHaha";
-import { WappuState, useOffSeasonState } from "../state";
+import { SocketProvider, WappuState, useOffSeasonState } from "../state";
 import { OffSeasonCountdown, RibbonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
 import { PlayerBar } from "./player/PlayerBar";
@@ -77,9 +77,11 @@ const InnerLayout: ParentComponent = (props: ParentProps) => {
 				</main>
 			</Match>
 			<Match when={!isOffSeason()}>
-				<PlayerStateProvider>
-					<InnestLayout>{props.children}</InnestLayout>
-				</PlayerStateProvider>
+				<SocketProvider>
+					<PlayerStateProvider>
+						<InnestLayout>{props.children}</InnestLayout>
+					</PlayerStateProvider>
+				</SocketProvider>
 			</Match>
 		</Switch>
 	);

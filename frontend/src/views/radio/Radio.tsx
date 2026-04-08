@@ -1,15 +1,5 @@
-import { createEffect, createMemo, createSignal, lazy, Show, Suspense } from "solid-js";
+import { createEffect, createMemo, lazy, Show, Suspense } from "solid-js";
 
-import {
-	SocketProvider,
-	useChangeChannelEffect,
-	useChannelStates,
-	useListenersState,
-	useNowPlayingState,
-	useRadiosState,
-	useScheduleState,
-	useStreamStatusState,
-} from "../../state";
 import { useSelectedProgram } from "../../useSelectedProgram";
 import { Channels } from "../channels/Channels";
 import { useLayoutState } from "../layoutState";
@@ -23,15 +13,19 @@ const Description = lazy(() =>
 	})),
 );
 
-function Radio() {
+export default function Radio() {
 	const { nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
-	const { setChannel, isPlaying, setIsPlaying } = usePlayerState();
-	const radios = useRadiosState();
-	const schedule = useScheduleState();
-	const nowPlaying = useNowPlayingState();
-	const streamStatus = useStreamStatusState();
-	const listeners = useListenersState();
-	const channelStates = useChannelStates(schedule, radios, nowPlaying, streamStatus, listeners);
+	const {
+		channelId,
+		setChannelId,
+		channels,
+
+		radios,
+		schedule,
+
+		isPlaying,
+		setIsPlaying,
+	} = usePlayerState();
 
 	const allPrograms = createMemo(() => {
 		const scheduleData = schedule();
@@ -45,37 +39,8 @@ function Radio() {
 		);
 	});
 
-	const [selectedChannelId, setSelectedChannelId] = createSignal<string | null>(null);
-
 	// eslint-disable-next-line solid/reactivity
 	const [selectedProgram, setSelectedProgram] = useSelectedProgram(allPrograms);
-
-	const selectedAndPlaying = createMemo(() => {
-		const channelId = selectedChannelId();
-		return isPlaying() ? channelId : null;
-	});
-	// We're passing this to createEffect in the function, so this is a false alarm
-	// (could still be refactored instead of ignored but I'll leave that as an exercise for the reader)
-	// eslint-disable-next-line solid/reactivity
-	useChangeChannelEffect(selectedAndPlaying);
-
-	createEffect(() => {
-		if (selectedChannelId() === null) {
-			return undefined;
-		}
-
-		const radio = channelStates().find((station) => station.radio.id === selectedChannelId());
-
-		if (!radio) {
-			// TODO: Auto-deselect channel in this case?
-			// Probably can't be done inside memo, needs an effect
-			console.warn(`Selected channel ID ${selectedChannelId()} not found in nowPlaying data`);
-
-			return undefined;
-		}
-
-		setChannel(radio);
-	});
 
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
 
@@ -89,11 +54,11 @@ function Radio() {
 				inert={nonModalElementsInert()}
 			>
 				<Channels
-					channelState={channelStates}
+					channelState={channels}
 					isPlaying={isPlaying}
 					setIsPlaying={setIsPlaying}
-					selectedChannelId={selectedChannelId}
-					setSelectedChannelId={setSelectedChannelId}
+					selectedChannelId={channelId}
+					setSelectedChannelId={setChannelId}
 					setSelectedProgram={setSelectedProgram}
 				/>
 			</div>
@@ -105,13 +70,5 @@ function Radio() {
 				)}
 			</Show>
 		</>
-	);
-}
-
-export default function WrappedRadio() {
-	return (
-		<SocketProvider>
-			<Radio />
-		</SocketProvider>
 	);
 }
