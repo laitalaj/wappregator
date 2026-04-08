@@ -53,6 +53,7 @@ export const ProgramModal: Component<Props> = (props) => {
 				aria-label={`Ohjelman tiedot: ${props.programInfo.program.title}`}
 			>
 				<ProgramHeader
+					radio={props.programInfo.radio.name}
 					title={props.programInfo.program.title}
 					timeStr={timeStr()}
 					photo={props.programInfo.program.photo}

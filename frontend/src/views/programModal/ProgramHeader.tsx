@@ -7,6 +7,7 @@ import { brandColorVariablesStyle } from "../common/brandUtils";
 import classes from "./ProgramHeader.module.css";
 
 interface Props {
+	radio: string;
 	title: string;
 	timeStr: string;
 	photo?: string;
@@ -24,6 +25,7 @@ export const ProgramHeader: Component<Props> = (props) => (
 			/>
 		)}
 		<div class={classes.headerContent}>
+			<div class={classes.radio}>{props.radio}</div>
 			<h2 class={classes.title}>{props.title}</h2>
 			<div class={classes.time}>{props.timeStr}</div>
 		</div>
