@@ -12,6 +12,7 @@ import {
 	type Accessor,
 	createContext,
 	createEffect,
+	createMemo,
 	createResource,
 	createSignal,
 	onCleanup,
@@ -34,6 +35,7 @@ import {
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;
 const NOW_PLAYING_UPDATE_INTERVAL_MS = 1000;
+const RADIO_SORT_TIMEOUT_MS = 333;
 
 export function useRadiosState(): Resource<Radios> {
 	const [radios, { refetch: refetchRadios }] = createResource(fetchRadios);
@@ -83,6 +85,75 @@ async function fetchSchedule(): Promise<Schedule> {
 	return response.json();
 }
 
+function generateRadioOrder(
+	state: Accessor<{ [radioId: string]: ChannelState }>,
+	stateIsReady: Accessor<boolean>,
+): Accessor<string[] | null> {
+	const [timedOut, setTimedOut] = createSignal(false);
+	const [radioOrder, setRadioOrder] = createSignal<string[] | null>(null);
+
+	setTimeout(() => {
+		setTimedOut(true);
+	}, RADIO_SORT_TIMEOUT_MS);
+
+	const byListeners = (
+		[, channelStateA]: [string, ChannelState],
+		[, channelStateB]: [string, ChannelState],
+	) => {
+		const listenersA = channelStateA.listenerCount ?? 0;
+		const listenersB = channelStateB.listenerCount ?? 0;
+		return listenersB - listenersA;
+	};
+
+	const byNextProgramStart = (
+		[, channelStateA]: [string, ChannelState],
+		[, channelStateB]: [string, ChannelState],
+	) => {
+		const nextProgramA = channelStateA.nextPrograms[0];
+		const nextProgramB = channelStateB.nextPrograms[0];
+		if (!nextProgramA && !nextProgramB) return 0;
+		if (!nextProgramA) return 1;
+		if (!nextProgramB) return -1;
+		return parseISO(nextProgramA.start).getTime() - parseISO(nextProgramB.start).getTime();
+	};
+
+	createEffect(() => {
+		if (radioOrder() !== null) return;
+		if (Object.keys(state()).length === 0) return;
+		if (!timedOut() && !stateIsReady()) {
+			return;
+		}
+
+		const activeRadios = Object.entries(state()).filter(
+			([_, channelState]) =>
+				channelState.currentProgram && channelState.radioStatus === RadioStatus.Online,
+		);
+		const brokenRadios = Object.entries(state()).filter(
+			([_, channelState]) =>
+				channelState.currentProgram && channelState.radioStatus !== RadioStatus.Online,
+		);
+		const offlineButPlayingRadios = Object.entries(state()).filter(
+			([_, channelState]) =>
+				!channelState.currentProgram && channelState.radioStatus === RadioStatus.Online,
+		);
+		const offlineRadios = Object.entries(state()).filter(
+			([_, channelState]) =>
+				!channelState.currentProgram && channelState.radioStatus !== RadioStatus.Online,
+		);
+
+		const activeOrder = activeRadios.sort(byListeners).map(([id]) => id);
+		const brokenOrder = brokenRadios.sort(byListeners).map(([id]) => id);
+		const offlineButPlayingOrder = offlineButPlayingRadios
+			.sort(byNextProgramStart)
+			.map(([id]) => id);
+		const offlineOrder = offlineRadios.sort(byNextProgramStart).map(([id]) => id);
+
+		setRadioOrder([...activeOrder, ...brokenOrder, ...offlineButPlayingOrder, ...offlineOrder]);
+	});
+
+	return radioOrder;
+}
+
 export function useChannelStates(
 	schedule: Resource<Schedule>,
 	radios: Resource<Radios>,
@@ -90,7 +161,9 @@ export function useChannelStates(
 	streamStatus: Accessor<StreamStatus>,
 	listeners: Accessor<ListenerCounts>,
 ): Accessor<ChannelState[]> {
-	const [channelState, setChannelState] = createSignal<ChannelState[]>([]);
+	const [channelStateMap, setChannelStateMap] = createSignal<{ [radioId: string]: ChannelState }>(
+		{},
+	);
 	const updateChannelState = () => {
 		const scheduleData = schedule();
 		const radiosData = radios();
@@ -103,7 +176,7 @@ export function useChannelStates(
 		}
 
 		const now = new Date();
-		const res: ChannelState[] = [];
+		const res: { [radioId: string]: ChannelState } = {};
 
 		for (const [radioId, programs] of Object.entries(scheduleData)) {
 			const radio = radiosData[radioId];
@@ -137,7 +210,7 @@ export function useChannelStates(
 				radioStatus = RadioStatus.Offline;
 			}
 
-			res.push({
+			res[radio.id] = {
 				radio,
 				currentProgram,
 				nextPrograms,
@@ -145,9 +218,9 @@ export function useChannelStates(
 				streamStatus,
 				listenerCount,
 				radioStatus,
-			});
+			};
 		}
-		setChannelState(res);
+		setChannelStateMap(res);
 	};
 
 	createEffect(updateChannelState);
@@ -158,6 +231,27 @@ export function useChannelStates(
 
 	onCleanup(() => {
 		clearInterval(channelStateInterval);
+	});
+
+	const readyToGenerateOrder = createMemo(() => {
+		return !!(
+			schedule() &&
+			radios() &&
+			Object.keys(streamStatus()).length > 0 &&
+			Object.keys(listeners()).length > 0
+		);
+	});
+
+	// eslint-disable-next-line solid/reactivity
+	const order = generateRadioOrder(channelStateMap, readyToGenerateOrder);
+
+	const channelState = createMemo(() => {
+		const channelMap = channelStateMap();
+		const channelOrder = order();
+		if (channelOrder === null) {
+			return [];
+		}
+		return channelOrder.map((id) => channelMap[id]);
 	});
 
 	return channelState;
