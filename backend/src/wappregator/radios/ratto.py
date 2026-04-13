@@ -1,8 +1,35 @@
+import re
+
 import aiohttp
 import ics
 from wapprecommon import model, radios
 
 from wappregator.radios import base, utils
+
+HOST_RE = re.compile(r"^Toimittajat?:\s*(.+)$", re.MULTILINE)
+PRODUCER_RE = re.compile(r"^Tuottajat?:\s*(.+)$", re.MULTILINE)
+
+
+def _extract(re: re.Pattern, text: str) -> tuple[str, str | None]:
+    match = re.search(text)
+    if match is None:
+        return text, None
+    else:
+        extracted = match.group(1).strip()
+        remaining = text[: match.start()] + text[match.end() :]
+        return remaining.strip(), extracted
+
+
+def _extract_staff(
+    description: str | None,
+) -> tuple[str | None, str | None, str | None]:
+    if description is None:
+        return None, None, None
+
+    description, host = _extract(HOST_RE, description)
+    description, producer = _extract(PRODUCER_RE, description)
+
+    return description, host, producer
 
 
 class RattoFetcher(base.BaseFetcher):
@@ -55,12 +82,17 @@ class RattoFetcher(base.BaseFetcher):
         """
         programs = []
         for event in data.events:
+            description, host, producer = _extract_staff(
+                utils.sanitize_value(event.description)
+            )
             programs.append(
                 model.Program(
                     start=event.begin.datetime,
                     end=event.end.datetime,
                     title=event.name,
-                    description=utils.sanitize_value(event.description),
+                    host=host,
+                    producer=producer,
+                    description=description,
                 )
             )
         return programs

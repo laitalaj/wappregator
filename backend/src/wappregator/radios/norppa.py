@@ -5,7 +5,7 @@ from urllib.parse import quote
 import aiohttp
 from wapprecommon import model, radios
 
-from wappregator.radios import base
+from wappregator.radios import base, utils
 
 WINDOW_DAYS = 7
 
@@ -58,5 +58,5 @@ class NorppaFetcher(base.JSONFetcher):
             start=datetime.datetime.fromisoformat(entry["start"]),
             end=datetime.datetime.fromisoformat(entry["end"]),
             title=entry["title"],
-            description=extended_props.get("description"),
+            description=utils.sanitize_value(extended_props.get("description")),
         )

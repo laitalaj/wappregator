@@ -1,12 +1,16 @@
-import re
+import warnings
 
-TAG_RE = re.compile(r"<[^>]+>")
+import bs4
+from bs4 import BeautifulSoup
+
+warnings.filterwarnings("ignore", category=bs4.MarkupResemblesLocatorWarning)
 
 
 def sanitize_value(value: str | None) -> str | None:
     """Sanitize a value.
 
-    Removes HTML tags and turns empty strings into None.
+    Turns <p> and <br> into appropriate newlines,
+    strips HTML tags and turns empty strings into None.
 
     Args:
         value: The value to sanitize.
@@ -16,8 +20,20 @@ def sanitize_value(value: str | None) -> str | None:
     """
     if value is None:
         return None
-    # Not the most sophisticated HTML sanitizer, but it will do for now.
-    res = TAG_RE.sub("", value)
+
+    soup = BeautifulSoup(value, "html.parser")
+
+    for br in soup.find_all("br"):
+        br.replace_with("\n")
+
+    for p in soup.find_all("p"):
+        p.append("\n")
+
+    lines = soup.get_text().splitlines()
+    stripped_lines = [line.strip() for line in lines]
+    res = "\n".join(line for line in stripped_lines if line).strip()
+
     if res == "":
         return None
+
     return res
