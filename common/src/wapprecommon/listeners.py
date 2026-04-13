@@ -1,25 +1,11 @@
 import time
+from collections import Counter
 
 import valkey.asyncio as valkey
 
 from wapprecommon import keys, utils
 
 NOT_LISTENING_ID = "none"
-
-
-def get_backend_specific_client_id(backend_id: str, client_id: str) -> str:
-    """Get a client ID that is specific to a backend.
-
-    This is used to avoid collisions between clients of different backends.
-
-    Args:
-        backend_id: The ID of the backend.
-        client_id: The original client ID.
-
-    Returns:
-        A client ID that is specific to the backend.
-    """
-    return f"{backend_id}:{client_id}"
 
 
 async def backend_heartbeat(valkey: valkey.Valkey, backend_id: str) -> None:
@@ -69,6 +55,25 @@ async def add_backend(valkey: valkey.Valkey, backend_id: str) -> None:
     await backend_heartbeat(valkey, backend_id)
 
 
+async def change_channel(
+    valkey: valkey.Valkey, backend_id: str, client_id: str, new_radio_id: str
+) -> None:
+    """Change the radio station a client is listening to.
+
+    Use NOT_LISTENING_ID as the new_radio_id if the client has stopped listening to any
+    station.
+
+    Args:
+        valkey: The Valkey client to use for the operation.
+        backend_id: The ID of the backend the client is connected to.
+        client_id: The ID of the client changing channels.
+        new_radio_id: The ID of the new radio station the client is listening to.
+    """
+    await utils.await_valkey_result(
+        valkey.hset(keys.get_backend_clients_key(backend_id), client_id, new_radio_id)
+    )
+
+
 async def add_client(
     valkey: valkey.Valkey,
     backend_id: str,
@@ -84,53 +89,7 @@ async def add_client(
         radio_id: The ID of the radio the client is listening to.
             Use NOT_LISTENING_ID if the client isn't listening to any station.
     """
-    pipe = valkey.pipeline()
-    pipe.hset(keys.get_backend_clients_key(backend_id), client_id, radio_id)
-    pipe.sadd(
-        keys.get_listeners_key(radio_id),
-        get_backend_specific_client_id(backend_id, client_id),
-    )
-    await pipe.execute()
-
-
-async def change_channel(
-    valkey: valkey.Valkey, backend_id: str, client_id: str, new_radio_id: str
-) -> None:
-    """Change the radio station a client is listening to.
-
-    Use NOT_LISTENING_ID as the new_radio_id if the client has stopped listening to any
-    station.
-
-    Args:
-        valkey: The Valkey client to use for the operation.
-        backend_id: The ID of the backend the client is connected to.
-        client_id: The ID of the client changing channels.
-        new_radio_id: The ID of the new radio station the client is listening to.
-    """
-    clients_key = keys.get_backend_clients_key(backend_id)
-    backend_client_id = get_backend_specific_client_id(backend_id, client_id)
-
-    # This might need pipe.watch to handle a case where rapid channel changes cause a
-    # race condition but let's avoid the extra complexity for now, we're already
-    # overengineering this
-    old_radio_id = await utils.await_valkey_result(valkey.hget(clients_key, client_id))
-    old_radio_id = utils.handle_valkey_str(old_radio_id)
-
-    if old_radio_id == new_radio_id:
-        return
-    if old_radio_id is None:
-        # This shouldn't really happen,
-        # so should be fine to just burn everything in the off chance
-        raise ValueError(f"Client {client_id} not found in backend {backend_id}")
-
-    pipe = valkey.pipeline()
-    pipe.smove(
-        keys.get_listeners_key(old_radio_id),
-        keys.get_listeners_key(new_radio_id),
-        backend_client_id,
-    )
-    pipe.hset(clients_key, client_id, new_radio_id)
-    await pipe.execute()
+    await change_channel(valkey, backend_id, client_id, radio_id)
 
 
 async def remove_client(valkey: valkey.Valkey, backend_id: str, client_id: str) -> None:
@@ -141,16 +100,9 @@ async def remove_client(valkey: valkey.Valkey, backend_id: str, client_id: str) 
         backend_id: The ID of the backend the client is connected to.
         client_id: The ID of the client to remove.
     """
-    clients_key = keys.get_backend_clients_key(backend_id)
-    backend_client_id = get_backend_specific_client_id(backend_id, client_id)
-    radio_id = await utils.await_valkey_result(valkey.hget(clients_key, client_id))
-    radio_id = utils.handle_valkey_str(radio_id)
-
-    pipe = valkey.pipeline()
-    if radio_id is not None:
-        pipe.srem(keys.get_listeners_key(radio_id), backend_client_id)
-    pipe.hdel(clients_key, client_id)
-    await pipe.execute()
+    await utils.await_valkey_result(
+        valkey.hdel(keys.get_backend_clients_key(backend_id), client_id)
+    )
 
 
 async def cleanup_backend(valkey: valkey.Valkey, backend_id: str) -> None:
@@ -163,18 +115,8 @@ async def cleanup_backend(valkey: valkey.Valkey, backend_id: str) -> None:
         valkey: The Valkey client to use for the operation.
         backend_id: The ID of the backend to clean up.
     """
-    clients_key = keys.get_backend_clients_key(backend_id)
-    clients = await utils.await_valkey_result(valkey.hgetall(clients_key))
-    clients = {
-        utils.handle_valkey_str(client_id): utils.handle_valkey_str(radio_id)
-        for client_id, radio_id in clients.items()
-    }
-
     pipe = valkey.pipeline()
-    for client_id, radio_id in clients.items():
-        backend_client_id = get_backend_specific_client_id(backend_id, client_id)
-        pipe.srem(keys.get_listeners_key(radio_id), backend_client_id)
-    pipe.delete(clients_key)
+    pipe.delete(keys.get_backend_clients_key(backend_id))
     pipe.hdel(keys.BACKENDS_ONLINE_KEY, backend_id)
     await pipe.execute()
 
@@ -193,9 +135,17 @@ async def get_listener_counts(
         Has an additional entry with key NOT_LISTENING_ID for clients that aren't
         listening to any station.
     """
-    all_ids = [*radio_ids, NOT_LISTENING_ID]
+    backends = await utils.await_valkey_result(valkey.hkeys(keys.BACKENDS_ONLINE_KEY))
     pipe = valkey.pipeline()
-    for radio_id in all_ids:
-        pipe.scard(keys.get_listeners_key(radio_id))
-    counts = await pipe.execute()
-    return dict(zip(all_ids, counts))
+    for backend_id in backends:
+        pipe.hgetall(keys.get_backend_clients_key(utils.handle_valkey_str(backend_id)))
+    backend_clients: list[dict[str, str]] = await pipe.execute()
+
+    counts = Counter(
+        utils.handle_valkey_str(radio_id)
+        for clients in backend_clients
+        for radio_id in clients.values()
+    )
+    all_ids = [*radio_ids, NOT_LISTENING_ID]
+    all_counts = {radio_id: counts.get(radio_id, 0) for radio_id in all_ids}
+    return all_counts

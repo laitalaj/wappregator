@@ -146,10 +146,10 @@ async def setup_socketio(
 
     async def listener_updates() -> None:
         """Periodically check listener counts and broadcast updates."""
-        async with valkey.Valkey(connection_pool=pool) as client:
-            radio_ids = [radio.id for radio in radios.FETCHERS]
-            previous_counts: dict[str, int] = {}
-            while True:
+        radio_ids = [radio.id for radio in radios.FETCHERS]
+        previous_counts: dict[str, int] = {}
+        while True:
+            async with valkey.Valkey(connection_pool=pool) as client:
                 counts = await listeners.get_listener_counts(client, radio_ids)
                 if counts != previous_counts:
                     logger.info("Broadcasting a listener count update: %s", counts)
@@ -159,8 +159,8 @@ async def setup_socketio(
 
     async def heartbeat() -> None:
         """Periodically set heartbeat in Valkey to indicate that we're alive."""
-        async with valkey.Valkey(connection_pool=pool) as client:
-            while True:
+        while True:
+            async with valkey.Valkey(connection_pool=pool) as client:
                 logger.debug("Heartbeat for %s", backend_id)
                 await listeners.backend_heartbeat(client, backend_id)
                 await asyncio.sleep(HEARBEAT_INTERVAL_SECONDS)
