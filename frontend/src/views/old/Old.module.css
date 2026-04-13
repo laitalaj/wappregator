@@ -2,6 +2,7 @@
 	background-color: white;
 	font-family: sans-serif;
 	margin: 2em;
+	overflow: auto;
 }
 
 .oldContainer a {
@@ -10,7 +11,7 @@
 
 .oldContainer table {
 	border-collapse: collapse;
-	width: 100%;
+	min-width: 100%;
 }
 
 .oldContainer th,
