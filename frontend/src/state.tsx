@@ -469,3 +469,31 @@ export function useMaydayCountdownState(): Accessor<number> {
 
 	return countdownState;
 }
+
+function getBirthday(): number | null {
+	const now = new Date();
+	if (now.getMonth() !== 3 || now.getDate() !== 17) {
+		return null;
+	}
+	return now.getFullYear() - 2025;
+}
+
+export function useBirthdayState(): Accessor<number | null> {
+	const searchParams = new URLSearchParams(window.location.search);
+	const birthdayOverride = searchParams.get("birthday");
+	if (birthdayOverride) {
+		return () => parseInt(birthdayOverride, 10) || null;
+	}
+
+	const [birthday, setBirthday] = createSignal<number | null>(getBirthday());
+
+	const interval = setInterval(
+		() => setBirthday(getBirthday()),
+		1000 * 60, // Would be cool to first wait until midnight and then daily, but that'd complicate this a bunch
+	);
+	onCleanup(() => {
+		clearInterval(interval);
+	});
+
+	return birthday;
+}

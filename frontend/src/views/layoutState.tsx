@@ -1,8 +1,9 @@
 import { type Accessor, createContext, createSignal, type ParentProps, useContext } from "solid-js";
 
-import { useWappuState, type WappuState } from "../state";
+import { useBirthdayState, useWappuState, type WappuState } from "../state";
 
 export interface LayoutState {
+	birthday: Accessor<number | null>;
 	wappu: Accessor<WappuState>;
 	nonModalElementsInert: Accessor<boolean>;
 	setNonModalElementsInert: (inert: boolean) => void;
@@ -11,10 +12,12 @@ export interface LayoutState {
 const LayoutStateContext = createContext<LayoutState>();
 
 export function LayoutStateProvider(props: ParentProps) {
+	const birthday = useBirthdayState();
 	const wappu = useWappuState();
 	const [nonModalElementsInert, setNonModalElementsInert] = createSignal(false);
 
 	const state = {
+		birthday,
 		wappu,
 		nonModalElementsInert,
 		setNonModalElementsInert,

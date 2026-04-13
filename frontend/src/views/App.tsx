@@ -102,13 +102,18 @@ const Layout: ParentComponent = (props: ParentProps) => {
 };
 
 function Header() {
-	const { wappu, nonModalElementsInert } = useLayoutState();
+	const { birthday, wappu, nonModalElementsInert } = useLayoutState();
 
-	const funnySlogan = funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
+	const funnySlogan = createMemo(() => {
+		if (birthday() !== null) {
+			return `Paljon onnea Wappregator ${birthday()}v! 🎉`;
+		}
+		return funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
+	});
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
 	const logo = createMemo(() => {
-		if (wappu() === WappuState.Wappu) {
+		if (birthday() !== null || wappu() === WappuState.Wappu) {
 			return wappuImgs[Math.floor(Math.random() * wappuImgs.length)];
 		}
 		return "/appicon.png";
@@ -123,7 +128,7 @@ function Header() {
 					</h1>
 					<img src={logo()} alt="" width={64} height={64} />
 				</div>
-				<span>{funnySlogan}</span>
+				<span>{funnySlogan()}</span>
 				<div class={classes.headerLinks}>
 					<a
 						class={classes.headerLink}
@@ -157,8 +162,11 @@ function Header() {
 }
 
 function Navigation() {
+	const { birthday } = useLayoutState();
+
 	const matchRadio = useMatch(() => "/");
 	const matchOpas = useMatch(() => "/opas");
+	const matchWanha = useMatch(() => "/wanha");
 
 	return (
 		<nav class={classes.mainNavigation} aria-label="Päävalikko">
@@ -182,6 +190,17 @@ function Navigation() {
 						Ohjelmaopas
 					</A>
 				</li>
+				<Show when={birthday() !== null}>
+					<li>
+						<A
+							href="/wanha"
+							activeClass={classes.activeNavigationLink}
+							aria-current={matchWanha() ? "page" : undefined}
+						>
+							Ennen oli paremmin
+						</A>
+					</li>
+				</Show>
 			</ul>
 		</nav>
 	);
@@ -190,6 +209,8 @@ function Navigation() {
 const Radio = lazy(() => import("./radio/Radio"));
 
 const Guide = lazy(() => import("./guide/Guide"));
+
+const Old = lazy(() => import("./old/Old"));
 
 const NotFound: Component = () => (
 	<OffSeasonCountdown
@@ -212,6 +233,7 @@ const App: Component = () => {
 		<Router root={Layout}>
 			<Route path="/" component={Radio} />
 			<Route path="/opas" component={Guide} />
+			<Route path="/wanha" component={Old} />
 			<Route path="*" component={NotFound} />
 		</Router>
 	);

@@ -1,0 +1,25 @@
+.oldContainer {
+	background-color: white;
+	font-family: sans-serif;
+	margin: 2em;
+}
+
+.oldContainer a {
+	color: revert;
+}
+
+.oldContainer table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.oldContainer th,
+.oldContainer td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.oldContainer th {
+	background-color: #f2f2f2;
+}
