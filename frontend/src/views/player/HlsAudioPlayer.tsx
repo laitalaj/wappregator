@@ -26,9 +26,9 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 		}
 
 		hls = new Hls({
-			maxBufferLength: 20,
-			maxMaxBufferLength: 60,
-			liveSyncDuration: 30,
+			maxBufferLength: 10,
+			maxMaxBufferLength: 30,
+			liveSyncDuration: 5,
 			liveDurationInfinity: true,
 		});
 		hls.attachMedia(audioRef);
@@ -49,7 +49,7 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 		}
 
 		hls.loadSource(streamUrl);
-		hls.on(Hls.Events.MANIFEST_PARSED, () => {
+		hls.once(Hls.Events.MANIFEST_PARSED, () => {
 			audioRef?.play();
 		});
 	});
@@ -57,7 +57,10 @@ export function HlsAudioPlayer(props: AudioPlayerProps) {
 	useSyncPlaybackState(
 		() => audioRef,
 		() => props.isPlaying(),
-		false,
+		() => {
+			// Restart loading from the live edge
+			hls?.startLoad(-1);
+		},
 	);
 	useMediaSessionIntegration(props);
 	useSyncVolume(

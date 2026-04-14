@@ -113,23 +113,42 @@ export function useMediaSessionIntegration(props: AudioPlayerProps) {
 	});
 }
 
+const MAX_LIVE_DELAY_SECONDS = 10;
+
+/**
+ * Force a fresh connection by cache-busting source element URLs and reloading.
+ * This ensures the browser doesn't serve stale buffered audio when switching
+ * channels or resuming after a pause.
+ */
+export function loadFreshStream(audioElement: HTMLAudioElement) {
+	const now = Date.now().toString();
+	for (const source of audioElement.querySelectorAll("source")) {
+		const url = new URL(source.src);
+		url.searchParams.set("_t", now);
+		source.src = url.toString();
+	}
+	audioElement.load();
+}
+
 export function seekToLive(audioElement: HTMLAudioElement) {
 	if (audioElement.seekable.length > 0) {
 		const seekableEnd = audioElement.seekable.end(audioElement.seekable.length - 1);
 
 		if (seekableEnd > 0 && Number.isFinite(seekableEnd)) {
-			audioElement.currentTime = seekableEnd;
-		} else {
-			// Force reload
-			audioElement.load();
+			if (seekableEnd - audioElement.currentTime <= MAX_LIVE_DELAY_SECONDS) {
+				audioElement.currentTime = seekableEnd;
+				return;
+			}
 		}
 	}
+	// No seekable ranges or too far behind live — force a fresh connection
+	loadFreshStream(audioElement);
 }
 
 export function useSyncPlaybackState(
 	getAudioElement: Accessor<HTMLAudioElement | null>,
 	isPlaying: Accessor<boolean>,
-	seekToLiveAfterPause: boolean,
+	onResumeFromPause?: () => void,
 ) {
 	// If playback state changes, sync it with the audio element
 	createEffect(() => {
@@ -141,9 +160,8 @@ export function useSyncPlaybackState(
 		}
 
 		if (isPlayingState) {
-			// If we were paused, try to seek to current live position
-			if (element.paused && seekToLiveAfterPause) {
-				seekToLive(element);
+			if (element.paused && onResumeFromPause) {
+				onResumeFromPause();
 			}
 
 			element.play().catch((error) => {

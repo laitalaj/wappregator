@@ -2,6 +2,7 @@ import { type Accessor, createEffect, createMemo, Index } from "solid-js";
 
 import type { Program, Radio } from "../../types";
 import {
+	loadFreshStream,
 	seekToLive,
 	useMediaSessionIntegration,
 	useShouldAvoidFlac,
@@ -35,9 +36,8 @@ export function AudioPlayer(props: AudioPlayerProps) {
 		return radioStreams.filter((stream) => stream.mime_type !== "audio/flac");
 	});
 
-	// If the stream changes, we need to load the new stream
+	// If the channel changes, force a fresh connection to avoid stale buffered audio
 	createEffect(() => {
-		// When channel changes and we're playing, we need to load the new stream
 		radioId();
 
 		if (!audioRef) {
@@ -45,8 +45,7 @@ export function AudioPlayer(props: AudioPlayerProps) {
 		}
 
 		if (!audioRef.paused) {
-			audioRef.load();
-			seekToLive(audioRef);
+			loadFreshStream(audioRef);
 			audioRef.play().catch((error) => {
 				// If AbortError, ignore it
 				if (error.name !== "AbortError") {
@@ -68,8 +67,7 @@ export function AudioPlayer(props: AudioPlayerProps) {
 		const switchedToRestrictedNetwork = !wasAvoidingFlac && isAvoidingFlac;
 
 		if (switchedToRestrictedNetwork && !audioRef.paused) {
-			audioRef.load();
-			seekToLive(audioRef);
+			loadFreshStream(audioRef);
 			audioRef.play().catch((error) => {
 				// If AbortError, ignore it
 				if (error.name !== "AbortError") {
@@ -84,7 +82,11 @@ export function AudioPlayer(props: AudioPlayerProps) {
 	useSyncPlaybackState(
 		() => audioRef,
 		() => props.isPlaying(),
-		true,
+		() => {
+			if (audioRef) {
+				seekToLive(audioRef);
+			}
+		},
 	);
 	useMediaSessionIntegration(props);
 	useSyncVolume(
