@@ -3,6 +3,7 @@ import { type Component, Suspense, createMemo } from "solid-js";
 import { usePlayerState } from "../player/playerState";
 import { NowPlayingTable } from "./nowplaying/NowPlayingTable";
 
+import appClasses from "../App.module.css";
 import classes from "./Old.module.css";
 
 const Old: Component = () => {
@@ -16,10 +17,12 @@ const Old: Component = () => {
 	);
 
 	return (
-		<div class={classes.oldContainer}>
-			<Suspense fallback={<div>Loading...</div>}>
-				<NowPlayingTable stations={nowPlaying()} />
-			</Suspense>
+		<div class={appClasses.content}>
+			<div class={classes.oldContainer}>
+				<Suspense fallback={<div>Loading...</div>}>
+					<NowPlayingTable stations={nowPlaying()} />
+				</Suspense>
+			</div>
 		</div>
 	);
 };
