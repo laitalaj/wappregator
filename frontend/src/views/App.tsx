@@ -10,6 +10,7 @@ import {
 	lazy,
 	type ParentComponent,
 	type ParentProps,
+	Suspense,
 } from "solid-js";
 
 import { funnySlogansHaha } from "../funnySlogansHaha";
@@ -20,6 +21,7 @@ import { PlayerBar } from "./player/PlayerBar";
 import { PlayerStateProvider, usePlayerState } from "./player/playerState";
 
 import classes from "./App.module.css";
+import commonClasses from "./common/common.module.css";
 
 const ErrorFallback = (err: unknown, reset: () => void) => {
 	console.error("ErrorBoundary caught an error:", err);
@@ -47,10 +49,31 @@ const ErrorFallback = (err: unknown, reset: () => void) => {
 	);
 };
 
+const Confetti = lazy(() => import("./confetti/Confetti"));
+
 const InnestLayout: ParentComponent = (props: ParentProps) => {
-	const { channel } = usePlayerState();
+	const { wappu } = useLayoutState();
+	const { channel, radios } = usePlayerState();
+	const showConfetti = () => wappu() === WappuState.Wappu;
+	const colors = createMemo(() => {
+		if (!showConfetti()) return [];
+		return Object.values(radios() || {})
+			.map((radio) => [
+				radio.brand.background_color,
+				radio.brand.text_color,
+				radio.brand.contrast_color,
+			])
+			.flat()
+			.filter((color) => color !== null && color !== undefined);
+	});
+
 	return (
 		<>
+			<Show when={showConfetti()}>
+				<Suspense fallback={null}>
+					<Confetti colors={colors} />
+				</Suspense>
+			</Show>
 			<main>
 				{props.children}
 				<PlayerBar />
@@ -123,7 +146,7 @@ function Header() {
 		<header inert={nonModalElementsInert()}>
 			<div class={classes.headerTop}>
 				<div class={classes.headerLogo}>
-					<h1>
+					<h1 classList={{ [commonClasses.rainbowText]: wappu() === WappuState.Wappu }}>
 						Wappregat<small>.</small>or<small>g</small>
 					</h1>
 					<img src={logo()} alt="" width={64} height={64} />

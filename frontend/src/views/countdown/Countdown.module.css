@@ -1,49 +1,12 @@
-@property --gradient-angle {
-	syntax: "<angle>";
-	initial-value: 0deg;
-	inherits: false;
-}
-
-@keyframes rainbow {
-	from {
-		--gradient-angle: 0deg;
-	}
-	to {
-		--gradient-angle: 360deg;
-	}
-}
-
-.rainbowText {
-	background:
-		linear-gradient(
-			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%)),
-			rgb(255 255 255 / calc((1 - var(--rainbow-intensity)) * 100%))
-		),
-		conic-gradient(
-			from var(--gradient-angle),
-			#ff6b6b,
-			#feca57,
-			#48dbfb,
-			#ff9ff3,
-			#54a0ff,
-			#5f27cd,
-			#ff6b6b
-		);
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent;
-	animation: rainbow 6s linear infinite;
-}
-
 .countdownNumber {
-	composes: rainbowText;
+	composes: rainbowText from "../common/common.module.css";
 	font-family: "Bungee", sans-serif;
 	font-size: 96px;
 	line-height: 1;
 }
 
 .countdownLabel {
-	composes: rainbowText;
+	composes: rainbowText from "../common/common.module.css";
 	font-size: 24px;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;

@@ -26,9 +26,18 @@
     "vite-plugin-solid": "^2.11.10"
   },
   "dependencies": {
+    "@ctrl/tinycolor": "^4.2.0",
     "@solid-primitives/scheduled": "^1.5.3",
     "@solidjs/router": "^0.16.1",
     "@tabler/icons-solidjs": "^3.36.1",
+    "@tsparticles/basic": "^3.9.1",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/shape-square": "^3.9.1",
+    "@tsparticles/shape-star": "^3.9.1",
+    "@tsparticles/updater-roll": "^3.9.1",
+    "@tsparticles/updater-rotate": "^3.9.1",
+    "@tsparticles/updater-tilt": "^3.9.1",
+    "@tsparticles/updater-wobble": "^3.9.1",
     "date-fns": "^4.1.0",
     "flexsearch": "^0.8.212",
     "hls.js": "^1.6.15",
