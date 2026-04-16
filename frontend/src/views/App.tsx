@@ -6,6 +6,7 @@ import {
 	Match,
 	Show,
 	createMemo,
+	createSignal,
 	ErrorBoundary,
 	lazy,
 	type ParentComponent,
@@ -127,11 +128,20 @@ const Layout: ParentComponent = (props: ParentProps) => {
 function Header() {
 	const { birthday, wappu, nonModalElementsInert } = useLayoutState();
 
+	const [luckyNumber, setLuckyNumber] = createSignal(
+		Math.floor(Math.random() * funnySlogansHaha.length),
+	);
+	const [luckyNumberMulliganed, setLuckyNumberMulliganed] = createSignal(false);
+	const mulligan = () => {
+		setLuckyNumber(Math.floor(Math.random() * funnySlogansHaha.length));
+		setLuckyNumberMulliganed(true);
+	};
+
 	const funnySlogan = createMemo(() => {
-		if (birthday() !== null) {
+		if (birthday() !== null && !luckyNumberMulliganed()) {
 			return `Paljon onnea Wappregator ${birthday()}v! 🎉`;
 		}
-		return funnySlogansHaha[Math.floor(Math.random() * funnySlogansHaha.length)];
+		return funnySlogansHaha[luckyNumber()];
 	});
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
@@ -151,7 +161,9 @@ function Header() {
 					</h1>
 					<img src={logo()} alt="" width={64} height={64} />
 				</div>
-				<span>{funnySlogan()}</span>
+				{/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions
+				(just a dumb easter egg, doesn't need a11y) */}
+				<span onClick={mulligan}>{funnySlogan()}</span>
 				<div class={classes.headerLinks}>
 					<a
 						class={classes.headerLink}
