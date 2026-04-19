@@ -111,6 +111,21 @@ class HTTPPoller(BasePoller):
         super().__init__(id)
         self.url = url
 
+    async def check_response(self, response: aiohttp.ClientResponse) -> bool:
+        """Check if the HTTP response is valid.
+
+        Args:
+            response: The HTTP response to check.
+
+        Returns:
+            True if the response is valid, False otherwise.
+
+        Raises:
+            aiohttp.ClientResponseError: If the response status is not OK.
+        """
+        response.raise_for_status()
+        return True
+
     @abstractmethod
     async def handle_response(
         self, response: aiohttp.ClientResponse
@@ -137,11 +152,11 @@ class HTTPPoller(BasePoller):
                 try:
                     logger.info(f"Polling {self.url} for {self.id}")
                     async with session.get(self.url) as response:
-                        response.raise_for_status()
-                        result = await self.handle_response(response)
-                        if result != now_playing:
-                            now_playing = result
-                            await self.update_now_playing(valkey_client, result)
+                        if await self.check_response(response):
+                            result = await self.handle_response(response)
+                            if result != now_playing:
+                                now_playing = result
+                                await self.update_now_playing(valkey_client, result)
                 except (
                     KeyError,
                     aiohttp.ClientResponseError,

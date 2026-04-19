@@ -6,7 +6,7 @@ import valkey.asyncio as valkey
 
 logger = logging.getLogger(__name__)
 
-LOOP_WRAPPER_RESTART_DELAY_SECONDS = 5
+LOOP_WRAPPER_RESTART_DELAY_SECONDS = 60
 
 
 async def loop_wrapper(

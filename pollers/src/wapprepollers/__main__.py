@@ -6,16 +6,14 @@ from wapprecommon import constants, radios
 
 from wapprepollers.housekeeping import cleanup_dead_backends
 from wapprepollers.heartbeat import heartbeat, ready
-from wapprepollers.pollers import diodi, rakkauden, turun
+from wapprepollers.pollers import diodi, rakkauden, turun, ratto
 from wapprepollers.streams import StreamChecker
 
 NOWPLAYING_POLLERS = [
     rakkauden.RakkaudenPoller(),
     diodi.DiodiPoller(),
     turun.TurunPoller(),
-    # Gives 403 as of 2026-02-06. Looks like there's nyt-soi.json,
-    # but that's an empty object at the moment. Fix when we're closer to Wappu!
-    # ratto.RattoPoller(),
+    ratto.RattoPoller(),
 ]
 
 STREAMSTATUS_POLLERS = [

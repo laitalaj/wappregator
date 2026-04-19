@@ -18,6 +18,24 @@ class RattoPoller(base.HTTPPoller):
             url="https://www.rattoradio.fi/nyt-soi/",
         )
 
+    async def check_response(self, response: aiohttp.ClientResponse) -> bool:
+        """Check if the HTTP response is valid.
+
+        Override for the base method, as Ratto gives us a 403 when off-season.
+
+        Args:
+            response: The HTTP response to check.
+
+        Returns:
+            True if the response is valid, False otherwise.
+
+        Raises:
+            aiohttp.ClientResponseError: If the response status is not OK and not 403.
+        """
+        if response.status == 403:
+            return False
+        return await super().check_response(response)
+
     async def handle_response(
         self, response: aiohttp.ClientResponse
     ) -> model.Song | None:
