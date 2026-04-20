@@ -11,7 +11,7 @@ WINDOW_DAYS = 7
 
 
 class NorppaFetcher(base.JSONFetcher):
-    """Fetcher for Norpparadio, the wappuradio from lappeen Ranta."""
+    """Fetcher for Norpparadio, the wappuradio from lappeen   Ranta."""
 
     def __init__(self) -> None:
         """Initialize the fetcher."""
