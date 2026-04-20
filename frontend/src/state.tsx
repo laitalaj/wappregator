@@ -200,7 +200,7 @@ export function useChannelStates(
 			const listenerCount = listenerData[radio.id];
 
 			let radioStatus: RadioStatus;
-			if (streamStatus === undefined) {
+			if (streamStatus === undefined || Object.keys(streamStatus).length === 0) {
 				radioStatus = RadioStatus.Unknown;
 			} else if (Object.values(streamStatus).some((status) => status)) {
 				radioStatus = RadioStatus.Online;

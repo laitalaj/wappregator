@@ -4,9 +4,10 @@ import json
 import logging
 
 import valkey.asyncio as valkey
-from wapprecommon import constants, model, keys
+from wapprecommon import constants, model, keys, radios as radio_objs
 
 from wappregator.radios import (
+    base,
     diodi,
     jkl,
     norppa,
@@ -24,8 +25,10 @@ FETCHERS = [
     norppa.NorppaFetcher(),
     wapina.WapinaFetcher(),
     ratto.RattoFetcher(),
-    # Domain doesn't exist as of 2026-02-06. Fix when we're closer to Wappu!
+    # No idea if and where they'll have a schedule as of 2026-04-20.
+    # Fix as soon as we know something!
     # sateily.SateilyFetcher(),
+    base.DummyFetcher(radio_objs.SATEILY),
     jkl.JklFetcher(),
 ]
 

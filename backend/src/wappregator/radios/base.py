@@ -201,3 +201,56 @@ class JSONFetcher(BaseFetcher):
         """
         res = [self.handle_parse_one(entry) for entry in data]
         return [entry for entry in res if entry is not None]
+
+
+class DummyFetcher(BaseFetcher):
+    """A dummy fetcher that always returns an empty schedule."""
+
+    async def get_api_url(self, session: aiohttp.ClientSession) -> str:
+        """Raise a NotImplementedError.
+
+        DummyFetcher does not have an API URL, so this method is not implemented.
+
+        Args:
+            session: Not used.
+
+        Returns:
+            Never.
+
+        Raises:
+            NotImplementedError: Always.
+        """
+        raise NotImplementedError("DummyFetcher does not have an API URL")
+
+    async def parse_response(self, response: aiohttp.ClientResponse) -> None:
+        """Do nothing.
+
+        Args:
+            response: Not used.
+
+        Returns:
+            None.
+        """
+        return None
+
+    def parse_schedule(self, data: None) -> list[model.Program]:
+        """Return an empty schedule.
+
+        Args:
+            data: Not used.
+
+        Returns:
+            An empty list.
+        """
+        return []
+
+    async def fetch_schedule(self, session: aiohttp.ClientSession) -> None:
+        """Do nothing.
+
+        Args:
+            session: Not used.
+
+        Returns:
+            None.
+        """
+        return None

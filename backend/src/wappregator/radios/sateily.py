@@ -21,7 +21,7 @@ class SateilyFetcher(base.BaseFetcher):
     def __init__(self) -> None:
         """Initialize the fetcher."""
         super().__init__(radios.SATEILY)
-        self.link_url = "https://www.radiosateily.fi/ohjelmistocsv"
+        self.link_url = "https://www.sateily.com/ohjelmistocsv"
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Get the URL for the radio's API endpoint.

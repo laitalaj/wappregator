@@ -140,23 +140,22 @@ RATTO = model.Radio(
 SATEILY = model.Radio(
     id="sateily",
     name="Radio Säteily",
-    url="https://www.radiosateily.fi/",
+    url="https://www.sateily.com/",
     location="Rovaniemi",
     wappu_locations=["Lappi"],
     frequency_mhz=89,
     brand=model.Brand(
-        background_color="rgb(72, 83, 139)",
+        background_color="black",
         text_color="white",
-        contrast_color="rgb(198, 180, 116)",
+        contrast_color="rgb(244, 217, 98)",
     ),
     streams=[
-        model.Stream(
-            url="https://streams.radio.co/sc2e7aecbe/listen",
-            mime_type="audio/aac",
-        ),
+        # model.Stream(
+        #     url="https://streams.radio.co/sc2e7aecbe/listen",
+        #     mime_type="audio/aac",
+        # ),
     ],
-    # The domain doesn't exist as of 2026-03-07,
-    # enable this when Säteily is back
+    # Enable this when we know where Säteily is streaming
     stream_check_enabled=False,
 )
 
