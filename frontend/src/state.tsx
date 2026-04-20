@@ -393,9 +393,16 @@ export function useChangeChannelEffect(selectedChannelId: Accessor<string | null
 		throw new Error("useChangeChannelEffect must be used within a SocketProvider");
 	}
 
-	createEffect(() => {
-		const channelId = selectedChannelId() || "none";
+	const emitCCEvent = (maybeChannelId: string | null) => {
+		if (!socket.connected) return;
+		const channelId = maybeChannelId || "none";
 		socket.emit("change_channel", channelId);
+	};
+
+	createEffect(() => emitCCEvent(selectedChannelId()));
+	createEffect(() => {
+		socket.removeAllListeners("connect"); // TODO: We might want to do a socket.off here & elsewhere, but for now this should be fine as we don't do other connect events
+		socket.on("connect", () => emitCCEvent(selectedChannelId()));
 	});
 }
 
