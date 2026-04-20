@@ -74,24 +74,6 @@ async def change_channel(
     )
 
 
-async def add_client(
-    valkey: valkey.Valkey,
-    backend_id: str,
-    client_id: str,
-    radio_id: str = NOT_LISTENING_ID,
-) -> None:
-    """Add a client to the relevant data structures.
-
-    Args:
-        valkey: The Valkey client to use for the operation.
-        backend_id: The ID of the backend the client is connected to.
-        client_id: The ID of the client to add.
-        radio_id: The ID of the radio the client is listening to.
-            Use NOT_LISTENING_ID if the client isn't listening to any station.
-    """
-    await change_channel(valkey, backend_id, client_id, radio_id)
-
-
 async def remove_client(valkey: valkey.Valkey, backend_id: str, client_id: str) -> None:
     """Remove a client from the relevant data structures.
 

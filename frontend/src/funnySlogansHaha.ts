@@ -66,6 +66,7 @@ export const funnySlogansHaha = [
 	"Paras sekoitus klassikoita ja tyylikkäimpiä uutuuksia",
 	"It's a feature",
 	"Special thanks to aa ii äm äl",
+	"Turkuun tahdo en",
 	"Älä laita tomaattia",
 	"Pinkki ja pörröinen!",
 	"Tervetuloa Laitilan Munamarkkinoille 13.-14.6.",

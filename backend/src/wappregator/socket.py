@@ -72,7 +72,6 @@ async def setup_socketio(
         """
         async with valkey.Valkey(connection_pool=pool) as client:
             logger.debug("%s connected to the socket", sid)
-            await listeners.add_client(client, backend_id, sid)
 
             currently_playing = await radios.now_playing(client)
             await sio.emit(
