@@ -193,16 +193,10 @@ WAPINA = model.Radio(
         text_color="rgb(42, 44, 46)",
     ),
     streams=[
-        # These URLs are identical for both streams - maybe the endpoint serves
-        # different data depending on headers?
         model.Stream(
-            url="https://s5.radio.co/s484b62a6d/listen",
-            mime_type="audio/ogg",
-        ),
-        model.Stream(
-            url="https://s5.radio.co/s484b62a6d/listen",
+            url="https://s2.radio.co/s523e41698/listen",
             mime_type="audio/mpeg",
-        ),
+        )
     ],
 )
 
