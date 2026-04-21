@@ -1,3 +1,4 @@
+import { IconCalendarDown } from "@tabler/icons-solidjs";
 import { isToday, isWithinInterval, startOfDay } from "date-fns";
 import {
 	createEffect,
@@ -11,6 +12,7 @@ import {
 	Suspense,
 } from "solid-js";
 
+import { encodeProgramKey } from "../../programKey";
 import { useFullScheduleState, useRadiosState } from "../../state";
 import { formatDate } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
@@ -104,7 +106,7 @@ const groupPrograms = (schedule: ProgramInfo[]) =>
 		}, []);
 
 export default function Guide() {
-	const { nonModalElementsInert, setNonModalElementsInert } = useLayoutState();
+	const { nonModalElementsInert, setNonModalElementsInert, favourites } = useLayoutState();
 	const radios = useRadiosState();
 	const schedule = useFullScheduleState();
 
@@ -129,11 +131,44 @@ export default function Guide() {
 	const [searchResults, setSearchResults] = createSignal<ProgramInfoWithId[]>([]);
 	const [searchActive, setSearchActive] = createSignal(false);
 	const [searchInProgress, setSearchInProgress] = createSignal(false);
+	const [favouritesOnly, setFavouritesOnly] = createSignal(false);
 
-	const groupedSchedule = createMemo(() => {
-		const source = searchActive() ? searchResults() : programInfo();
-		return groupPrograms(source);
+	const filteredPrograms = createMemo(() => {
+		const base = searchActive() ? searchResults() : programInfo();
+		if (!favouritesOnly()) return base;
+		const favSet = favourites();
+		return base.filter((info) => favSet.has(encodeProgramKey(info)));
 	});
+
+	const groupedSchedule = createMemo(() => groupPrograms(filteredPrograms()));
+
+	const showExportToolbar = createMemo(() => groupedSchedule().length > 0);
+
+	const exportFilename = () => {
+		if (searchActive()) return "wappregator-haku.ics";
+		if (favouritesOnly()) return "wappregator-suosikit.ics";
+		return "wappregator-kaikki.ics";
+	};
+
+	const handleExport = async () => {
+		const { buildIcsFile, downloadIcsFile } = await import("../../icsExport");
+		downloadIcsFile(buildIcsFile(filteredPrograms()), exportFilename());
+	};
+
+	const emptyMessage = () => {
+		if (schedule() === undefined) return "Ladataan...";
+		if (searchInProgress()) return "Haetaan...";
+		if (favouritesOnly() && favourites().size === 0) {
+			return "Ei suosikkeja vielä — lisää ohjelmia suosikeiksi sydänpainikkeella.";
+		}
+		return "Ei hakutuloksia :^(";
+	};
+
+	const exportText = () => {
+		if (searchActive()) return "Lisää näkymä kalenteriin (.ics)";
+		if (favouritesOnly()) return "Lisää suosikit kalenteriin (.ics)";
+		return "Lisää kaikki ohjelmat kalenteriin (.ics)";
+	};
 
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
 
@@ -152,18 +187,20 @@ export default function Guide() {
 					setActive={setSearchActive}
 					setInProgress={setSearchInProgress}
 					setResults={setSearchResults}
+					favouritesOnly={favouritesOnly}
+					setFavouritesOnly={setFavouritesOnly}
 				/>
+				<Show when={showExportToolbar()}>
+					<div class={classes.exportToolbar}>
+						<button type="button" class={classes.exportLink} onClick={handleExport}>
+							<IconCalendarDown size={18} role="presentation" />
+							{exportText()}
+						</button>
+					</div>
+				</Show>
 				<Show
 					when={groupedSchedule().length}
-					fallback={
-						<p class={classes.nothingToShow}>
-							{schedule() === undefined
-								? "Ladataan..."
-								: searchInProgress()
-									? "Haetaan..."
-									: "Ei hakutuloksia :^("}
-						</p>
-					}
+					fallback={<p class={classes.nothingToShow}>{emptyMessage()}</p>}
 				>
 					<For each={groupedSchedule()}>
 						{(group, i) => (

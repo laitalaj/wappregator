@@ -63,7 +63,15 @@
 	line-height: 1.25;
 }
 
-.closeButton {
+.headerActions {
+	display: flex;
+	flex-direction: row;
+	gap: 4px;
+	align-items: center;
+	z-index: 2;
+}
+
+.iconButton {
 	composes: buttonHoverContrast from "../common/common.module.css";
 	background: none;
 	border: none;
@@ -72,5 +80,4 @@
 	justify-content: center;
 	align-items: center;
 	padding: 0;
-	z-index: 2;
 }

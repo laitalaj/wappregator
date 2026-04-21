@@ -52,3 +52,32 @@
 		white-space: pre-wrap;
 	}
 }
+
+.exportActions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.exportLink {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: none;
+	border: none;
+	padding: 0;
+	color: var(--text-color);
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: color-mix(in srgb, var(--text-color) 70%, white);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--border-color-focus);
+		outline-offset: 2px;
+	}
+}

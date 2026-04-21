@@ -1,3 +1,4 @@
+import { IconHeartFilled } from "@tabler/icons-solidjs";
 import {
 	type Accessor,
 	children,
@@ -13,10 +14,12 @@ import {
 import { Dynamic } from "solid-js/web";
 
 import { getProgramProgress } from "../../getProgramProgress";
+import { encodeProgramKey } from "../../programKey";
 import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo, Program as ProgramType } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 import { ProgressBar } from "../common/ProgressBar";
+import { useLayoutState } from "../layoutState";
 
 import classes from "./Program.module.css";
 
@@ -25,6 +28,7 @@ const NOW_PLAYING_UPDATE_INTERVAL = 1000;
 interface ProgramProps {
 	program: Accessor<ProgramType>;
 	playingNow: boolean;
+	isFavourite?: Accessor<boolean>;
 }
 
 interface MaybeProgramProps {
@@ -67,7 +71,17 @@ export function Program(props: ProgramProps) {
 
 	return (
 		<div class={classes.program}>
-			<span class={classes.programTitle}>{props.program().title}</span>
+			<span class={classes.programTitle}>
+				{props.program().title}
+				<Show when={props.isFavourite?.()}>
+					<IconHeartFilled
+						size={14}
+						class={classes.favouriteIndicator}
+						role="img"
+						aria-label="Oma suosikki"
+					/>
+				</Show>
+			</span>
 			<ProgramTime startTime={startTime} endTime={endTime} />
 			<Show when={props.playingNow}>
 				<ProgressBar progress={nowPlayingProgress} transitionTimeMs={NOW_PLAYING_UPDATE_INTERVAL} />
@@ -95,7 +109,12 @@ function NoProgram() {
 }
 
 export function MaybeProgram(props: MaybeProgramProps) {
+	const { isFavourite } = useLayoutState();
 	const program = createMemo(() => props.programInfo()?.program);
+	const favourite = createMemo(() => {
+		const info = props.programInfo();
+		return info ? isFavourite(encodeProgramKey(info)) : false;
+	});
 	const handleClick = () => {
 		const info = props.programInfo();
 		if (info) {
@@ -112,13 +131,21 @@ export function MaybeProgram(props: MaybeProgramProps) {
 			aria-label={program() ? "Näytä ohjelmatiedot" : undefined}
 		>
 			<Show when={program()} fallback={<NoProgram />}>
-				{(program) => <Program program={() => program()} playingNow={props.playingNow} />}
+				{(program) => (
+					<Program
+						program={() => program()}
+						playingNow={props.playingNow}
+						isFavourite={favourite}
+					/>
+				)}
 			</Show>
 		</Dynamic>
 	);
 }
 
 export function BrandedProgram(props: BrandedProgramProps) {
+	const { isFavourite } = useLayoutState();
+	const favourite = createMemo(() => isFavourite(encodeProgramKey(props.programInfo)));
 	const handleClick = () => {
 		props.setSelectedProgram(props.programInfo);
 	};
@@ -132,7 +159,11 @@ export function BrandedProgram(props: BrandedProgramProps) {
 			aria-label="Näytä ohjelmatiedot"
 		>
 			<span class={classes.brandedProgramChannel}>{props.programInfo.radio.name}</span>
-			<Program program={() => props.programInfo.program} playingNow={props.playingNow} />
+			<Program
+				program={() => props.programInfo.program}
+				playingNow={props.playingNow}
+				isFavourite={favourite}
+			/>
 		</button>
 	);
 }
