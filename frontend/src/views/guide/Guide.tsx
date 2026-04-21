@@ -12,7 +12,6 @@ import {
 	Suspense,
 } from "solid-js";
 
-import { buildIcsFile, downloadIcsFile } from "../../icsExport";
 import { encodeProgramKey } from "../../programKey";
 import { useFullScheduleState, useRadiosState } from "../../state";
 import { formatDate } from "../../timeUtils";
@@ -145,8 +144,15 @@ export default function Guide() {
 
 	const showExportToolbar = createMemo(() => groupedSchedule().length > 0);
 
-	const handleExport = () => {
-		downloadIcsFile(buildIcsFile(filteredPrograms()), "wappregator-suosikit.ics");
+	const exportFilename = () => {
+		if (searchActive()) return "wappregator-haku.ics";
+		if (favouritesOnly()) return "wappregator-suosikit.ics";
+		return "wappregator-kaikki.ics";
+	};
+
+	const handleExport = async () => {
+		const { buildIcsFile, downloadIcsFile } = await import("../../icsExport");
+		downloadIcsFile(buildIcsFile(filteredPrograms()), exportFilename());
 	};
 
 	const emptyMessage = () => {

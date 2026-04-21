@@ -1,7 +1,7 @@
 import { IconCalendarPlus, IconCalendarDown } from "@tabler/icons-solidjs";
 import { type Component, createMemo, onCleanup, onMount, type Setter, Show } from "solid-js";
 
-import { buildGoogleCalendarUrl, buildIcsFile, downloadIcsFile } from "../../icsExport";
+import { buildGoogleCalendarUrl } from "../../calendarUtils";
 import { encodeProgramKey } from "../../programKey";
 import { formatDate, formatTimeRange } from "../../timeUtils";
 import type { ProgramInfo } from "../../types";
@@ -32,7 +32,8 @@ export const ProgramModal: Component<Props> = (props) => {
 	const favourite = createMemo(() => isFavourite(programKey()));
 	const googleCalendarUrl = createMemo(() => buildGoogleCalendarUrl(props.programInfo));
 
-	const handleDownloadIcs = () => {
+	const handleDownloadIcs = async () => {
+		const { buildIcsFile, downloadIcsFile } = await import("../../icsExport");
 		downloadIcsFile(buildIcsFile([props.programInfo]), `${programKey()}.ics`);
 	};
 
