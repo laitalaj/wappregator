@@ -92,9 +92,13 @@ function generateRadioOrder(
 	const [timedOut, setTimedOut] = createSignal(false);
 	const [radioOrder, setRadioOrder] = createSignal<string[] | null>(null);
 
-	setTimeout(() => {
+	const timeout = setTimeout(() => {
 		setTimedOut(true);
 	}, RADIO_SORT_TIMEOUT_MS);
+
+	onCleanup(() => {
+		clearTimeout(timeout);
+	});
 
 	const byListeners = (
 		[, channelStateA]: [string, ChannelState],
@@ -164,6 +168,8 @@ export function useChannelStates(
 	const [channelStateMap, setChannelStateMap] = createSignal<{ [radioId: string]: ChannelState }>(
 		{},
 	);
+	const [readyToGenerateOrder, setReadyToGenerateOrder] = createSignal(false);
+
 	const updateChannelState = () => {
 		const scheduleData = schedule();
 		const radiosData = radios();
@@ -221,6 +227,13 @@ export function useChannelStates(
 			};
 		}
 		setChannelStateMap(res);
+
+		setReadyToGenerateOrder(
+			schedule() !== undefined &&
+				radios() !== undefined &&
+				Object.keys(streamStatus()).length > 0 &&
+				Object.keys(listeners()).length > 0,
+		);
 	};
 
 	createEffect(updateChannelState);
@@ -231,15 +244,6 @@ export function useChannelStates(
 
 	onCleanup(() => {
 		clearInterval(channelStateInterval);
-	});
-
-	const readyToGenerateOrder = createMemo(() => {
-		return !!(
-			schedule() &&
-			radios() &&
-			Object.keys(streamStatus()).length > 0 &&
-			Object.keys(listeners()).length > 0
-		);
 	});
 
 	// eslint-disable-next-line solid/reactivity
