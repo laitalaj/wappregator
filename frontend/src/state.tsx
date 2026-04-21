@@ -35,7 +35,7 @@ import {
 const RADIOS_FETCH_INTERVAL_MS = 15 * 60 * 1000;
 const SCHEDULE_FETCH_INTERVAL_MS = 5 * 60 * 1000;
 const NOW_PLAYING_UPDATE_INTERVAL_MS = 1000;
-const RADIO_SORT_TIMEOUT_MS = 333;
+const RADIO_SORT_TIMEOUT_MS = 512;
 
 export function useRadiosState(): Resource<Radios> {
 	const [radios, { refetch: refetchRadios }] = createResource(fetchRadios);
