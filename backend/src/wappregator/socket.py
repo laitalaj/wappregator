@@ -9,7 +9,7 @@ import uuid
 
 import socketio
 import valkey.asyncio as valkey
-from wapprecommon import internal_model, keys, listeners
+from wapprecommon import model, internal_model, keys, listeners
 
 from wappregator import radios
 
@@ -46,6 +46,23 @@ def task_exc_handler(task: asyncio.Task) -> None:
         pass
 
 
+def dump_song(song: model.Song | None) -> dict[str, str] | None:
+    """Dump a Song object to a JSON-serializable dict.
+
+    Args:
+        song: The Song object to dump.
+
+    Returns:
+        A dict representing the song, or None if the input was None.
+    """
+    if song is None:
+        return None
+
+    res = song.model_dump()
+    res["start"] = res["start"].isoformat()
+    return res
+
+
 @contextlib.asynccontextmanager
 async def setup_socketio(
     sio: socketio.AsyncServer, pool: valkey.ConnectionPool
@@ -76,10 +93,7 @@ async def setup_socketio(
             currently_playing = await radios.now_playing(client)
             await sio.emit(
                 NOW_PLAYING_EVENT,
-                {
-                    k: v.model_dump() if v is not None else None
-                    for k, v in currently_playing.items()
-                },
+                {k: dump_song(v) for k, v in currently_playing.items()},
                 to=sid,
             )
 
@@ -125,11 +139,7 @@ async def setup_socketio(
         logger.info("Broadcasting a now-playing update: %s", event)
         await sio.emit(
             NOW_PLAYING_EVENT,
-            {
-                event.radio_id: event.now_playing.model_dump()
-                if event.now_playing
-                else None
-            },
+            {event.radio_id: dump_song(event.now_playing)},
         )
 
     async def handle_streamstatus_event(msg: dict[str, Any]) -> None:

@@ -26,7 +26,7 @@ DIODI = model.Radio(
             mime_type="audio/aac",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.REALTIME,
 )
 
 JKL = model.Radio(
@@ -114,7 +114,7 @@ RAKKAUDEN = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.LATEST,
 )
 
 RATTO = model.Radio(
@@ -134,7 +134,7 @@ RATTO = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.REALTIME,
 )
 
 SATEILY = model.Radio(
@@ -178,7 +178,7 @@ TURUN = model.Radio(
             mime_type="application/x-mpegURL",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.LATEST,
 )
 
 WAPINA = model.Radio(

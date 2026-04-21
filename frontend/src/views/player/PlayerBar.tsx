@@ -71,6 +71,7 @@ export function PlayerBar() {
 		<Show when={channel()}>
 			{(state) => {
 				const nowPlaying = () => state().currentProgram;
+				const currentSong = () => state().currentSong;
 				return (
 					<>
 						<Switch>
@@ -80,7 +81,8 @@ export function PlayerBar() {
 										radio={() => state().radio}
 										isPlaying={isTrulyPlaying}
 										volume={volume}
-										nowPlaying={() => state().currentProgram}
+										nowPlaying={nowPlaying}
+										currentSong={currentSong}
 										setIsPlaying={setIsPlaying}
 									/>
 								</Suspense>
@@ -90,7 +92,8 @@ export function PlayerBar() {
 									radio={() => state().radio}
 									isPlaying={isTrulyPlaying}
 									volume={volume}
-									nowPlaying={() => state().currentProgram}
+									nowPlaying={nowPlaying}
+									currentSong={currentSong}
 									setIsPlaying={setIsPlaying}
 								/>
 							</Match>

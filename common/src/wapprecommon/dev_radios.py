@@ -17,7 +17,7 @@ BOSSA = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.LATEST,
 )
 
 GROOVESALAD = model.Radio(
@@ -39,7 +39,7 @@ GROOVESALAD = model.Radio(
         #    mime_type="audio/mpeg",
         # ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.REALTIME,
 )
 
 DEFCON = model.Radio(
@@ -57,7 +57,7 @@ DEFCON = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.LATEST,
 )
 
 VAPORWAVES = model.Radio(
@@ -75,7 +75,7 @@ VAPORWAVES = model.Radio(
             mime_type="audio/mpeg",
         ),
     ],
-    has_now_playing=True,
+    current_song_type=model.CurrentSongType.REALTIME,
 )
 
 BROKEN = model.Radio(

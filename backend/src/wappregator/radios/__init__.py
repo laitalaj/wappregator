@@ -105,7 +105,11 @@ async def now_playing(valkey_client: valkey.Valkey) -> dict[str, model.Song | No
         Dictionary; keys are radio IDs, values are their currently playing songs.
     """
     res = {}
-    relevant_ids = [fetcher.id for fetcher in FETCHERS if fetcher.radio.has_now_playing]
+    relevant_ids = [
+        fetcher.id
+        for fetcher in FETCHERS
+        if fetcher.radio.current_song_type != model.CurrentSongType.NONE
+    ]
 
     tasks = [_now_playing_for_radio(valkey_client, id) for id in relevant_ids]
     results = await asyncio.gather(*tasks, return_exceptions=True)

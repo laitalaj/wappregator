@@ -1,6 +1,6 @@
 import { type Accessor, createEffect, createMemo, Index } from "solid-js";
 
-import type { Program, Radio } from "../../types";
+import type { Song, Program, Radio } from "../../types";
 import {
 	loadFreshStream,
 	seekToLive,
@@ -13,6 +13,7 @@ import {
 export interface AudioPlayerProps {
 	radio: Accessor<Radio>;
 	nowPlaying: Accessor<Program | undefined>;
+	currentSong: Accessor<Song | undefined>;
 	isPlaying: Accessor<boolean>;
 	setIsPlaying: (isPlaying: boolean) => void;
 	volume: Accessor<number>;

@@ -1,4 +1,5 @@
 import logging
+import re
 
 import aiohttp
 from wapprecommon import radios, model
@@ -6,6 +7,7 @@ from wapprecommon import radios, model
 from wapprepollers.pollers import base
 
 logger = logging.getLogger(__name__)
+SPLIT_RE = re.compile(r"\s*[\u2013\u2014-]\s*")  # Matches (e[nm])?dash
 
 
 class RattoPoller(base.HTTPPoller):
@@ -51,7 +53,7 @@ class RattoPoller(base.HTTPPoller):
         if not data:
             return None
 
-        parts = data.split(" - ")
+        parts = SPLIT_RE.split(data)
         if len(parts) == 1:
             artist = None
             title = parts[0]

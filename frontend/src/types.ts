@@ -20,6 +20,8 @@ export interface Brand {
 	contrast_color?: string;
 }
 
+export type CurrentSongType = "none" | "latest" | "realtime";
+
 export interface Radio {
 	id: string;
 	name: string;
@@ -29,6 +31,7 @@ export interface Radio {
 	frequency_mhz?: number;
 	brand: Brand;
 	streams: Stream[];
+	current_song_type?: CurrentSongType;
 }
 
 export interface Radios {
@@ -64,6 +67,7 @@ export interface ProgramInfo {
 export interface Song {
 	title: string;
 	artist?: string;
+	start?: string;
 }
 
 export type NowPlaying = Partial<Record<string, Song | null>>;

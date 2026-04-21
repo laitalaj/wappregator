@@ -1,7 +1,10 @@
 import { type Accessor, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 
-import type { Radio } from "../../types";
+import type { Radio, Program, Song } from "../../types";
 import type { AudioPlayerProps } from "./AudioPlayer";
+
+const MEDIA_INFO_NOW_UPDATE_INTERVAL_MS = 10 * 1000; // 10 seconds
+const SHOW_LATEST_CURRENT_SONG_MILLIS = 60 * 1000; // 1 minute
 
 interface NetworkInformationLike extends EventTarget {
 	readonly saveData?: boolean;
@@ -58,9 +61,58 @@ export function useShouldAvoidFlac(): Accessor<boolean> {
 	return shouldAvoidFlac;
 }
 
+const buildMediaData = (radio: Radio, nowPlaying?: Program, currentSong?: Song, now?: Date) => {
+	if (currentSong) {
+		switch (radio.current_song_type) {
+			case "realtime":
+				return {
+					title: currentSong.title,
+					artist: currentSong.artist ?? radio.name,
+				};
+			case "latest":
+				if (currentSong.start && now) {
+					const currentSongStart = new Date(currentSong.start).getTime();
+					if (now.getTime() - currentSongStart <= SHOW_LATEST_CURRENT_SONG_MILLIS) {
+						return {
+							title: currentSong.title,
+							artist: currentSong.artist ?? radio.name,
+						};
+					}
+				} else {
+					console.warn(
+						`Radio ${radio.name} has current_song_type "latest" but current song is missing start time or now is not provided. Not showing current song info.`,
+					);
+				}
+				break;
+			default:
+				console.warn(
+					`Radio ${radio.name} has a currentSong but current_song_type "${radio.current_song_type}" is not implemented in buildMediaData. Not showing current song info.`,
+				);
+		}
+	}
+
+	return nowPlaying
+		? {
+				title: nowPlaying.title,
+				artist: radio.name,
+			}
+		: {
+				title: radio.name,
+			};
+};
+
 export function useMediaSessionIntegration(props: AudioPlayerProps) {
 	const play = () => props.setIsPlaying(true);
 	const pause = () => props.setIsPlaying(false);
+	const [now, setNow] = createSignal(new Date());
+
+	const nowInterval = setInterval(() => {
+		setNow(new Date());
+	}, MEDIA_INFO_NOW_UPDATE_INTERVAL_MS);
+
+	onCleanup(() => {
+		clearInterval(nowInterval);
+	});
 
 	// Media Session API: play/pause
 	createEffect(() => {
@@ -83,14 +135,7 @@ export function useMediaSessionIntegration(props: AudioPlayerProps) {
 			return;
 		}
 
-		const mediaData = nowPlaying
-			? {
-					title: nowPlaying.title,
-					artist: radio.name,
-				}
-			: {
-					title: radio.name,
-				};
+		const mediaData = buildMediaData(radio, nowPlaying, props.currentSong(), now());
 
 		const wappregatorArtwork = {
 			src: "https://wappregat.org/appicon.png",

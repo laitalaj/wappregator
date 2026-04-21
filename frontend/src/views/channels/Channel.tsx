@@ -173,8 +173,7 @@ export function Channel(props: Props) {
 				<Show when={nowPlaying()}>
 					{(song) => {
 						const title = createMemo(() => {
-							// TODO: Move this to the backend; could have an enum instead of a boolean in has_now_playing
-							if (["diodi", "ratto"].includes(radio().id)) {
+							if (radio().current_song_type === "realtime") {
 								return "Nyt soi";
 							}
 

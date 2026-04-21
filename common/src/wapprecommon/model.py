@@ -1,4 +1,5 @@
 from typing import Self
+from enum import StrEnum
 import datetime
 
 import pydantic
@@ -20,11 +21,32 @@ class Program(pydantic.BaseModel):
     photo: str | None = None
 
 
+def _utc_now() -> datetime.datetime:
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
 class Song(pydantic.BaseModel):
     """A song."""
 
     artist: str | None = None
     title: str
+    start: datetime.datetime = pydantic.Field(default_factory=_utc_now)
+
+    def __eq__(self, other: object) -> bool:
+        """Check if two Song objects are equal.
+
+        Custom implementation to ignore the 'start' field and to thus avoid
+        overwriting the cached value every time we poll.
+
+        Args:
+            other: The other object to compare with.
+
+        Returns:
+            True if the two objects are equal, False otherwise.
+        """
+        if not isinstance(other, Song):
+            return False
+        return self.artist == other.artist and self.title == other.title
 
 
 class Stream(pydantic.BaseModel):
@@ -51,6 +73,14 @@ class Brand(pydantic.BaseModel):
         )
 
 
+class CurrentSongType(StrEnum):
+    """Type of the current song information provided by a radio station."""
+
+    NONE = "none"
+    LATEST = "latest"
+    REALTIME = "realtime"
+
+
 class Radio(pydantic.BaseModel):
     """A radio station."""
 
@@ -65,5 +95,5 @@ class Radio(pydantic.BaseModel):
     brand: Brand = Brand.default()
     streams: list[Stream] = []
 
-    has_now_playing: bool = False
+    current_song_type: CurrentSongType = CurrentSongType.NONE
     stream_check_enabled: bool = True
