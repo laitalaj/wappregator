@@ -1,4 +1,4 @@
-import { IconDownload } from "@tabler/icons-solidjs";
+import { IconCalendarDown } from "@tabler/icons-solidjs";
 import { isToday, isWithinInterval, startOfDay } from "date-fns";
 import {
 	createEffect,
@@ -143,9 +143,7 @@ export default function Guide() {
 
 	const groupedSchedule = createMemo(() => groupPrograms(filteredPrograms()));
 
-	const showExportToolbar = createMemo(
-		() => favouritesOnly() && favourites().size > 0 && groupedSchedule().length > 0,
-	);
+	const showExportToolbar = createMemo(() => groupedSchedule().length > 0);
 
 	const handleExport = () => {
 		downloadIcsFile(buildIcsFile(filteredPrograms()), "wappregator-suosikit.ics");
@@ -158,6 +156,12 @@ export default function Guide() {
 			return "Ei suosikkeja vielä — lisää ohjelmia suosikeiksi sydänpainikkeella.";
 		}
 		return "Ei hakutuloksia :^(";
+	};
+
+	const exportText = () => {
+		if (searchActive()) return "Lisää näkymä kalenteriin (.ics)";
+		if (favouritesOnly()) return "Lisää suosikit kalenteriin (.ics)";
+		return "Lisää kaikki ohjelmat kalenteriin (.ics)";
 	};
 
 	createEffect(() => setNonModalElementsInert(selectedProgram() !== null));
@@ -183,8 +187,8 @@ export default function Guide() {
 				<Show when={showExportToolbar()}>
 					<div class={classes.exportToolbar}>
 						<button type="button" class={classes.exportLink} onClick={handleExport}>
-							<IconDownload size={18} role="presentation" />
-							Lisää kalenteriin (.ics)
+							<IconCalendarDown size={18} role="presentation" />
+							{exportText()}
 						</button>
 					</div>
 				</Show>

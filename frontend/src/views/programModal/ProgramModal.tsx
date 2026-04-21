@@ -1,4 +1,4 @@
-import { IconCalendarPlus, IconDownload } from "@tabler/icons-solidjs";
+import { IconCalendarPlus, IconCalendarDown } from "@tabler/icons-solidjs";
 import { type Component, createMemo, onCleanup, onMount, type Setter, Show } from "solid-js";
 
 import { buildGoogleCalendarUrl, buildIcsFile, downloadIcsFile } from "../../icsExport";
@@ -95,7 +95,7 @@ export const ProgramModal: Component<Props> = (props) => {
 							Lisää kalenteriin (Google)
 						</a>
 						<button type="button" class={classes.exportLink} onClick={handleDownloadIcs}>
-							<IconDownload size={18} role="presentation" />
+							<IconCalendarDown size={18} role="presentation" />
 							Lisää kalenteriin (.ics)
 						</button>
 					</div>
