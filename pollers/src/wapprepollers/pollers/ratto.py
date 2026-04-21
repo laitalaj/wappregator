@@ -7,7 +7,7 @@ from wapprecommon import radios, model
 from wapprepollers.pollers import base
 
 logger = logging.getLogger(__name__)
-SPLIT_RE = re.compile(r"\s*[\u2013\u2014-]\s*")  # Matches (e[nm])?dash
+SPLIT_RE = re.compile(r"\s+[\u2013\u2014-]\s+")  # Matches (e[nm])?dash
 
 
 class RattoPoller(base.HTTPPoller):
