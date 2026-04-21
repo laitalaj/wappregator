@@ -1,4 +1,5 @@
 import { TinyColor } from "@ctrl/tinycolor";
+import { debounce } from "@solid-primitives/scheduled";
 import { loadBasic } from "@tsparticles/basic";
 import { tsParticles, MoveDirection } from "@tsparticles/engine";
 import { loadSquareShape } from "@tsparticles/shape-square";
@@ -7,16 +8,18 @@ import { loadRollUpdater } from "@tsparticles/updater-roll";
 import { loadRotateUpdater } from "@tsparticles/updater-rotate";
 import { loadTiltUpdater } from "@tsparticles/updater-tilt";
 import { loadWobbleUpdater } from "@tsparticles/updater-wobble";
-import { type Accessor, createEffect, createSignal } from "solid-js";
+import { type Accessor, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 
-const confettiConfig = (colors: string[]) => ({
+const CONFETTI_PER_PIXEL = 1 / 20;
+
+const confettiConfig = (count: number, colors: string[]) => ({
 	// Basically https://github.com/tsparticles/tsparticles/blob/7140af4ab787dee2b17a21a53e354af56cc6918e/presets/confettiFalling/src/index.ts
 	fullScreen: {
 		zIndex: 3,
 	},
 	particles: {
 		number: {
-			value: 64,
+			value: count,
 		},
 		color: {
 			value: Array.from(new Set(colors.map((color) => new TinyColor(color).toHexString()))),
@@ -89,6 +92,20 @@ interface ConfettiProps {
 
 export default function Confetti(props: ConfettiProps) {
 	const [init, setInit] = createSignal<boolean | null>(null);
+	const [count, setCount] = createSignal(0);
+
+	onMount(() => {
+		const handleResize = debounce(() => {
+			setCount(Math.ceil(window.innerWidth * CONFETTI_PER_PIXEL));
+		}, 100);
+		handleResize();
+
+		window.addEventListener("resize", handleResize);
+
+		onCleanup(() => {
+			window.removeEventListener("resize", handleResize);
+		});
+	});
 
 	createEffect(() => {
 		if (init()) return;
@@ -118,7 +135,7 @@ export default function Confetti(props: ConfettiProps) {
 		tsParticles
 			.load({
 				id: "confetti",
-				options: confettiConfig(props.colors()),
+				options: confettiConfig(count(), props.colors()),
 			})
 			.catch((err) => {
 				console.error("Failed to update confetti:", err);
