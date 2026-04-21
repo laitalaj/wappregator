@@ -1,3 +1,4 @@
+import { IconHeart, IconHeartFilled } from "@tabler/icons-solidjs";
 import { type Accessor, For } from "solid-js";
 
 import type { Radio } from "../../types";
@@ -8,6 +9,8 @@ interface RadioFilterProps {
 	radios: Accessor<Radio[]>;
 	selectedIds: Accessor<Set<string>>;
 	onChange: (ids: Set<string>) => void;
+	favouritesOnly: Accessor<boolean>;
+	onToggleFavourites: () => void;
 }
 
 export function RadioFilter(props: RadioFilterProps) {
@@ -23,8 +26,22 @@ export function RadioFilter(props: RadioFilterProps) {
 
 	return (
 		<fieldset class={classes.filterGroup}>
-			<legend class={classes.visuallyHidden}>Suodata asemilla</legend>
+			<legend class={classes.visuallyHidden}>Suodata ohjelmia</legend>
 			<div class={classes.filterChips}>
+				<button
+					type="button"
+					class={classes.filterChip}
+					data-favourite="true"
+					aria-pressed={props.favouritesOnly()}
+					onClick={() => props.onToggleFavourites()}
+				>
+					{props.favouritesOnly() ? (
+						<IconHeartFilled size={16} role="presentation" />
+					) : (
+						<IconHeart size={16} role="presentation" />
+					)}
+					Omat suosikit
+				</button>
 				<For each={props.radios()}>
 					{(radio) => {
 						const pressed = () => props.selectedIds().has(radio.id);

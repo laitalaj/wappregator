@@ -11,6 +11,37 @@
 	color: white;
 	font-size: 24px;
 	margin: 0;
+	text-align: center;
+	padding: 0 16px;
+}
+
+.exportToolbar {
+	display: flex;
+	justify-content: center;
+	padding: 8px var(--horizontal-padding);
+	background: var(--bg-color-darker);
+}
+
+.exportLink {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: none;
+	border: none;
+	padding: 0;
+	color: var(--text-color);
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: color-mix(in srgb, var(--text-color) 70%, white);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--border-color-focus);
+		outline-offset: 2px;
+	}
 }
 
 .guideDivider {

@@ -47,6 +47,8 @@ interface SearchProps {
 	setActive: Setter<boolean>;
 	setInProgress: Setter<boolean>;
 	setResults: Setter<ProgramInfoWithId[]>;
+	favouritesOnly: Accessor<boolean>;
+	setFavouritesOnly: Setter<boolean>;
 }
 
 export function Search(props: SearchProps) {
@@ -130,6 +132,8 @@ export function Search(props: SearchProps) {
 					radios={radioOptions}
 					selectedIds={selectedRadioIds}
 					onChange={setSelectedRadioIds}
+					favouritesOnly={props.favouritesOnly}
+					onToggleFavourites={() => props.setFavouritesOnly(!props.favouritesOnly())}
 				/>
 			</div>
 		</div>

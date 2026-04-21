@@ -44,6 +44,13 @@
 	font-weight: 700;
 }
 
+.favouriteIndicator {
+	display: inline-block;
+	vertical-align: baseline;
+	margin-left: 6px;
+	color: var(--text-color);
+}
+
 .noProgram {
 	display: flex;
 	flex-direction: column;

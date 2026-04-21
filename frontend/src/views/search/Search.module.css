@@ -68,6 +68,9 @@
 	padding: 4px 12px;
 	font: inherit;
 	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	transition:
 		background-color 0.15s ease-out,
 		border-color 0.15s ease-out;
@@ -83,6 +86,11 @@
 
 	&[aria-pressed="true"] {
 		border-color: transparent;
+	}
+
+	&[data-favourite="true"][aria-pressed="true"] {
+		background-color: #d64161;
+		color: white;
 	}
 }
 

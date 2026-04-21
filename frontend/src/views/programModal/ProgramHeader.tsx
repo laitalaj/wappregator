@@ -1,4 +1,4 @@
-import { IconX } from "@tabler/icons-solidjs";
+import { IconHeart, IconHeartFilled, IconX } from "@tabler/icons-solidjs";
 import type { Component } from "solid-js";
 
 import type { Brand } from "../../types";
@@ -12,6 +12,8 @@ interface Props {
 	timeStr: string;
 	photo?: string;
 	brandColor: Brand;
+	isFavourite: boolean;
+	onToggleFavourite: () => void;
 	onClose: () => void;
 }
 
@@ -29,13 +31,28 @@ export const ProgramHeader: Component<Props> = (props) => (
 			<h2 class={classes.title}>{props.title}</h2>
 			<div class={classes.time}>{props.timeStr}</div>
 		</div>
-		<button
-			type="button"
-			class={classes.closeButton}
-			onClick={() => props.onClose()}
-			title="Sulje ohjelman tiedot"
-		>
-			<IconX width={24} height={24} role="presentation" color="currentcolor" />
-		</button>
+		<div class={classes.headerActions}>
+			<button
+				type="button"
+				class={classes.iconButton}
+				aria-pressed={props.isFavourite}
+				onClick={() => props.onToggleFavourite()}
+				title={props.isFavourite ? "Poista suosikeista" : "Lisää suosikkeihin"}
+			>
+				{props.isFavourite ? (
+					<IconHeartFilled width={24} height={24} role="presentation" color="currentcolor" />
+				) : (
+					<IconHeart width={24} height={24} role="presentation" color="currentcolor" />
+				)}
+			</button>
+			<button
+				type="button"
+				class={classes.iconButton}
+				onClick={() => props.onClose()}
+				title="Sulje ohjelman tiedot"
+			>
+				<IconX width={24} height={24} role="presentation" color="currentcolor" />
+			</button>
+		</div>
 	</div>
 );
