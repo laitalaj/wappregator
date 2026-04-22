@@ -133,12 +133,7 @@ main {
 .mainNavigation {
 	display: flex;
 	justify-content: center;
-	position: sticky;
-	top: 0;
-	z-index: 1;
-	padding: 4px 16px 6px 16px;
-	background-color: var(--bg-color-darker);
-	height: var(--nav-height);
+	flex: 1;
 
 	& > ul {
 		margin: 0;
@@ -162,6 +157,22 @@ main {
 	}
 }
 
+.navSpacer {
+	flex: 0 0 20px;
+}
+
 .activeNavigationLink {
 	--border-color: var(--text-color);
+}
+
+.navWrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background-color: var(--bg-color-darker);
+	height: var(--nav-height);
+	padding: 4px 16px 6px 16px;
 }

@@ -20,6 +20,7 @@ import { OffSeasonCountdown, RibbonCountdown } from "./countdown/Countdown";
 import { LayoutStateProvider, useLayoutState } from "./layoutState";
 import { PlayerBar } from "./player/PlayerBar";
 import { PlayerStateProvider, usePlayerState } from "./player/playerState";
+import { SettingsButton } from "./settings/Settings";
 
 import classes from "./App.module.css";
 import commonClasses from "./common/common.module.css";
@@ -116,7 +117,11 @@ const Layout: ParentComponent = (props: ParentProps) => {
 		<LayoutStateProvider>
 			<div class={classes.app}>
 				<Header />
-				<Navigation />
+				<div class={classes.navWrapper}>
+					<div aria-hidden="true" class={classes.navSpacer} />
+					<Navigation />
+					<SettingsButton />
+				</div>
 				<ErrorBoundary fallback={ErrorFallback}>
 					<InnerLayout>{props.children}</InnerLayout>
 				</ErrorBoundary>

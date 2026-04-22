@@ -50,10 +50,22 @@ def _date_seed(date: datetime.date, radio_id: str) -> int:
     return struct.unpack("I", h.digest()[:4])[0]
 
 
+def _is_prime(x: int) -> bool:
+    return all(x % i for i in range(2, x))
+
+
+def _next_prime(x: int) -> int:
+    if x < 2:
+        return 2
+    return min([a for a in range(x + 1, 2 * x) if _is_prime(a)])
+
+
 def _generate_programs(
     radio_id: str,
     genre: str,
     titles: list[str],
+    min_duration_minutes: int = 60,
+    max_duration_minutes: int = 120,
 ) -> list[model.Program]:
     """Generate mock programs covering yesterday through tomorrow.
 
@@ -70,9 +82,13 @@ def _generate_programs(
     seed = _date_seed(now.date(), radio_id)
     i = 0
 
+    duration_interval_minutes = max_duration_minutes - min_duration_minutes
+    duration_prime = _next_prime(duration_interval_minutes // 2)
     while current < end_boundary:
-        # Vary duration between 1 and 2 hours based on seed
-        duration_minutes = 60 + ((seed + i * 37) % 61)  # 60-120 minutes
+        # Vary duration between min and max duration based on seed
+        duration_minutes = min_duration_minutes + (
+            (seed + i * duration_prime) % (duration_interval_minutes + 1)
+        )
         end = current + datetime.timedelta(minutes=duration_minutes)
 
         title_idx = (seed + i * 13) % len(titles)
@@ -102,6 +118,8 @@ class MockFetcher(base.BaseFetcher):
         radio: model.Radio,
         genre: str,
         titles: list[str] | None = None,
+        min_duration_minutes: int = 60,
+        max_duration_minutes: int = 120,
     ) -> None:
         """Initialize the fetcher.
 
@@ -109,10 +127,14 @@ class MockFetcher(base.BaseFetcher):
             radio: The Radio that this fetcher is for.
             genre: Genre string for generated programs.
             titles: Custom program titles. Defaults to PROGRAM_TITLES.
+            min_duration_minutes: Minimum program duration in minutes.
+            max_duration_minutes: Maximum program duration in minutes.
         """
         super().__init__(radio)
         self.genre = genre
         self.titles = titles or PROGRAM_TITLES
+        self.min_duration_minutes = min_duration_minutes
+        self.max_duration_minutes = max_duration_minutes
 
     async def get_api_url(self, session: aiohttp.ClientSession) -> str:
         """Not used - schedule is generated locally."""
@@ -143,7 +165,13 @@ class MockFetcher(base.BaseFetcher):
             Generated mock programs.
         """
         return sorted(
-            _generate_programs(self.id, self.genre, self.titles),
+            _generate_programs(
+                self.id,
+                self.genre,
+                self.titles,
+                self.min_duration_minutes,
+                self.max_duration_minutes,
+            ),
             key=lambda x: x.start,
         )
 
@@ -160,6 +188,6 @@ def get_mock_fetchers() -> list[MockFetcher]:
         MockFetcher(dev_radios.DEFCON, "electronic"),
         MockFetcher(dev_radios.VAPORWAVES, "vaporwave", VAPORWAVE_TITLES),
         MockFetcher(
-            dev_radios.BROKEN, "industrial", ["oof", "ouch", "auts", "aiai", "au"]
+            dev_radios.BROKEN, "industrial", ["oof", "ouch", "auts", "aiai", "au"], 1, 3
         ),
     ]

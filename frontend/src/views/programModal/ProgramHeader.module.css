@@ -70,14 +70,3 @@
 	align-items: center;
 	z-index: 2;
 }
-
-.iconButton {
-	composes: buttonHoverContrast from "../common/common.module.css";
-	background: none;
-	border: none;
-	border-radius: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 0;
-}

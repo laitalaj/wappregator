@@ -10,6 +10,7 @@ import {
 import { useBirthdayState, useWappuState, type WappuState } from "../state";
 
 const FAVOURITES_STORAGE_KEY = "wappregator.favourites";
+const AUTO_SWITCH_TO_FAVOURITE_STORAGE_KEY = "wappregator.autoSwitchToFavourite";
 
 export interface LayoutState {
 	birthday: Accessor<number | null>;
@@ -19,6 +20,8 @@ export interface LayoutState {
 	favourites: Accessor<Set<string>>;
 	toggleFavourite: (key: string) => void;
 	isFavourite: (key: string) => boolean;
+	autoSwitchToFavourite: Accessor<boolean>;
+	setAutoSwitchToFavourite: (value: boolean) => void;
 }
 
 const LayoutStateContext = createContext<LayoutState>();
@@ -43,14 +46,38 @@ function persistFavourites(favourites: Set<string>): void {
 	}
 }
 
+function loadAutoSwitchToFavourite(): boolean {
+	try {
+		const raw = localStorage.getItem(AUTO_SWITCH_TO_FAVOURITE_STORAGE_KEY);
+		return raw === "1";
+	} catch {
+		return true;
+	}
+}
+
+function persistAutoSwitchToFavourite(value: boolean): void {
+	try {
+		localStorage.setItem(AUTO_SWITCH_TO_FAVOURITE_STORAGE_KEY, value ? "1" : "0");
+	} catch {
+		// Storage may be unavailable (private mode, disabled); keep in-memory state only.
+	}
+}
+
 export function LayoutStateProvider(props: ParentProps) {
 	const birthday = useBirthdayState();
 	const wappu = useWappuState();
 	const [nonModalElementsInert, setNonModalElementsInert] = createSignal(false);
 	const [favourites, setFavourites] = createSignal<Set<string>>(loadFavourites());
+	const [autoSwitchToFavourite, setAutoSwitchToFavourite] = createSignal(
+		loadAutoSwitchToFavourite(),
+	);
 
 	createEffect(() => {
 		persistFavourites(favourites());
+	});
+
+	createEffect(() => {
+		persistAutoSwitchToFavourite(autoSwitchToFavourite());
 	});
 
 	const toggleFavourite = (key: string) => {
@@ -73,6 +100,8 @@ export function LayoutStateProvider(props: ParentProps) {
 		favourites,
 		toggleFavourite,
 		isFavourite,
+		autoSwitchToFavourite,
+		setAutoSwitchToFavourite,
 	};
 
 	return <LayoutStateContext.Provider value={state}>{props.children}</LayoutStateContext.Provider>;

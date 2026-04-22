@@ -56,3 +56,24 @@
 		color: var(--hover-color);
 	}
 }
+
+.iconButtonBase {
+	background: none;
+	border: none;
+	border-radius: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	cursor: pointer;
+}
+
+.iconButton {
+	composes: iconButtonBase;
+	composes: buttonHover;
+}
+
+.iconButtonContrast {
+	composes: iconButtonBase;
+	composes: buttonHoverContrast;
+}

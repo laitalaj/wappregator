@@ -20,6 +20,8 @@ import {
 	useChangeChannelEffect,
 } from "../../state";
 import type { ChannelState, Radios, Schedule } from "../../types";
+import { encodeProgramKey } from "../../programKey";
+import { useLayoutState } from "../layoutState";
 
 export interface PlayerState {
 	channelId: Accessor<string | null>;
@@ -40,7 +42,10 @@ export function PlayerStateProvider(props: ParentProps) {
 	const [channelId, setChannelId] = createSignal<string | null>(null);
 	const [channel, setChannel] = createSignal<ChannelState | undefined>(undefined);
 	const [isPlaying, setIsPlaying] = createSignal(false);
+	const [hasPlayed, setHasPlayed] = createSignal(false);
+	const [seenFavourites, setSeenFavourites] = createSignal(new Set<string>());
 
+	const { isFavourite, autoSwitchToFavourite } = useLayoutState();
 	const radios = useRadiosState();
 	const schedule = useScheduleState();
 	const nowPlaying = useNowPlayingState();
@@ -73,6 +78,51 @@ export function PlayerStateProvider(props: ParentProps) {
 		}
 
 		setChannel(radio);
+	});
+
+	createEffect(() => {
+		if (hasPlayed()) return;
+		setHasPlayed(isPlaying());
+	});
+
+	const toProgramInfo = (channel: ChannelState | undefined) => {
+		if (!channel || !channel.currentProgram) {
+			return undefined;
+		}
+		return {
+			radio: channel.radio,
+			program: channel.currentProgram,
+		};
+	};
+
+	createEffect(() => {
+		if (!autoSwitchToFavourite()) {
+			return;
+		}
+
+		const currentProgram = toProgramInfo(channel());
+		if (currentProgram && isFavourite(encodeProgramKey(currentProgram))) {
+			return;
+		}
+
+		for (const channel of channels()) {
+			const info = toProgramInfo(channel);
+			if (!info) continue;
+
+			const key = encodeProgramKey(info);
+			if (isFavourite(key) && !seenFavourites().has(key)) {
+				const seen = new Set(seenFavourites());
+				seen.add(encodeProgramKey(info));
+				setSeenFavourites(seen);
+
+				setChannelId(channel.radio.id);
+
+				if (hasPlayed()) {
+					setIsPlaying(true);
+				}
+				return;
+			}
+		}
 	});
 
 	const state = {

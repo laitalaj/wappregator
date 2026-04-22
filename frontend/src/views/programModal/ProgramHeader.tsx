@@ -4,6 +4,7 @@ import type { Component } from "solid-js";
 import type { Brand } from "../../types";
 import { brandColorVariablesStyle } from "../common/brandUtils";
 
+import commonClasses from "../common/common.module.css";
 import classes from "./ProgramHeader.module.css";
 
 interface Props {
@@ -34,7 +35,7 @@ export const ProgramHeader: Component<Props> = (props) => (
 		<div class={classes.headerActions}>
 			<button
 				type="button"
-				class={classes.iconButton}
+				class={commonClasses.iconButtonContrast}
 				aria-pressed={props.isFavourite}
 				onClick={() => props.onToggleFavourite()}
 				title={props.isFavourite ? "Poista suosikeista" : "Lisää suosikkeihin"}
@@ -47,7 +48,7 @@ export const ProgramHeader: Component<Props> = (props) => (
 			</button>
 			<button
 				type="button"
-				class={classes.iconButton}
+				class={commonClasses.iconButtonContrast}
 				onClick={() => props.onClose()}
 				title="Sulje ohjelman tiedot"
 			>
