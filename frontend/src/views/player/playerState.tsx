@@ -10,6 +10,7 @@ import {
 	useContext,
 } from "solid-js";
 
+import { encodeProgramKey } from "../../programKey";
 import {
 	useChannelStates,
 	useListenersState,
@@ -20,7 +21,6 @@ import {
 	useChangeChannelEffect,
 } from "../../state";
 import type { ChannelState, Radios, Schedule } from "../../types";
-import { encodeProgramKey } from "../../programKey";
 import { useLayoutState } from "../layoutState";
 
 export interface PlayerState {

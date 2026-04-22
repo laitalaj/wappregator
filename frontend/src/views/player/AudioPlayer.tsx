@@ -1,4 +1,5 @@
-import { type Accessor, createEffect, createMemo, Index } from "solid-js";
+import { throttle } from "@solid-primitives/scheduled";
+import { type Accessor, createEffect, createMemo, onMount, Index } from "solid-js";
 
 import type { Song, Program, Radio } from "../../types";
 import {
@@ -21,6 +22,13 @@ export interface AudioPlayerProps {
 
 export function AudioPlayer(props: AudioPlayerProps) {
 	let audioRef: HTMLAudioElement | null = null;
+
+	const handleStall = throttle(() => loadFreshStream(audioRef!), 1000);
+
+	onMount(() => {
+		audioRef!.addEventListener("playing", handleStall.clear);
+		audioRef!.addEventListener("stalled", handleStall);
+	});
 
 	const radioId = createMemo(() => {
 		return props.radio().id;
