@@ -1,5 +1,13 @@
-import { throttle } from "@solid-primitives/scheduled";
-import { type Accessor, createEffect, createMemo, onMount, Index, onCleanup } from "solid-js";
+import {
+	type Accessor,
+	createEffect,
+	createMemo,
+	createSignal,
+	onMount,
+	Index,
+	onCleanup,
+	untrack,
+} from "solid-js";
 
 import type { Song, Program, Radio } from "../../types";
 import {
@@ -20,16 +28,50 @@ export interface AudioPlayerProps {
 	volume: Accessor<number>;
 }
 
+const INITIAL_STALL_RECOVER_DELAY = 1000;
+const MAX_STALL_RECOVER_DELAY = 16000;
+
 export function AudioPlayer(props: AudioPlayerProps) {
 	let audioRef: HTMLAudioElement | null = null;
+	let [stallTimeout, setStallTimeout] = createSignal<number | undefined>(undefined);
+	let [stallRecoverDelay, setStallRecoverDelay] = createSignal(INITIAL_STALL_RECOVER_DELAY);
 
-	const handleStall = throttle(() => loadFreshStream(audioRef!), 1000);
+	const handleStall = () => {
+		if (stallTimeout()) return;
+		setStallTimeout(
+			// eslint-disable-next-line solid/reactivity -- no need for this to be reactive, it's triggered by event listeners / itself
+			window.setTimeout(() => {
+				if (!props.isPlaying()) {
+					clearStalled();
+					return;
+				}
+				loadFreshStream(audioRef!);
+				setStallRecoverDelay((prev) => Math.min(prev * 2, MAX_STALL_RECOVER_DELAY));
+				setStallTimeout(undefined);
+				handleStall();
+			}, stallRecoverDelay()),
+		);
+	};
+
+	const clearStalled = () => {
+		clearTimeout(stallTimeout());
+		setStallTimeout(undefined);
+		setStallRecoverDelay(INITIAL_STALL_RECOVER_DELAY);
+	};
+
+	createEffect(() => {
+		// Depend on some signals without using them...
+		radioId();
+		props.isPlaying();
+		// ...and then do what we actually want to do when those change without depending on any of our action's signals:
+		untrack(clearStalled);
+	});
 
 	onMount(() => {
-		audioRef!.addEventListener("playing", handleStall.clear);
+		audioRef!.addEventListener("playing", clearStalled);
 		audioRef!.addEventListener("stalled", handleStall);
 		onCleanup(() => {
-			audioRef!.removeEventListener("playing", handleStall.clear);
+			audioRef!.removeEventListener("playing", clearStalled);
 			audioRef!.removeEventListener("stalled", handleStall);
 		});
 	});
