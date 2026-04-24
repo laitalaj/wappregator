@@ -145,18 +145,18 @@ SATEILY = model.Radio(
     wappu_locations=["Lappi"],
     frequency_mhz=89,
     brand=model.Brand(
-        background_color="black",
-        text_color="white",
-        contrast_color="rgb(244, 217, 98)",
+        background_color="#f7f8ea",
+        text_color="black",
+        contrast_color="#751239",
     ),
     streams=[
-        # model.Stream(
-        #     url="https://streams.radio.co/sc2e7aecbe/listen",
-        #     mime_type="audio/aac",
-        # ),
+        model.Stream(
+            url="https://s5.radio.co/sb2b437926/listen",
+            mime_type="audio/mpeg",
+        ),
     ],
-    # Enable this when we know where Säteily is streaming
-    stream_check_enabled=False,
+    # Enable this once Säteily's stream is actually live
+    stream_check_enabled=True,
 )
 
 TURUN = model.Radio(

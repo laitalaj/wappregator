@@ -4,16 +4,15 @@ import json
 import logging
 
 import valkey.asyncio as valkey
-from wapprecommon import constants, model, keys, radios as radio_objs
+from wapprecommon import constants, model, keys
 
 from wappregator.radios import (
-    base,
     diodi,
     jkl,
     norppa,
     rakkauden,
     ratto,
-    # sateily,
+    sateily,
     turun,
     wapina,
 )
@@ -25,10 +24,7 @@ FETCHERS = [
     norppa.NorppaFetcher(),
     wapina.WapinaFetcher(),
     ratto.RattoFetcher(),
-    # No idea if and where they'll have a schedule as of 2026-04-20.
-    # Fix as soon as we know something!
-    # sateily.SateilyFetcher(),
-    base.DummyFetcher(radio_objs.SATEILY),
+    sateily.SateilyFetcher(),
     jkl.JklFetcher(),
 ]
 
