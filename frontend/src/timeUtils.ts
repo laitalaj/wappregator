@@ -9,22 +9,46 @@ export function formatTime(date: Date | string): string {
 	});
 }
 
+const isWappuEve = (date: Date) => {
+	return date.getMonth() === 3 && date.getDate() === 30;
+};
+
+const isWappu = (date: Date) => {
+	return date.getMonth() === 4 && date.getDate() === 1;
+};
+
+const maybeAddWappuInfo = (text: string, date: Date): string => {
+	if (isWappuEve(date)) {
+		return `${text} (Wappuaattona)`;
+	}
+	if (isWappu(date)) {
+		return `${text} (Wappuna)`;
+	}
+	return text;
+};
+
 export function formatDate(date: Date | string, todayOverride?: string): string {
 	const dateObj = typeof date === "string" ? new Date(date) : date;
 
 	if (isYesterday(dateObj)) {
-		return "Eilen";
+		return maybeAddWappuInfo("Eilen", dateObj);
 	}
 
 	if (isToday(dateObj)) {
-		return todayOverride ?? "Tänään";
+		return todayOverride ?? maybeAddWappuInfo("Tänään", dateObj);
 	}
 
 	if (isTomorrow(dateObj)) {
-		return "Huomenna";
+		return maybeAddWappuInfo("Huomenna", dateObj);
 	}
 
 	if (!isThisYear(dateObj)) {
+		if (isWappuEve(dateObj)) {
+			return `Wappuaattona ${dateObj.getFullYear()}`;
+		}
+		if (isWappu(dateObj)) {
+			return `Wappuna ${dateObj.getFullYear()}`;
+		}
 		return format(dateObj, "d.M.yyyy");
 	}
 
@@ -34,11 +58,19 @@ export function formatDate(date: Date | string, todayOverride?: string): string 
 	const weekday = format(dateObj, "eeee", weekOptions);
 
 	if (programWeek === currentWeek) {
-		return weekday[0].toUpperCase() + weekday.slice(1);
+		return maybeAddWappuInfo(weekday[0].toUpperCase() + weekday.slice(1), dateObj);
 	}
 
 	if (programWeek === currentWeek + 1) {
-		return `Ensi viikon ${weekday}`;
+		return maybeAddWappuInfo(`Ensi viikon ${weekday}`, dateObj);
+	}
+
+	if (isWappuEve(dateObj)) {
+		return "Wappuaattona";
+	}
+
+	if (isWappu(dateObj)) {
+		return "Wappuna";
 	}
 
 	return format(dateObj, "d.M.");

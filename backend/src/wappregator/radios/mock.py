@@ -66,6 +66,7 @@ def _generate_programs(
     titles: list[str],
     min_duration_minutes: int = 60,
     max_duration_minutes: int = 120,
+    max_future_programs: int = 32,
 ) -> list[model.Program]:
     """Generate mock programs covering yesterday through tomorrow.
 
@@ -81,10 +82,11 @@ def _generate_programs(
     end_boundary = start_of_yesterday + datetime.timedelta(days=3)
     seed = _date_seed(now.date(), radio_id)
     i = 0
+    future_program_count = 0
 
     duration_interval_minutes = max_duration_minutes - min_duration_minutes
     duration_prime = _next_prime(duration_interval_minutes // 2)
-    while current < end_boundary:
+    while current < end_boundary and future_program_count < max_future_programs:
         # Vary duration between min and max duration based on seed
         duration_minutes = min_duration_minutes + (
             (seed + i * duration_prime) % (duration_interval_minutes + 1)
@@ -104,6 +106,8 @@ def _generate_programs(
             )
         )
 
+        if end > now:
+            future_program_count += 1
         current = end
         i += 1
 
