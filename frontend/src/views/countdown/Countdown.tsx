@@ -1,6 +1,7 @@
 import { createMemo, type JSX, Show } from "solid-js";
 
 import { useMaydayCountdownState } from "../../state";
+import { useLayoutState } from "../layoutState";
 
 import classes from "./Countdown.module.css";
 
@@ -11,8 +12,9 @@ interface MaydayCountdownProps {
 
 function MaydayCountdown(props: MaydayCountdownProps) {
 	const daysUntilWappu = useMaydayCountdownState();
+	const { enableSFX } = useLayoutState();
 	const rainbowIntensity = createMemo(() =>
-		Math.max(0, Math.min(1, (100 - daysUntilWappu()) / 100)),
+		enableSFX() ? Math.max(0, Math.min(1, (100 - daysUntilWappu()) / 100)) : 0,
 	);
 	const numberClass = createMemo(
 		() => `${classes.countdownNumber} ${props.numberClasses ? props.numberClasses.join(" ") : ""}`,

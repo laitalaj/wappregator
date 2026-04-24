@@ -54,9 +54,9 @@ const ErrorFallback = (err: unknown, reset: () => void) => {
 const Confetti = lazy(() => import("./confetti/Confetti"));
 
 const InnestLayout: ParentComponent = (props: ParentProps) => {
-	const { wappu } = useLayoutState();
+	const { wappu, enableSFX } = useLayoutState();
 	const { channel, radios } = usePlayerState();
-	const showConfetti = () => wappu() === WappuState.Wappu;
+	const showConfetti = () => wappu() === WappuState.Wappu && enableSFX();
 	const colors = createMemo(() => {
 		if (!showConfetti()) return [];
 		return Object.values(radios() || {})
@@ -131,7 +131,7 @@ const Layout: ParentComponent = (props: ParentProps) => {
 };
 
 function Header() {
-	const { birthday, wappu, nonModalElementsInert } = useLayoutState();
+	const { birthday, wappu, nonModalElementsInert, enableSFX } = useLayoutState();
 
 	const [luckyNumber, setLuckyNumber] = createSignal(
 		Math.floor(Math.random() * funnySlogansHaha.length),
@@ -151,7 +151,7 @@ function Header() {
 
 	const wappuImgs = ["/champagne.gif", "/partyblower.gif"];
 	const logo = createMemo(() => {
-		if (birthday() !== null || wappu() === WappuState.Wappu) {
+		if (enableSFX() && (birthday() !== null || wappu() === WappuState.Wappu)) {
 			return wappuImgs[Math.floor(Math.random() * wappuImgs.length)];
 		}
 		return "/appicon.png";
@@ -161,7 +161,9 @@ function Header() {
 		<header inert={nonModalElementsInert()}>
 			<div class={classes.headerTop}>
 				<div class={classes.headerLogo}>
-					<h1 classList={{ [commonClasses.rainbowText]: wappu() === WappuState.Wappu }}>
+					<h1
+						classList={{ [commonClasses.rainbowText]: wappu() === WappuState.Wappu && enableSFX() }}
+					>
 						Wappregat<small>.</small>or<small>g</small>
 					</h1>
 					<img src={logo()} alt="" width={64} height={64} />

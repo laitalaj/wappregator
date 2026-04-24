@@ -1,5 +1,5 @@
 import { IconSettings, IconX } from "@tabler/icons-solidjs";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { type Accessor, type Setter, createSignal, onCleanup, onMount, Show } from "solid-js";
 
 import { useLayoutState } from "../layoutState";
 
@@ -50,8 +50,32 @@ export function SettingsButton() {
 	);
 }
 
+interface SettingProps {
+	label: string;
+	checked: Accessor<boolean>;
+	onChange: Setter<boolean>;
+}
+
+function Setting(props: SettingProps) {
+	return (
+		<label class={classes.settingRow}>
+			<span class={classes.settingLabel}>{props.label}</span>
+			<span class={classes.toggleSwitch}>
+				<input
+					type="checkbox"
+					class={classes.toggleCheckbox}
+					checked={props.checked()}
+					onChange={(e) => props.onChange(e.currentTarget.checked)}
+				/>
+				<span class={classes.toggle} aria-hidden="true" />
+			</span>
+		</label>
+	);
+}
+
 function SettingsPanel(props: { onClose: () => void }) {
-	const { autoSwitchToFavourite, setAutoSwitchToFavourite } = useLayoutState();
+	const { autoSwitchToFavourite, setAutoSwitchToFavourite, enableSFX, setEnableSFX } =
+		useLayoutState();
 
 	return (
 		<div class={classes.settingsPanel} role="dialog" aria-label="Asetukset">
@@ -66,20 +90,12 @@ function SettingsPanel(props: { onClose: () => void }) {
 					<IconX size={18} role="presentation" />
 				</button>
 			</div>
-			<label class={classes.settingRow}>
-				<span class={classes.settingLabel}>
-					Vaihda kanavaa automaattisesti suosikkiohjelman alkaessa
-				</span>
-				<span class={classes.toggleSwitch}>
-					<input
-						type="checkbox"
-						class={classes.toggleCheckbox}
-						checked={autoSwitchToFavourite()}
-						onChange={(e) => setAutoSwitchToFavourite(e.currentTarget.checked)}
-					/>
-					<span class={classes.toggle} aria-hidden="true" />
-				</span>
-			</label>
+			<Setting
+				label="Vaihda kanavaa automaattisesti suosikkiohjelman alkaessa"
+				checked={autoSwitchToFavourite}
+				onChange={setAutoSwitchToFavourite}
+			/>
+			<Setting label="Näytä erikoisefektit" checked={enableSFX} onChange={setEnableSFX} />
 		</div>
 	);
 }

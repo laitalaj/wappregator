@@ -1,5 +1,6 @@
 import {
 	type Accessor,
+	type Setter,
 	createContext,
 	createEffect,
 	createSignal,
@@ -10,7 +11,9 @@ import {
 import { useBirthdayState, useWappuState, type WappuState } from "../state";
 
 const FAVOURITES_STORAGE_KEY = "wappregator.favourites";
+// TODO for season 2027: Move all of these to some `settings` key
 const AUTO_SWITCH_TO_FAVOURITE_STORAGE_KEY = "wappregator.autoSwitchToFavourite";
+const ENABLE_SFX_STORAGE_KEY = "wappregator.enableSFX";
 
 export interface LayoutState {
 	birthday: Accessor<number | null>;
@@ -21,7 +24,9 @@ export interface LayoutState {
 	toggleFavourite: (key: string) => void;
 	isFavourite: (key: string) => boolean;
 	autoSwitchToFavourite: Accessor<boolean>;
-	setAutoSwitchToFavourite: (value: boolean) => void;
+	setAutoSwitchToFavourite: Setter<boolean>;
+	enableSFX: Accessor<boolean>;
+	setEnableSFX: Setter<boolean>;
 }
 
 const LayoutStateContext = createContext<LayoutState>();
@@ -63,6 +68,30 @@ function persistAutoSwitchToFavourite(value: boolean): void {
 	}
 }
 
+function defaultEnableSFX(): boolean {
+	return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function loadEnableSFX(): boolean {
+	try {
+		const raw = localStorage.getItem(ENABLE_SFX_STORAGE_KEY);
+		if (raw === null) {
+			return defaultEnableSFX();
+		}
+		return raw === "1";
+	} catch {
+		return defaultEnableSFX();
+	}
+}
+
+function persistEnableSFX(value: boolean): void {
+	try {
+		localStorage.setItem(ENABLE_SFX_STORAGE_KEY, value ? "1" : "0");
+	} catch {
+		// Storage may be unavailable (private mode, disabled); keep in-memory state only.
+	}
+}
+
 export function LayoutStateProvider(props: ParentProps) {
 	const birthday = useBirthdayState();
 	const wappu = useWappuState();
@@ -71,6 +100,7 @@ export function LayoutStateProvider(props: ParentProps) {
 	const [autoSwitchToFavourite, setAutoSwitchToFavourite] = createSignal(
 		loadAutoSwitchToFavourite(),
 	);
+	const [enableSFX, setEnableSFX] = createSignal(loadEnableSFX());
 
 	createEffect(() => {
 		persistFavourites(favourites());
@@ -78,6 +108,10 @@ export function LayoutStateProvider(props: ParentProps) {
 
 	createEffect(() => {
 		persistAutoSwitchToFavourite(autoSwitchToFavourite());
+	});
+
+	createEffect(() => {
+		persistEnableSFX(enableSFX());
 	});
 
 	const toggleFavourite = (key: string) => {
@@ -102,6 +136,8 @@ export function LayoutStateProvider(props: ParentProps) {
 		isFavourite,
 		autoSwitchToFavourite,
 		setAutoSwitchToFavourite,
+		enableSFX,
+		setEnableSFX,
 	};
 
 	return <LayoutStateContext.Provider value={state}>{props.children}</LayoutStateContext.Provider>;

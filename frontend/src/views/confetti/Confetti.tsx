@@ -1,7 +1,7 @@
 import { TinyColor } from "@ctrl/tinycolor";
 import { debounce } from "@solid-primitives/scheduled";
 import { loadBasic } from "@tsparticles/basic";
-import { tsParticles, MoveDirection } from "@tsparticles/engine";
+import { tsParticles, MoveDirection, type Container } from "@tsparticles/engine";
 import { loadSquareShape } from "@tsparticles/shape-square";
 import { loadStarShape } from "@tsparticles/shape-star";
 import { loadRollUpdater } from "@tsparticles/updater-roll";
@@ -93,6 +93,7 @@ interface ConfettiProps {
 export default function Confetti(props: ConfettiProps) {
 	const [init, setInit] = createSignal<boolean | null>(null);
 	const [count, setCount] = createSignal(0);
+	const [container, setContainer] = createSignal<Container | undefined>(undefined);
 
 	onMount(() => {
 		const handleResize = debounce(() => {
@@ -104,6 +105,7 @@ export default function Confetti(props: ConfettiProps) {
 
 		onCleanup(() => {
 			window.removeEventListener("resize", handleResize);
+			container()?.destroy();
 		});
 	});
 
@@ -137,6 +139,7 @@ export default function Confetti(props: ConfettiProps) {
 				id: "confetti",
 				options: confettiConfig(count(), props.colors()),
 			})
+			.then((container) => setContainer(container))
 			.catch((err) => {
 				console.error("Failed to update confetti:", err);
 			});
