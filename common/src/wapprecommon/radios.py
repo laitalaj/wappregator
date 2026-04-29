@@ -2,7 +2,7 @@ from wapprecommon import model
 
 DIODI = model.Radio(
     id="diodi",
-    name="Radio Diodi",
+    name="Radiodiodi",
     url="https://radiodiodi.fi/",
     location="Otaniemi",
     wappu_locations=["TKK"],
