@@ -141,7 +141,7 @@ export function Channel(props: Props) {
 			</div>
 
 			<div class={classes.channelInfo}>
-				<Show when={radio().frequency_mhz}>{radio().frequency_mhz?.toFixed(1)} MHz @ </Show>
+				<Show when={radio().broadcast_info}>{radio().broadcast_info} @ </Show>
 				{location()}
 				{" / "}
 				<a href={radio().url} class={classes.listenButton}>

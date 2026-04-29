@@ -90,7 +90,7 @@ class Radio(pydantic.BaseModel):
 
     location: str
     wappu_locations: list[str] | None = None
-    frequency_mhz: float | None = None
+    broadcast_info: str | None = None
 
     brand: Brand = Brand.default()
     streams: list[Stream] = []
